@@ -14,6 +14,8 @@ HTML final mengatur tampilan. SKPL bagian 1–4 mengatur hak akses. Untuk alur d
 
 **Frontend yang sudah tersedia.** Katalog, detail tenant, formulir akun, simulasi survei, dan tampilan pengelola serta pemilik dapat ditinjau di [pratinjau Cloudflare](https://sikantin-unusa-frontend.rossabuckerr.workers.dev/). Pratinjau memakai data contoh. Untuk menjalankan salinan lokal gunakan `npm ci` dan `npm run dev`. Pada terminal kedua jalankan `npm run test:browser` dengan Chrome terpasang. Periksa fondasi dan paket rilis dengan `npm run build`. Tahap operasional di bawah masih memerlukan Supabase.
 
+Versi ini diterbitkan melalui dashboard Cloudflare pada Worker `sikantin-unusa-frontend`. Untuk rilis berikutnya, unggah folder `web/` ke Worker yang sama atau jalankan `npm run deploy` setelah Wrangler masuk ke akun pada `wrangler.jsonc`.
+
 Nama layar memakai ID HTML tanpa awalan `screen-`. Rute dan folder merupakan usulan implementasi. Keempat agen dapat bekerja paralel. Centang tahap setelah hasil mereka terintegrasi dan memenuhi uji penerimaan. [Pembagian kerja empat agen](DELEGASI_AGEN.md) · [Aturan bahasa dan tampilan](AGENTS.md#bahasa-dan-tampilan)
 
 ### 1. Katalog publik

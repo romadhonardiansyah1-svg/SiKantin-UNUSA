@@ -75,13 +75,13 @@ const tanggapan = tenants => tenants.flatMap(t => t.ulasan.map(u => ({ t, u })))
 
 function grafik(key, judul, tipe, labels, data) {
   const canvas = id(key);
+  canvas.setAttribute('aria-label', judul + '. ' + labels.map((l, i) => l + ' ' + (data[i] ?? '—')).join(', '));
   const old = window.Chart.getChart(canvas);
   if (old) {
     old.data.datasets[0].data = data;
     old.update('none');
     return;
   }
-  canvas.setAttribute('aria-label', judul + '. ' + labels.map((l, i) => l + ' ' + (data[i] ?? '—')).join(', '));
   const chart = new window.Chart(canvas, {
     type: tipe, data: { labels, datasets: [{ label: judul, data, borderColor: '#007546',
       backgroundColor: tipe === 'bar' ? ['#006837','#10b981','#fbbf24','#34b778','#059669'] : '#10b98126',
@@ -94,6 +94,10 @@ function grafik(key, judul, tipe, labels, data) {
 function diagram(aspectKey, peakKey, reviews) {
   const distribusi = Array(24).fill(0);
   for (const u of reviews) distribusi[Number(jam.format(new Date(u.waktu)))]++;
+  const bagianJam = id(peakKey).parentElement.parentElement;
+  bagianJam.querySelector('h3, h4').textContent = 'Waktu pengisian ulasan (WIB)';
+  const keterangan = bagianJam.querySelector('p');
+  if (keterangan) keterangan.textContent = 'Jumlah ulasan contoh menurut jam pengisian.';
   grafik(aspectKey, 'Rata-rata penilaian', 'bar', aspek, statistik(reviews).aspek);
   grafik(peakKey, 'Jumlah ulasan per jam (WIB)', 'line', distribusi.map((_, h) => String(h).padStart(2,'0')), distribusi);
 }
@@ -113,6 +117,7 @@ function komentar(key, rows) {
   if (!rows.length) kontainer.textContent = 'Belum ada ulasan dalam pilihan ini.';
 }
 function dasbor(daftar) {
+  id('adminDashboardCampusFilter').parentElement.previousElementSibling.textContent = 'Ringkasan ulasan contoh di kampus yang dipilih.';
   const tenants = daftar.filter(t => kampus('adminDashboardCampusFilter',t));
   const rows = tanggapan(tenants);
   const reviews = rows.map(r => r.u);
@@ -213,6 +218,8 @@ export async function internal(path, daftar) {
     panel.querySelector('main').append(clone(key));
     isi('adminTopbarTitle',title);
     isi('adminTopbarDate','Pratinjau · Data contoh');
+    const kembali = panel.querySelector('.admin-sidebar .btn-danger');
+    kembali.replaceChildren(kembali.querySelector('svg'), 'Kembali ke katalog');
     for(const a of panel.querySelectorAll('.admin-nav-item'))a.classList.toggle('active',a.pathname===path);
   }
   for(const k of ['adminMenusFilterTenant','adminReviewsFilterTenant','reportFilterTenant']) pilihTenant(k,daftar);
