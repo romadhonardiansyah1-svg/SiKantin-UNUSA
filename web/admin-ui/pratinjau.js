@@ -25,6 +25,7 @@ let events;
 export function tutupInternal() {
   events?.abort();
   for (const chart of charts.splice(0)) chart.destroy();
+  id('screen-internal').replaceChildren();
 }
 
 async function templates() {
@@ -179,6 +180,7 @@ function proses(key, daftar) {
     isi('qrPrintFallbackUrl','');
   } else if (key==='tenant-dashboard') {
     const t=daftar.find(t=>t.slug==='warung-cak-min');
+    id('screen-tenant-dashboard').querySelector('.badge-stall').textContent = t.stand;
     const s=statistik(t.ulasan);
     isi('tenantKpiAvg',nilai(s));
     isi('tenantKpiMenus',t.menu.length);
@@ -190,7 +192,7 @@ function proses(key, daftar) {
     diagram('tenantAspectChart','tenantPeakChart',t.ulasan);
   }
 }
-export async function internal(path, daftar) {
+export async function internal(path, katalogPublik) {
   const route=rute[path];
   if (!route) return false;
   const controller=new AbortController();
@@ -198,9 +200,14 @@ export async function internal(path, daftar) {
   const {signal}=controller;
   const [key,title]=route;
   const panel=id('screen-internal');
-  let doc;
+  const perluStand = ['admin-tenants', 'admin-qr-print', 'tenant-dashboard'].includes(key);
+  let doc, standContoh;
   try {
-    [doc]=await Promise.all([templates(), ['admin-dashboard','admin-report','tenant-dashboard'].includes(key) ? import('../vendor/chart-4.6.2.js') : Promise.resolve()]);
+    [doc, standContoh] = await Promise.all([
+      templates(),
+      perluStand ? import('./stand-contoh.js') : null,
+      ['admin-dashboard','admin-report','tenant-dashboard'].includes(key) ? import('../vendor/chart-4.6.2.js') : null
+    ]);
   } catch {
     if (signal.aborted) return false;
     panel.replaceChildren();
@@ -210,6 +217,9 @@ export async function internal(path, daftar) {
     return true;
   }
   if(signal.aborted) return false;
+  const daftar = standContoh
+    ? katalogPublik.map(t => ({ ...t, stand: standContoh.kodeStand[t.slug] ?? 'Belum ditetapkan' }))
+    : katalogPublik;
   const clone=key => doc.getElementById(key).content.cloneNode(true);
   const admin=key.startsWith('admin-') && key!=='admin-qr-print';
   panel.classList.toggle('internal-admin',admin);

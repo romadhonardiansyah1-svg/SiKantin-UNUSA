@@ -29,7 +29,7 @@ test('tujuan kembali hanya survei tenant yang dikenal', () => {
 });
 test('paket publik memuat aset yang ada dan kolom katalog yang diizinkan', () => {
   for (const t of daftar) {
-    assert.deepEqual(Object.keys(t).sort(), ['slug','nama','kampus','stand','deskripsi','foto','menu','ulasan'].sort());
+    assert.deepEqual(Object.keys(t).sort(), ['slug','nama','kampus','deskripsi','foto','menu','ulasan'].sort());
     assert.match(t.slug, /^[a-z0-9-]+$/);
     for (const item of [t,...t.menu]) {
       assert.match(item.foto, /^\/assets\/[\w-]+\.jpg$/);
@@ -44,6 +44,7 @@ test('paket publik memuat aset yang ada dan kolom katalog yang diizinkan', () =>
 });
 test('formulir pratinjau dan router tidak memakai handler asli atau sandi operasional', () => {
   const html = read('web/index.html');
+  assert.doesNotMatch(html, /\bStand\s+[A-Z]-\d+\b|reviewFormStallBadge|detailStall/i);
   assert.doesNotMatch(html, /\bon(?:click|submit|input|change)\s*=|quickPreviewRole|QR_UNUSA|data:image|owner_phone/i);
   const password = html.match(/<input\b[^>]*\btype="password"[^>]*>/g);
   assert.equal(password.length, 2);
@@ -55,4 +56,12 @@ test('template internal membawa 10 layar acuan tanpa data akun atau aksi prototi
   const data = read('web/admin-ui/layar.html');
   assert.equal((data.match(/<template id="/g) || []).length, 11);
   assert.doesNotMatch(data, /\bon(?:click|submit|input|change)\s*=|qr_unusa|0812\d{5}|@student\.unusa|quickPreviewRole|Cak Solihin|<script/i);
+});
+
+test('kode stand contoh dapat dirujuk lewat slug di layar internal', async () => {
+  const { kodeStand } = await import('../web/admin-ui/stand-contoh.js');
+  assert.deepEqual(Object.keys(kodeStand).sort(), daftar.map(t => t.slug).sort());
+  assert.equal(new Set(Object.values(kodeStand)).size, daftar.length);
+  assert.equal(kodeStand['ayam-geprek-juara-unusa'], 'Stand A-02');
+  assert.equal(kodeStand['warung-cak-min'], 'Stand B-01');
 });

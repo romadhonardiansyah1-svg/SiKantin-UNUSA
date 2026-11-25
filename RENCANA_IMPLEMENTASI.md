@@ -24,6 +24,8 @@ Nama layar memakai ID HTML tanpa awalan `screen-`. Rute dan folder merupakan usu
 
 `/` → pilih kampus A/B/C, cari tenant/menu, filter kategori → `/tenant/:slug`. Tampilkan tenant aktif, foto, harga, ketersediaan menu, dan ulasan tayang. Batasi kolom publik di Supabase. Gunakan CSS, font Plus Jakarta Sans, ikon, kartu, dan breakpoint asli.
 
+Kartu publik menampilkan nama kampus dan “Tunai & QRIS” sesuai HTML tim. Kode stand dikhususkan untuk pengelola serta pemilik tenant terkait. Keluarkan kolom itu dari respons publik dan formulir survei. Saat Supabase tersambung, uji hak baca untuk pelanggan, dua akun pemilik berbeda, dan pengelola. Animasi detail dan pilihan bintang mengikuti preferensi kurangi gerakan pada perangkat.
+
 - [ ] **Lulus** bila tautan detail dan muat ulang bekerja, Kembali memulihkan filter, dan tenant nonaktif tersembunyi. Nol ulasan tampil sebagai “Belum ada penilaian” (prototipe `getTenantStats` memberi 5,0). Cocokkan tampilan dengan HTML pada 390 dan 1440 px memakai data uji yang sama.
 
 ### 2. Akun, operasional admin, dan QR

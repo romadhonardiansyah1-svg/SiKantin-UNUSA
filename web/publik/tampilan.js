@@ -10,7 +10,7 @@ const bintang = nilai => '★'.repeat(Math.round(nilai)) + '☆'.repeat(5 - Math
 function kartu(t) {
   const ringkas = statistik(t.ulasan);
   const detail = detailUrl(t);
-  const nilai = ringkas.jumlah ? `<span class="gf-star" aria-hidden="true">★</span><b class="gf-rating-val">${skor(ringkas.nilai)}</b> (${ringkas.jumlah} ulasan)` : 'Belum ada penilaian';
+  const nilai = ringkas.jumlah ? `<span class="gf-star" aria-hidden="true">★</span><span class="gf-rating-val">${skor(ringkas.nilai)}</span><span>(${ringkas.jumlah} ulasan)</span>` : 'Belum ada penilaian';
   const kategori = [...new Set(t.menu.map(m => m.kategori))].join(', ');
   const menu = t.menu.slice(0, 6).map(m => `
     <a class="gf-menu-item" href="${detail}"><div class="gf-menu-img-box">${img(m.foto, '')}
@@ -20,12 +20,16 @@ function kartu(t) {
   return `<article class="tenant-card gf-card">
     <div class="gf-header"><a href="${detail}" class="gf-thumb-wrap" aria-label="Lihat ${teks(t.nama)}">${img(t.foto, '')}</a>
     <div class="gf-info"><h3 class="gf-title"><a href="${detail}">${teks(t.nama)}</a></h3>
-    <div class="gf-meta-row">${nilai}${kategori ? ' · ' + teks(kategori) : ''}</div>
-    <div class="gf-campus-row"><span class="gf-campus-label">Kampus ${teks(t.kampus)} UNUSA</span><span class="gf-sep">|</span><span class="gf-pay-label">${teks(t.stand)}</span></div>
+    <div class="gf-meta-row">${nilai}${kategori ? '<span class="gf-sep" aria-hidden="true">|</span><span>' + teks(kategori) + '</span>' : ''}</div>
+    <div class="gf-campus-row"><span class="gf-campus-label">
+      <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+      Kampus ${teks(t.kampus)} UNUSA</span><span class="gf-sep" aria-hidden="true">|</span><span class="gf-pay-label">Tunai &amp; QRIS</span></div>
     <div class="gf-tags-row">${ringkas.nilai >= 4.5 ? '<span class="gf-tag-pill is-emerald">Rating Tinggi</span>' : ''}<span class="gf-tag-pill">${mulai}</span></div></div></div>
-    <div class="gf-menu-carousel">${menu}<a class="gf-see-more-slot" href="${detail}"><span class="gf-see-more-circle" aria-hidden="true">→</span><span class="gf-see-more-label">Lihat lainnya</span></a></div>
-    ${t.ulasan.length ? `<div class="gf-review-snippet"><span class="gf-review-snippet-text">“${teks(t.ulasan[0].komentar)}”</span></div>` : ''}
-    <div class="gf-footer"><a class="gf-footer-link" href="${detail}">Kunjungi toko (${t.menu.length} menu) →</a>
+    <div class="gf-menu-carousel">${menu}<a class="gf-see-more-slot" href="${detail}"><span class="gf-see-more-circle">
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><span class="gf-see-more-label">Lihat lainnya</span></a></div>
+    ${t.ulasan.length ? `<div class="gf-review-snippet"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" style="flex-shrink:0"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span class="gf-review-snippet-text">“${teks(t.ulasan[0].komentar)}”</span></div>` : ''}
+    <div class="gf-footer"><a class="gf-footer-link" href="${detail}">Kunjungi toko (${t.menu.length} menu)
+      <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg></a>
     <a class="gf-footer-review-btn" href="${surveiUrl(t)}">Beri Ulasan</a></div></article>`;
 }
 
@@ -75,7 +79,6 @@ export function detail(t, kembali) {
   id('detailTenantDesc').textContent = t.deskripsi;
   id('detailTenantBannerImg').src = t.foto;
   id('detailTenantBannerImg').alt = 'Foto ' + t.nama;
-  id('detailStall').textContent = t.stand;
   id('detailAvgScore').textContent = nilai.jumlah ? skor(nilai.nilai) : 'Belum ada penilaian';
   id('detailAvgScore').nextElementSibling.hidden = !nilai.jumlah;
   id('detailStarContainer').textContent = nilai.jumlah ? bintang(nilai.nilai) : '';

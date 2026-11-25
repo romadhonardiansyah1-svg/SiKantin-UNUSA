@@ -28,7 +28,6 @@ export function bukaSurvei(t) {
     if (!t.menu.length) tempat.textContent = 'Belum ada menu yang dapat dipilih.';
   }
   stand = t;
-  id('reviewFormStallBadge').textContent = t.stand;
   id('reviewFormCampusBadge').textContent = 'Kampus ' + t.kampus + ' UNUSA';
   id('reviewFormTenantName').textContent = t.nama;
   id('screen-public-review').querySelector('[data-detail-link]').href = detailUrl(t);

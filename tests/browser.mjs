@@ -10,20 +10,29 @@ const browser = await chromium.launch({ channel: 'chrome', headless: true });
 let jumlah = 0;
 try {
   for (const width of [390, 768, 1440]) {
-    const page = await browser.newPage({ viewport: { width, height: 900 }, reducedMotion: 'reduce' });
+    const page = await browser.newPage({ viewport: { width, height: 900 }, hasTouch: width <= 768, isMobile: width === 390, reducedMotion: 'reduce' });
     const errors = [];
     const writes = [];
     page.on('pageerror', err => errors.push(err.message));
-    page.on('request', req => { if (!['GET','HEAD'].includes(req.method())) writes.push(req.method()); });
+    const dataStand = [];
+    page.on('request', req => {
+      if (!['GET','HEAD'].includes(req.method())) writes.push(req.method());
+      if (new URL(req.url()).pathname === '/admin-ui/stand-contoh.js') dataStand.push(req.url());
+    });
+    const kode = /\b[A-C]-\d{2}\b/;
     await page.goto(origin);
     const tenant = page.locator('.gf-card');
     await tenant.first().waitFor();
     assert.equal(await tenant.count(), 17);
+    assert.doesNotMatch(await page.locator('#tenantGrid').innerText(), kode);
+    assert.equal(await tenant.first().locator('.gf-pay-label').innerText(), 'Tunai & QRIS');
     const columns = await page.locator('#tenantGrid').evaluate(e => getComputedStyle(e).gridTemplateColumns.split(' ').length);
     assert.equal(columns, width === 1440 ? 2 : 1);
     await page.evaluate(() => document.fonts.ready);
+    await tenant.first().locator('.gf-thumb-wrap img').evaluate(img => img.decode());
     assert.ok(await page.evaluate(() => document.fonts.check('16px "Plus Jakarta Sans"')));
     await page.screenshot({ path: fileURLToPath(new URL('katalog-' + width + '.png', bukti)) });
+    if (width === 1440) await tenant.nth(1).screenshot({ path: fileURLToPath(new URL('kartu-ayam-geprek.png', bukti)) });
     const menu = page.getByRole('button', { name: 'Buka Menu Navigasi' });
     assert.equal(await menu.isVisible(), width <= 768);
     if (width <= 768) {
@@ -40,6 +49,12 @@ try {
     await page.reload();
     await page.locator('#detailTenantName').waitFor();
     assert.equal(await page.locator('#detailTenantName').textContent(), 'Warung Cak Min');
+    assert.doesNotMatch(await page.locator('#screen-public-tenant-detail').innerText(), kode);
+    const namaGerak = () => page.locator('.detail-caption-below').evaluate(e => getComputedStyle(e).animationName);
+    assert.equal(await namaGerak(), 'none');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    assert.equal(await namaGerak(), 'buka-rincian');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
     await page.getByRole('button', {name: 'Minuman', exact:true}).click();
     assert.equal(await page.locator('#detailMenuGrid article').count(), 2);
@@ -57,6 +72,7 @@ try {
     assert.equal(await page.locator('#authRegEmail').getAttribute('aria-invalid'), 'false');
     assert.ok(await page.locator('#authRegPassword').isDisabled());
     await page.getByRole('link', {name:'Coba formulir survei'}).click();
+    assert.doesNotMatch(await page.locator('#screen-public-review').innerText(), kode);
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
     for (const key of ['rasa','kebersihan','porsi','kualitas','cara_pembayaran']) {
       await page.locator('label[for="rating_' + key + '_4"]').click();
@@ -64,6 +80,8 @@ try {
     await page.getByRole('button', {name:'Lihat ringkasan pratinjau'}).click();
     await page.locator('#screen-public-review-success').waitFor();
     assert.equal(await page.locator('#reviewSuccessScore').textContent(), '4,0');
+    assert.doesNotMatch(await page.locator('#screen-public-review-success').innerText(), kode);
+    assert.equal(dataStand.length, 0);
     await page.goto(origin + '/pratinjau/admin/tenant/baru');
     await page.locator('#tenant_form_name').waitFor();
     assert.ok(await page.locator('#tenant_form_name').isDisabled());
@@ -71,6 +89,15 @@ try {
       await page.goto(origin + path);
       await page.locator('#screen-internal h1').waitFor();
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), path + ' meluap pada ' + width);
+      if (path === '/pratinjau/admin/tenant') {
+        await page.locator('#adminTenantsSearch').fill('A-02');
+        assert.equal(await page.locator('#adminTenantsTableBody tr').count(), 1);
+        assert.match(await page.locator('#adminTenantsTableBody').innerText(), /Stand A-02.*Ayam Geprek/);
+      }
+      if (path === '/pratinjau/pemilik') {
+        const teksPortal = await page.locator('#screen-tenant-dashboard').innerText();
+        assert.deepEqual(teksPortal.match(/\b[A-C]-\d{2}\b/g), ['B-01']);
+      }
       if (path === '/pratinjau/admin/menu') {
         await page.locator('#adminMenusFilterCategory').selectOption('minuman');
         const rows = page.locator('#adminMenusTableBody tr');
