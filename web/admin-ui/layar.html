@@ -1,0 +1,1045 @@
+<template id="layout">
+<div class="admin-layout">
+            <aside class="admin-sidebar" id="adminSidebar">
+                <div class="admin-sidebar-header">
+                    <img src="/assets/logo-unusa.png" data-asset-path="assets/images/unusa-logo.png" alt="Logo UNUSA" class="sidebar-logo-img">
+                    <div>
+                        <strong style="color:white; font-size:0.95rem; display:block;">SiKantin UNUSA</strong>
+                        <small style="color:#a7f3d0; font-size:0.75rem;">Panel Pengelola</small>
+                    </div>
+                </div>
+
+                <nav class="admin-sidebar-nav">
+                    <a href="/pratinjau/admin" class="admin-nav-item active" data-admin-nav="admin-dashboard">
+                        <svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        <span>Dashboard Analitik</span>
+                    </a>
+                    <a href="/pratinjau/admin/kampus" class="admin-nav-item" data-admin-nav="admin-campuses">
+                        <svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        <span>Manajemen Kampus</span>
+                    </a>
+                    <a href="/pratinjau/admin/tenant" class="admin-nav-item" data-admin-nav="admin-tenants">
+                        <svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        <span>Tenant &amp; Kode QR</span>
+                    </a>
+                    <a href="/pratinjau/admin/menu" class="admin-nav-item" data-admin-nav="admin-menus">
+                        <svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
+                        <span>Katalog Menu</span>
+                    </a>
+                    <a href="/pratinjau/admin/pertanyaan" class="admin-nav-item" data-admin-nav="admin-questions">
+                        <svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        <span>Butir Pertanyaan</span>
+                    </a>
+                    <a href="/pratinjau/admin/ulasan" class="admin-nav-item" data-admin-nav="admin-reviews">
+                        <svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        <span>Moderasi Ulasan</span>
+                    </a>
+                    <a href="/pratinjau/admin/laporan" class="admin-nav-item" data-admin-nav="admin-report">
+                        <svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        <span>Laporan Evaluasi</span>
+                    </a>
+                <a class="admin-nav-item" href="/pratinjau/admin/qr">Kartu QR meja</a></nav>
+
+                <div style="padding: 1.25rem; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                    <a href="/" class="btn btn-danger btn-block" style="font-size:0.8rem; padding: 0.5rem;">Kembali ke katalog<svg width="16" height="16" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <span>Keluar (Logout)</span>
+                    </a>
+                </div>
+            </aside>
+            <div id="adminSidebarBackdrop" class="admin-sidebar-backdrop"></div>
+            <div id="crudDrawerBackdrop" class="crud-drawer-backdrop" data-drawer="close"></div>
+
+            <div class="admin-main">
+                <header class="admin-topbar">
+                    <div style="display:flex; align-items:center; gap:1rem;">
+                        <button type="button" id="sidebarToggle" class="btn btn-outline" style="padding:0.4rem 0.6rem; display:inline-flex;" title="Toggle Menu" aria-label="Buka menu pengelola" aria-controls="adminSidebar">
+                            <svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                        </button>
+                        <div>
+                            <h1 id="adminTopbarTitle" style="font-size: 1.15rem; font-weight: 700; margin: 0; color: var(--text-primary);">Dashboard Analitik Pengelola Kantin</h1>
+                            <small id="adminTopbarDate" style="color: var(--text-secondary);"></small>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <a href="/" class="nav-btn nav-btn-outline" style="font-size:0.8rem;">
+                            <svg width="14" height="14" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            <span class="admin-topbar-public-text">Buka Web Publik</span>
+                        </a>
+                        <div style="display:flex; align-items:center; gap:0.5rem; border-left:1px solid var(--border-color); padding-left:1rem;">
+                            <div style="width:34px; height:34px; border-radius:50%; background:#006837; color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem;">
+                                I
+                            </div>
+                            <div class="admin-topbar-profile-text" style="text-align:left;">
+                                <div style="font-size:0.85rem; font-weight:700; color:var(--text-primary); line-height:1.2;">Pratinjau pengelola</div>
+                                <small style="font-size:0.72rem; color:var(--unusa-emerald); font-weight:600;">Pengelola Kantin</small>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <main class="admin-content">
+
+                    </main>
+            </div>
+        </div>
+</template>
+<template id="admin-dashboard">
+<section id="screen-admin-dashboard" class="internal-page">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1.25rem;">
+                            <div style="font-size:0.9rem; color:var(--text-secondary);">Ringkasan performa kantin lintas kampus secara langsung.</div>
+                            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                <select id="adminDashboardCampusFilter" class="form-control" style="width:auto; padding:0.45rem 0.85rem; font-size:0.85rem;">
+                                    <option value="0">Semua Kampus</option>
+                                    <option value="1">Kampus A UNUSA</option>
+                                    <option value="2">Kampus B UNUSA</option>
+                                    <option value="3">Kampus C UNUSA</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="attention-card" id="adminAttentionCard">
+                            <div class="attention-header">
+                                <div>
+                                    <strong style="color:#92400E; font-size:0.95rem;">Tenant Perlu Perhatian (Skor Terendah / &lt; 4,2)</strong>
+                                    <div style="font-size:0.82rem; color:#78350F;">Prioritas pembinaan mutu rasa, kebersihan, atau porsi oleh Pengelola Kantin.</div>
+                                </div>
+                                <a href="/pratinjau/admin/laporan" class="btn btn-outline" style="font-size:0.8rem; padding:0.4rem 0.8rem; background:#fff;">Lihat Laporan Lengkap</a>
+                            </div>
+                            <div class="attention-list" id="adminAttentionList"></div>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background: #ecfdf5; color: #006837;">
+                                    <svg width="28" height="28" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                                </div>
+                                <div>
+                                    <div class="stat-val" id="adminStatTenants">17</div>
+                                    <div class="stat-label">Total Tenant Aktif</div>
+                                </div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background: #e0f2fe; color: #0284c7;">
+                                    <svg width="28" height="28" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
+                                </div>
+                                <div>
+                                    <div class="stat-val" id="adminStatMenus">20</div>
+                                    <div class="stat-label">Total Menu Terdaftar</div>
+                                </div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background: #fef3c7; color: #d97706;">
+                                    <svg width="28" height="28" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                </div>
+                                <div>
+                                    <div class="stat-val" id="adminStatReviews">14</div>
+                                    <div class="stat-label">Total Ulasan Masuk</div>
+                                </div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background: #fdf2f8; color: #db2777;">
+                                    <svg width="28" height="28" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                </div>
+                                <div>
+                                    <div class="stat-val"><span id="adminStatAvgRating">4.56</span> <span style="font-size:1rem; color:var(--text-muted);">/ 5</span></div>
+                                    <div class="stat-label">Rata-rata Rating Kepuasan</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                            <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+                                <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; color: var(--text-primary);">
+                                    Rata-rata Rating per Aspek Penilaian
+                                </h3>
+                                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+                                    Aspek standar mutu pangan &amp; layanan SiKantin UNUSA (Skala 1 - 5)
+                                </p>
+                                <div style="height: 280px; position: relative;">
+                                    <canvas id="aspectChart" class="grafik-ringkas" role="img"></canvas>
+                                </div>
+                            </div>
+
+                            <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+                                <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; color: var(--text-primary);">Waktu pengisian ulasan (WIB)</h3>
+                                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+                                    Pemetaan jam sibuk pengunjung kantin berdasarkan timestamp ulasan
+                                </p>
+                                <div style="height: 280px; position: relative;">
+                                    <canvas id="peakHoursChart" class="grafik-ringkas" role="img"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="two-col-admin-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+                            <div class="table-card" style="margin-bottom: 0;">
+                                <div class="table-header">
+                                    <div>
+                                        <h3 class="table-title">Ulasan &amp; Survei Terbaru Pelanggan</h3>
+                                        <small style="color: var(--text-secondary);">Ringkasan berdasarkan ulasan contoh yang tayang.</small>
+                                    </div>
+                                    <a href="/pratinjau/admin/ulasan" class="btn btn-outline" style="font-size:0.8rem; padding: 0.4rem 0.75rem;">
+                                        Lihat Semua &amp; Moderasi →
+                                    </a>
+                                </div>
+                                <div class="data-table-wrapper" tabindex="0">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Waktu</th>
+                                                <th>Tenant</th>
+                                                <th>Status</th>
+                                                <th>Rating</th>
+                                                <th>Komentar</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="adminDashboardLatestReviewsBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+                                <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; color: var(--text-primary);">
+                                    Tenant Terfavorit
+                                </h3>
+                                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+                                    Berdasarkan skor kepuasan pelanggan
+                                </p>
+
+                                <div id="adminDashboardTopTenantsList" style="display: flex; flex-direction: column; gap: 0.85rem;"></div>
+
+                                <div style="margin-top: 1.5rem;">
+                                    <a href="/pratinjau/admin/laporan" class="btn btn-secondary btn-block" style="font-size: 0.85rem;">
+                                        Buka Laporan Evaluasi Lengkap
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+</template>
+<template id="admin-campuses">
+<section id="screen-admin-campuses" class="internal-page">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                            <div>
+                                <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin: 0;">Manajemen Kampus UNUSA</h2>
+                                <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0;">Pengelolaan data Kampus A, B, C dan fasilitas kantin terintegrasi</p>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; justify-content:flex-end; margin-bottom:1rem;">
+                            <button type="button" class="btn btn-primary" data-drawer="open">+ Tambah Kampus Baru</button>
+                        </div>
+                        <div class="two-col-admin-grid crud-drawer-layout">
+                            <div class="table-card" style="margin-bottom: 0;">
+                                <div class="table-header">
+                                    <h3 class="table-title">Daftar Kampus &amp; Fasilitas Kantin</h3>
+                                    <span id="adminCampusesCountBadge" class="badge badge-info">3 Kampus Terdaftar</span>
+                                </div>
+                                <div class="data-table-wrapper" tabindex="0">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Kode</th>
+                                                <th>Nama Kampus &amp; Alamat</th>
+                                                <th>Fasilitas Kantin</th>
+                                                <th>Target/Tenant</th>
+                                                <th>Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="adminCampusesTableBody"><tr><td>KAMPUS_A</td><td>Kampus A UNUSA · Jl. SMEA No. 57, Wonokromo, Surabaya</td><td>Area makan beratap kapasitas 150 kursi, wastafel cuci tangan higienis, dispenser air minum isi ulang gratis, pembayaran QRIS terpadu, koneksi Wi-Fi Kampus UNUSA, toilet bersih.</td><td>9</td><td>—</td></tr><tr><td>KAMPUS_B</td><td>Kampus B UNUSA · Jl. Raya Jemursari No. 51-57, Surabaya</td><td>Kantin modern lantai 1 &amp; semi-outdoor, area makan ber-AC, 80 kursi, wastafel sensor otomatis, fasilitas daur ulang sampah sisa makanan, pembayaran cashless/QRIS.</td><td>5</td><td>—</td></tr><tr><td>KAMPUS_C</td><td>Kampus C UNUSA · Jl. Ketintang Madya No. 81, Surabaya</td><td>Green Canteen Fakultas Kedokteran &amp; Kesehatan, etalase makanan berstandar gizi, area makan rindang outdoor, fasilitas cuci tangan sabun cair antiseptik, Wi-Fi UNUSA.</td><td>3</td><td>—</td></tr></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div id="drawer-admin-campuses" class="card crud-drawer-panel">
+                                <button type="button" class="crud-drawer-close-btn" aria-label="Tutup Panel" data-drawer="close">×</button>
+                                <h3 id="campusFormTitle" style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.25rem;">
+                                    Tambah Kampus Baru
+                                </h3>
+
+                                <form id="adminCampusForm" method="dialog">
+                                    <input type="hidden" id="campus_edit_id" disabled>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="campus_code">Kode Kampus (cth: KAMPUS_A):</label>
+                                        <input type="text" id="campus_code" class="form-control" required disabled>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="campus_name">Nama Kampus:</label>
+                                        <input type="text" id="campus_name" class="form-control" required disabled>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="campus_address">Alamat Lengkap:</label>
+                                        <input type="text" id="campus_address" class="form-control" required disabled>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="campus_total_stalls">Target Jumlah Stan Kantin:</label>
+                                        <input type="number" id="campus_total_stalls" class="form-control" required min="1" max="50" disabled>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="campus_facility_info">Informasi Fasilitas Kantin:</label>
+                                        <textarea id="campus_facility_info" rows="4" class="form-control" disabled></textarea>
+                                    </div>
+
+                                    <button type="submit" id="campusFormSubmitBtn" class="btn btn-primary btn-block" style="padding: 0.75rem;" disabled>
+                                        Tambah Kampus
+                                    </button>
+                                    <button type="button" id="campusFormCancelBtn" class="btn btn-outline btn-block" style="margin-top: 0.5rem; font-size: 0.85rem; display: none;" data-drawer="close">
+                                        Batal Edit
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </section>
+</template>
+<template id="admin-tenants">
+<section id="screen-admin-tenants" class="internal-page">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                            <div>
+                                <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin: 0;">Manajemen Tenant &amp; Kode QR</h2>
+                                <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0;">Kelola data tenant di Kampus A, B, C, status kontrak, dan cetak kode QR meja kantin</p>
+                            </div>
+
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <input type="text" id="adminTenantsSearch" class="form-control" placeholder="Cari nama tenant, stand, atau pemilik..." style="width: 245px; padding: 0.45rem 0.8rem; font-size: 0.85rem;">
+                                <select id="adminTenantsFilterCampus" class="form-control" style="padding: 0.45rem 0.8rem; font-size: 0.85rem; width: auto;">
+                                    <option value="0">Semua Kampus</option>
+                                    <option value="1">Kampus A UNUSA</option>
+                                    <option value="2">Kampus B UNUSA</option>
+                                    <option value="3">Kampus C UNUSA</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; justify-content:flex-end; margin-bottom:1rem;">
+                            <a class="btn btn-primary" href="/pratinjau/admin/tenant/baru">+ Tambah Tenant &amp; Stand</a>
+                        </div>
+                        <div class="two-col-admin-grid crud-drawer-layout">
+                            <div class="table-card" style="margin-bottom: 0;">
+                                <div class="table-header">
+                                    <h3 class="table-title">Daftar Tenant Terdaftar</h3>
+                                    <span id="adminTenantsCountBadge" class="badge badge-info">17 Tenant</span>
+                                </div>
+                                <div class="data-table-wrapper" tabindex="0">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Stan &amp; Nama Tenant</th>
+                                                <th>Kampus</th>
+                                                <th>Pemilik &amp; Kontak</th>
+                                                <th>Masa Kontrak</th>
+                                                <th>Rating / Ulasan</th>
+                                                <th>Kode QR</th>
+                                                <th>Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="adminTenantsTableBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+</template>
+<template id="admin-tenant-form">
+<section id="screen-admin-tenant-form" class="internal-page">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+                            <div>
+                                <div style="font-size:0.82rem; color:var(--text-muted); margin-bottom:0.25rem;">
+                                    <a href="/pratinjau/admin/tenant" style="color:var(--text-secondary);">Tenant &amp; Kode QR</a> »
+                                    <strong style="color:var(--unusa-green);">Formulir Tenant</strong>
+                                </div>
+                                <h2 id="tenantFormTitle" style="font-size:1.45rem; font-weight:800; color:var(--text-primary); margin:0;">
+                                    Tambah Tenant Baru
+                                </h2>
+                            </div>
+                            <a class="btn btn-outline" href="/pratinjau/admin/tenant">
+                                ← Kembali ke Daftar Tenant
+                            </a>
+                        </div>
+
+                        <form id="adminTenantForm" method="dialog">
+                            <input type="hidden" id="tenant_form_id" disabled>
+
+                            <div class="tenant-form-page-grid">
+                                <div class="tenant-form-col">
+                                    <div class="tenant-form-card">
+                                        <h3 class="tenant-form-sec-title">1. Identitas &amp; Lokasi Stand</h3>
+                                        <div class="tenant-form-row-2">
+                                            <div class="form-group">
+                                                <label class="form-label" for="tenant_form_campus_id">Lokasi Kampus:</label>
+                                                <select id="tenant_form_campus_id" class="form-control" required disabled>
+                                                    <option value="1">Kampus A UNUSA</option>
+                                                    <option value="2">Kampus B UNUSA</option>
+                                                    <option value="3">Kampus C UNUSA</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label" for="tenant_form_stall_number">Nomor / Identitas Stan:</label>
+                                                <input type="text" id="tenant_form_stall_number" class="form-control" required disabled>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="tenant_form_name">Nama Tenant:</label>
+                                            <input type="text" id="tenant_form_name" class="form-control" required disabled>
+                                        </div>
+
+                                        <div class="tenant-form-row-2">
+                                            <div class="form-group">
+                                                <label class="form-label" for="tenant_form_owner_name">Nama Pemilik Tenant:</label>
+                                                <input type="text" id="tenant_form_owner_name" class="form-control" required disabled>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label" for="tenant_form_phone">Nomor Telepon / WhatsApp:</label>
+                                                <input type="text" id="tenant_form_phone" class="form-control" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="tenant-form-card">
+                                        <h3 class="tenant-form-sec-title">2. Profil &amp; Foto Stand</h3>
+                                        <div class="form-group">
+                                            <label class="form-label" for="tenant_form_description">Deskripsi Singkat Tenant:</label>
+                                            <textarea id="tenant_form_description" rows="3" class="form-control" disabled></textarea>
+                                        </div>
+
+                                        <div class="form-group" style="margin-bottom:0;">
+                                            <label class="form-label" for="tenant_form_photo">Foto Tenant (Thumbnail Stand):</label>
+                                            <input type="file" id="tenant_form_photo" class="form-control" accept="image/jpeg,image/png,image/webp" style="padding: 0.45rem;" disabled>
+                                            <small style="color: var(--text-muted); margin-top: 0.35rem; display:block;">Format JPG/PNG/WebP, maks 2MB. Jika kosong, foto bawaan otomatis digunakan.</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tenant-form-col">
+                                    <div class="tenant-form-card">
+                                        <h3 class="tenant-form-sec-title">3. Kontrak Sewa &amp; Visibilitas</h3>
+                                        <div class="tenant-form-row-2">
+                                            <div class="form-group">
+                                                <label class="form-label" for="tenant_form_contract_start">Awal Kontrak:</label>
+                                                <input type="date" id="tenant_form_contract_start" class="form-control" disabled>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label" for="tenant_form_contract_end">Akhir Kontrak:</label>
+                                                <input type="date" id="tenant_form_contract_end" class="form-control" disabled>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="tenant_form_contract_status">Status Kontrak Sewa:</label>
+                                            <select id="tenant_form_contract_status" class="form-control" disabled>
+                                                <option value="aktif">Aktif</option>
+                                                <option value="akan_habis">Akan Habis (&lt; 1 Bulan)</option>
+                                                <option value="berakhir">Kontrak Berakhir</option>
+                                                <option value="nonaktif">Nonaktif / Cuti</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group" style="display:flex; align-items:center; gap:0.55rem; margin-bottom:0; padding-top:0.25rem;">
+                                            <input type="checkbox" id="tenant_form_is_active" checked style="width:16px; height:16px; accent-color:var(--unusa-green);" disabled>
+                                            <label for="tenant_form_is_active" style="font-size:0.875rem; font-weight:600; cursor:pointer;">Tampilkan tenant ini secara aktif di Katalog Publik</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="tenant-form-card">
+                                        <h3 class="tenant-form-sec-title">4. Akses Portal Pemilik Tenant (Opsional)</h3>
+                                        <div class="form-group">
+                                            <label class="form-label" for="tenant_form_username">Username Tenant:</label>
+                                            <input type="text" id="tenant_form_username" class="form-control" disabled>
+                                        </div>
+
+                                        <div class="form-group" style="margin-bottom:0;">
+                                            <label class="form-label" for="tenant_form_password">Kata Sandi Tenant:</label>
+                                            <input type="password" id="tenant_form_password" class="form-control" disabled>
+                                        </div>
+                                    </div>
+
+                                    <div class="tenant-form-actions">
+                                        <a id="tenantFormCancelBtn" class="btn btn-outline" href="/pratinjau/admin/tenant">
+                                            Batal
+                                        </a>
+                                        <button type="submit" id="tenantFormSubmitBtn" class="btn btn-primary" style="flex:1; padding:0.75rem 1.25rem;" disabled>
+                                            Daftarkan Tenant &amp; Buat QR
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </section>
+</template>
+<template id="admin-menus">
+<section id="screen-admin-menus" class="internal-page">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                            <div>
+                                <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin: 0;">Manajemen Katalog Menu</h2>
+                                <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0;">Kelola daftar makanan, minuman, harga, dan ketersediaan menu tiap stan kantin</p>
+                            </div>
+
+                            <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                                <input type="text" id="adminMenusSearch" class="form-control" placeholder="Cari nama menu atau deskripsi..." style="width: 235px; padding: 0.45rem 0.8rem; font-size: 0.85rem;">
+                                <select id="adminMenusFilterTenant" class="form-control" style="padding: 0.45rem 0.8rem; font-size: 0.85rem; width: auto;"></select>
+                                <select id="adminMenusFilterCategory" class="form-control" style="padding: 0.45rem 0.8rem; font-size: 0.85rem; width: auto;">
+                                    <option value="">Semua Kategori</option>
+                                    <option value="makanan">Makanan</option>
+                                    <option value="minuman">Minuman</option>
+                                    <option value="snack">Snack / Jajanan</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; justify-content:flex-end; margin-bottom:1rem;">
+                            <button type="button" class="btn btn-primary" data-drawer="open">+ Tambah Menu Baru</button>
+                        </div>
+                        <div class="two-col-admin-grid crud-drawer-layout">
+                            <div class="table-card" style="margin-bottom: 0;">
+                                <div class="table-header">
+                                    <h3 class="table-title">Daftar Menu Terdaftar</h3>
+                                    <span id="adminMenusCountBadge" class="badge badge-info">20 Menu</span>
+                                </div>
+                                <div class="data-table-wrapper" tabindex="0">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Menu &amp; Kategori</th>
+                                                <th>Tenant / Stan</th>
+                                                <th>Harga</th>
+                                                <th>Status</th>
+                                                <th>Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="adminMenusTableBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div id="drawer-admin-menus" class="card crud-drawer-panel">
+                                <button type="button" class="crud-drawer-close-btn" aria-label="Tutup Panel" data-drawer="close">×</button>
+                                <h3 id="menuFormTitle" style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.25rem;">
+                                    Tambah Menu Baru
+                                </h3>
+
+                                <form id="adminMenuForm" method="dialog">
+                                    <input type="hidden" id="menu_form_id" disabled>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="menu_form_tenant_id">Pilih Tenant / Stan:</label>
+                                        <select id="menu_form_tenant_id" class="form-control" required disabled></select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="menu_form_name">Nama Makanan / Minuman:</label>
+                                        <input type="text" id="menu_form_name" class="form-control" required disabled>
+                                    </div>
+
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                                        <div class="form-group">
+                                            <label class="form-label" for="menu_form_category">Kategori:</label>
+                                            <select id="menu_form_category" class="form-control" disabled>
+                                                <option value="makanan">Makanan</option>
+                                                <option value="minuman">Minuman</option>
+                                                <option value="snack">Snack</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="menu_form_price">Harga (Rp):</label>
+                                            <input type="number" id="menu_form_price" class="form-control" required min="500" step="500" disabled>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="menu_form_description">Deskripsi Singkat / Bahan:</label>
+                                        <textarea id="menu_form_description" rows="3" class="form-control" disabled></textarea>
+                                    </div>
+
+                                    <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem;">
+                                        <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.875rem; cursor:pointer;">
+                                            <input type="checkbox" id="menu_form_is_available" checked disabled>
+                                            <span>Menu Tersedia (Ready)</span>
+                                        </label>
+
+                                        <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.875rem; cursor:pointer;">
+                                            <input type="checkbox" id="menu_form_is_recommended" disabled>
+                                            <span style="font-weight:600; color:#b45309;">★ Jadikan Menu Rekomendasi / Favorit</span>
+                                        </label>
+                                    </div>
+
+                                    <button type="submit" id="menuFormSubmitBtn" class="btn btn-primary btn-block" style="padding: 0.75rem;" disabled>
+                                        Tambah Menu Baru
+                                    </button>
+                                    <button type="button" id="menuFormCancelBtn" class="btn btn-outline btn-block" style="margin-top: 0.5rem; font-size: 0.85rem; display: none;" data-drawer="close">
+                                        Batal Edit
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </section>
+</template>
+<template id="admin-questions">
+<section id="screen-admin-questions" class="internal-page">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                            <div>
+                                <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin: 0;">Kelola Butir Pertanyaan Review</h2>
+                                <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0;">Pengaturan pertanyaan evaluasi 5 aspek standar: Rasa, Kebersihan, Porsi, Kualitas, dan Pembayaran</p>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; justify-content:flex-end; margin-bottom:1rem;">
+                            <button type="button" class="btn btn-primary" data-drawer="open">+ Tambah Butir Pertanyaan</button>
+                        </div>
+                        <div class="two-col-admin-grid crud-drawer-layout">
+                            <div class="table-card" style="margin-bottom: 0;">
+                                <div class="table-header">
+                                    <h3 class="table-title">Daftar Aspek &amp; Pertanyaan Survei</h3>
+                                    <span id="adminQuestionsCountBadge" class="badge badge-info">5 pertanyaan</span>
+                                </div>
+                                <div class="data-table-wrapper" tabindex="0">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Urutan</th>
+                                                <th>Label &amp; Kunci</th>
+                                                <th>Tipe Input</th>
+                                                <th>Teks Pertanyaan yang Ditampilkan</th>
+                                                <th>Status</th>
+                                                <th>Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="adminQuestionsTableBody"><tr><td>1</td><td>Cita Rasa &amp; Kelezatan</td><td>Skala 1–5</td><td>Bagaimana tingkat cita rasa dan kelezatan hidangan yang Anda nikmati?</td><td>Aktif</td><td>—</td></tr><tr><td>2</td><td>Kebersihan &amp; Higienitas</td><td>Skala 1–5</td><td>Bagaimana tingkat kebersihan stan, peralatan makan, dan kerapian penyajian?</td><td>Aktif</td><td>—</td></tr><tr><td>3</td><td>Kesesuaian Porsi</td><td>Skala 1–5</td><td>Apakah porsi makanan atau minuman yang disajikan sesuai dan memuaskan?</td><td>Aktif</td><td>—</td></tr><tr><td>4</td><td>Kualitas Bahan Baku</td><td>Skala 1–5</td><td>Bagaimana kesegaran, kematangan, dan mutu bahan makanan yang disajikan?</td><td>Aktif</td><td>—</td></tr><tr><td>5</td><td>Kemudahan Pembayaran</td><td>Skala 1–5</td><td>Bagaimana kemudahan, kecepatan, dan fleksibilitas metode pembayaran (Tunai/QRIS)?</td><td>Aktif</td><td>—</td></tr></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div id="drawer-admin-questions" class="card crud-drawer-panel">
+                                <button type="button" class="crud-drawer-close-btn" aria-label="Tutup Panel" data-drawer="close">×</button>
+                                <h3 id="questionFormTitle" style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.25rem;">
+                                    Tambah Butir Pertanyaan Baru
+                                </h3>
+
+                                <form id="adminQuestionForm" method="dialog">
+                                    <input type="hidden" id="question_form_id" disabled>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="question_form_type">Tipe Pertanyaan:</label>
+                                        <select id="question_form_type" class="form-control" required disabled>
+                                            <option value="rating">Skala Bintang (1–5)</option>
+                                            <option value="text">Isian Teks / Komentar Terbuka</option>
+                                            <option value="boolean">Pilihan Ya / Tidak</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="question_form_aspect_label">Judul / Label Pertanyaan:</label>
+                                        <input type="text" id="question_form_aspect_label" class="form-control" required disabled>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="question_form_key">Kunci Pertanyaan (Sistem):</label>
+                                        <input type="text" id="question_form_key" class="form-control" required style="font-family:monospace;" disabled>
+                                        <small id="questionKeyHint" style="color:var(--text-muted); display:block; margin-top:0.25rem;">Otomatis dibuat untuk pertanyaan baru; terkunci pada 5 aspek inti.</small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="question_form_question_text">Teks Pertanyaan / Placeholder:</label>
+                                        <textarea id="question_form_question_text" rows="3" class="form-control" required disabled></textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="question_form_order_num">Urutan Tampil:</label>
+                                        <input type="number" id="question_form_order_num" class="form-control" required min="1" max="50" disabled>
+                                    </div>
+
+                                    <div class="form-group" style="display:flex; align-items:center; gap:0.5rem;">
+                                        <input type="checkbox" id="question_form_required" disabled>
+                                        <label for="question_form_required" style="font-size:0.875rem; cursor:pointer;">Wajib diisi responden</label>
+                                    </div>
+
+                                    <div class="form-group" style="display:flex; align-items:center; gap:0.5rem; margin-bottom:1.5rem;">
+                                        <input type="checkbox" id="question_form_is_active" checked disabled>
+                                        <label for="question_form_is_active" style="font-size:0.875rem; cursor:pointer;">Aktifkan Pertanyaan di Formulir Survei</label>
+                                    </div>
+
+                                    <button type="submit" id="questionFormSubmitBtn" class="btn btn-primary btn-block" style="padding: 0.75rem;" disabled>
+                                        Simpan Pertanyaan Survei
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </section>
+</template>
+<template id="admin-reviews">
+<section id="screen-admin-reviews" class="internal-page">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                            <div>
+                                <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin: 0;">Moderasi Ulasan Pelanggan</h2>
+                                <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0;">Periksa tanggapan survei, filter komentar tidak pantas, dan kelola ulasan spam</p>
+                            </div>
+
+                            <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                                <input type="text" id="adminReviewsSearch" class="form-control" placeholder="Cari komentar, menu, atau tenant..." style="width: 240px; padding: 0.45rem 0.8rem; font-size: 0.85rem;">
+                                <select id="adminReviewsFilterTenant" class="form-control" style="padding: 0.45rem 0.8rem; font-size: 0.85rem; width: auto;"></select>
+                                <select id="adminReviewsFilterStatus" class="form-control" style="padding: 0.45rem 0.8rem; font-size: 0.85rem; width: auto;">
+                                    <option value="">Semua Status</option>
+                                    <option value="published">Published (Tayang)</option>
+                                    <option value="hidden">Hidden (Disembunyikan)</option>
+                                    <option value="spam">Spam (Terindikasi)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="table-card">
+                            <div class="table-header">
+                                <h3 class="table-title">Daftar Tanggapan Survei Kepuasan</h3>
+                                <span id="adminReviewsCountBadge" class="badge badge-info">15 Ulasan Ditemukan</span>
+                            </div>
+                            <div class="data-table-wrapper" tabindex="0">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Tanggal &amp; Pengunjung</th>
+                                            <th>Tenant</th>
+                                            <th>Skor &amp; Ringkasan Ulasan</th>
+                                            <th>Status</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminReviewsTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+</template>
+<template id="admin-report">
+<section id="screen-admin-report" class="internal-page">
+                        <div class="no-print" style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; margin-bottom: 2rem; box-shadow: var(--shadow-sm);">
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; justify-content: space-between;">
+                                <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end;">
+                                    <div>
+                                        <label class="form-label" for="reportFilterTenant" style="font-size: 0.8rem; margin-bottom: 0.2rem;">Pilih Tenant:</label>
+                                        <select id="reportFilterTenant" class="form-control" style="width: auto; min-width: 180px; font-size: 0.85rem; padding: 0.45rem 0.75rem;"></select>
+                                    </div>
+
+                                    <div>
+                                        <label class="form-label" for="reportFilterCampus" style="font-size: 0.8rem; margin-bottom: 0.2rem;">Lokasi Kampus:</label>
+                                        <select id="reportFilterCampus" class="form-control" style="width: auto; font-size: 0.85rem; padding: 0.45rem 0.75rem;">
+                                            <option value="0">Semua Kampus</option>
+                                            <option value="1">Kampus A UNUSA</option>
+                                            <option value="2">Kampus B UNUSA</option>
+                                            <option value="3">Kampus C UNUSA</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label class="form-label" for="reportFilterPeriod" style="font-size: 0.8rem; margin-bottom: 0.2rem;">Periode Evaluasi:</label>
+                                        <select id="reportFilterPeriod" class="form-control" style="width: auto; font-size: 0.85rem; padding: 0.45rem 0.75rem;">
+                                            <option value="3_months">3 Bulan Terakhir</option>
+                                            <option value="6_months" selected>6 Bulan Terakhir</option>
+                                            <option value="1_year">1 Tahun Terakhir (Tahunan)</option>
+                                            <option value="all">Semua Waktu</option>
+                                        </select>
+                                    </div>
+
+                                    <button type="button" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;" data-filter="">
+                                        <svg width="14" height="14" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                        <span>Terapkan Filter</span>
+                                    </button>
+                                </div>
+
+                                <div style="display: flex; gap: 0.75rem;">
+                                    <button type="button" class="btn btn-secondary" style="font-size: 0.85rem;" disabled title="Ekspor resmi tersedia setelah layanan terhubung">
+                                        <svg width="16" height="16" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                        <span>Ekspor Excel (.xlsx)</span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary" style="font-size: 0.85rem;" data-print="">
+                                        <svg width="16" height="16" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                                        <span>Cetak / Ekspor PDF</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="report-paper" style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-sm); margin-bottom: 3rem;">
+                            <div style="border-bottom: 3px double #006837; padding-bottom: 1.25rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <img src="/assets/logo-unusa.png" data-asset-path="assets/images/unusa-logo.png" alt="Logo UNUSA" style="width: 64px; height: 64px; object-fit: contain; flex-shrink: 0;">
+                                    <div>
+                                        <h2 style="font-size: 1.25rem; font-weight: 800; color: #006837; margin: 0; line-height: 1.2;">
+                                            UNIVERSITAS NAHDLATUL ULAMA SURABAYA
+                                        </h2>
+                                        <div style="font-size: 1.05rem; font-weight: 700; color: #1e293b; margin-top: 2px;">
+                                            PENGELOLA KANTIN &amp; GIZI - LAPORAN EVALUASI &amp; RATING TENANT
+                                        </div>
+                                        <small style="color: #64748b; font-size: 0.8rem;">
+                                            Kampus A (SMEA) • Kampus B (Jemursari) • Kampus C (Ketintang) | Dokumen Pertimbangan Kontrak Sewa
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <div style="text-align: right; font-size: 0.825rem; color: #64748b;">
+                                    <div><strong>Periode Evaluasi:</strong></div>
+                                    <div style="color: #006837; font-weight: 700;" id="periodeContoh">Data contoh</div>
+                                    <div id="waktuLaporan"></div>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+                                <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; text-align: center;">
+                                    <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Total Ulasan Periode Ini</div>
+                                    <div id="reportKpiReviews" style="font-size: 2rem; font-weight: 800; color: var(--unusa-green); margin-top: 0.25rem;">—</div>
+                                </div>
+
+                                <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; text-align: center;">
+                                    <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Skor Rerata Kepuasan</div>
+                                    <div style="font-size: 2rem; font-weight: 800; color: var(--unusa-green); margin-top: 0.25rem;">
+                                        <span id="reportKpiAvg">—</span> <span style="font-size: 1rem; color: var(--text-muted);">/ 5</span>
+                                    </div>
+                                </div>
+
+                                <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; text-align: center;">
+                                    <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Status Evaluasi Umum</div>
+                                    <div id="reportKpiStatus" style="font-size: 1.15rem; font-weight: 800; color: #15803d; margin-top: 0.5rem;">—</div>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+                                <div style="border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem;">
+                                    <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.75rem;">
+                                        Rata-rata Rating 5 Aspek Mutu &amp; Layanan
+                                    </h4>
+                                    <div style="height: 220px; position: relative;">
+                                        <canvas id="reportAspectChart" class="grafik-ringkas" role="img"></canvas>
+                                    </div>
+                                </div>
+
+                                <div style="border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem;">
+                                    <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.75rem;">
+                                        Sebaran Waktu Ramai Pembeli (Peak Hours)
+                                    </h4>
+                                    <div style="height: 220px; position: relative;">
+                                        <canvas id="reportPeakChart" class="grafik-ringkas" role="img"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 2.5rem;">
+                                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.75rem;">
+                                    Rekapitulasi Penilaian Tenant &amp; Rekomendasi Kontrak Sewa
+                                </h3>
+                                <p style="font-size: 0.825rem; color: var(--text-secondary); margin-bottom: 1rem;">Laporan ini memakai data contoh untuk meninjau tata letak evaluasi.</p>
+
+                                <div class="data-table-wrapper" tabindex="0">
+                                    <table class="data-table" id="evaluationReportTable">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Stan &amp; Nama Tenant</th>
+                                                <th>Kampus</th>
+                                                <th>Pemilik</th>
+                                                <th>Rasa</th>
+                                                <th>Kebersihan</th>
+                                                <th>Porsi</th>
+                                                <th>Kualitas</th>
+                                                <th>Bayar</th>
+                                                <th>Skor Rerata</th>
+                                                <th>Total Ulasan</th>
+                                                <th>Rekomendasi Kontrak</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="evaluationReportTableBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 3rem;">
+                                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.75rem;">
+                                    Daftar Masukan &amp; Komentar Sivitas Akademika (Kualitatif)
+                                </h3>
+                                <div id="reportCommentsList" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+                            </div>
+
+                            <div style="display: flex; justify-content: space-between; margin-top: 3rem; page-break-inside: avoid; flex-wrap: wrap; gap: 2rem;">
+                                <div style="text-align: center; width: 220px;">
+                                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4.5rem;">
+                                        Perwakilan Pemilik Tenant
+                                    </div>
+                                    <div style="font-weight: 700; font-size: 0.9rem; border-top: 1px solid #1e293b; padding-top: 0.35rem;">
+                                        ( .................................... )
+                                    </div>
+                                    <small style="color: var(--text-muted); font-size: 0.75rem;">Nama &amp; Tanda Tangan</small>
+                                </div>
+
+                                <div style="text-align: center; width: 260px;">
+                                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4.5rem;">Pratinjau laporan<br>
+                                        Pengelola SiKantin UNUSA
+                                    </div>
+                                    <div style="font-weight: 700; font-size: 0.9rem; border-top: 1px solid #1e293b; padding-top: 0.35rem;">Pengelola Kantin UNUSA</div>
+                                    <small style="color: var(--text-muted); font-size: 0.75rem;">Dosen Gizi / Koordinator Kantin</small>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+</template>
+<template id="admin-qr-print">
+<section id="screen-admin-qr-print" class="internal-page">
+            <div class="action-bar no-print" style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                <select id="qrPrintTenantSelect" class="form-control" style="width: auto; font-size: 0.9rem;"></select>
+                <button type="button" class="btn btn-primary" style="padding: 0.75rem 1.5rem; font-size: 1rem;" disabled title="QR aktif tersedia setelah layanan terhubung">
+                    <svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                    <span>Cetak Kartu Sekarang (Print)</span>
+                </button>
+                <a class="btn btn-outline" style="padding: 0.75rem 1.5rem;" href="/pratinjau/admin/tenant">
+                    Kembali ke Manajemen Tenant
+                </a>
+            </div>
+
+            <div class="qr-print-card qr-stand-card">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1rem;">
+                    <img src="/assets/logo-unusa.png" data-asset-path="assets/images/unusa-logo.png" alt="Logo UNUSA" style="width: 52px; height: 52px; object-fit: contain; flex-shrink: 0;">
+                    <div style="text-align: left;">
+                        <div style="font-size: 1.1rem; font-weight: 800; color: #006837; line-height: 1.1;">SiKantin UNUSA</div>
+                        <small style="font-size: 0.75rem; color: #64748b; font-weight: 600; letter-spacing: 0.5px;">UNIVERSITAS NAHDLATUL ULAMA SURABAYA</small>
+                    </div>
+                </div>
+
+                <div id="qrPrintStallCampusBadge" style="display: inline-block; background: #ecfdf5; color: #006837; font-weight: 700; font-size: 0.85rem; padding: 0.3rem 0.8rem; border-radius: 9999px; border: 1px solid #a7f3d0; margin-bottom: 0.75rem;">
+                    Stand B-01 • Kampus B UNUSA
+                </div>
+
+                <h1 id="qrPrintTenantName" style="font-size: 1.65rem; font-weight: 800; color: #1e293b; margin-bottom: 0.5rem; text-transform: uppercase;">
+                    WARUNG CAK MIN
+                </h1>
+
+                <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem;">
+                    Pindai kode QR untuk melihat katalog menu digital dan memberikan rating kepuasan pelayanan!
+                </p>
+
+                <div style="font-size:0.78rem; font-weight:600; color:var(--text-muted); margin-bottom:0.45rem;">Ukuran Cetak: A5 Tent Card (148 × 210 mm)</div>
+                <div class="qr-box">
+                    <div id="printQrContainer" style="display:flex; justify-content:center;"></div>
+                </div>
+                <div id="qrPrintFallbackUrl" style="font-family:monospace; font-size:0.82rem; color:var(--unusa-green); font-weight:600; margin-top:0.65rem;">QR belum diterbitkan.</div>
+
+                <div style="margin-top: 1rem; border-top: 1px dashed #cbd5e1; padding-top: 1.25rem;">
+                    <div style="font-weight: 700; color: #006837; font-size: 0.95rem; margin-bottom: 0.25rem;">
+                        Pindai langsung lewat kamera ponsel — tanpa aplikasi &amp; tanpa login.
+                    </div>
+                    <div style="font-size: 0.78rem; color: #64748b;">
+                        Buka kamera HP atau Google Lens • Arahkan ke Kode QR • Beri ulasan langsung
+                    </div>
+                </div>
+            </div>
+        </section>
+</template>
+<template id="tenant-dashboard">
+<section id="screen-tenant-dashboard" class="internal-page">
+            <div class="container" style="padding-top: 1.5rem; padding-bottom: 4rem;">
+                <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.75rem 2rem; margin-bottom: 2rem; box-shadow: var(--shadow-sm); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+                    <div>
+                        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.4rem;">
+                            <span class="badge-stall">Stand B-01</span>
+                            <span class="badge-campus">Kampus B UNUSA</span>
+                            <span class="badge badge-success">Pratinjau</span>
+                        </div>
+                        <h1 style="font-size: 1.6rem; font-weight: 800; color: var(--text-primary); margin: 0;">
+                            Portal Evaluasi: Warung Cak Min
+                        </h1>
+                        <p>Pratinjau pemilik · Data contoh untuk satu stand.</p></div>
+
+                    <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                        <a href="/tenant/warung-cak-min" class="btn btn-outline" style="font-size:0.85rem;">
+                            Buka Katalog Publik →
+                        </a>
+                        <a href="/pratinjau/admin/qr?tenant=warung-cak-min" class="btn btn-primary" style="font-size:0.85rem;">
+                            <svg width="16" height="16" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                            <span>Cetak Kartu QR Meja</span>
+                        </a>
+                        <a href="/" class="btn btn-danger" style="font-size:0.85rem;">Kembali ke katalog</a>
+                    </div>
+                </div>
+
+                <div class="stats-grid tenant-kpi-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#ecfdf5; color:#006837;">
+                            <svg width="26" height="26" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        </div>
+                        <div>
+                            <div class="stat-val"><span id="tenantKpiAvg">4.60</span> <small style="font-size:0.95rem; color:var(--text-muted);">/ 5.0</small></div>
+                            <div class="stat-label">Skor Rata-rata Pelanggan</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#e0f2fe; color:#0284c7;">
+                            <svg width="26" height="26" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        </div>
+                        <div>
+                            <div class="stat-val" id="tenantKpiReviews">6</div>
+                            <div class="stat-label">Total Ulasan Diterima</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#fef3c7; color:#d97706;">
+                            <svg width="26" height="26" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
+                        </div>
+                        <div>
+                            <div class="stat-val" id="tenantKpiMenus">7</div>
+                            <div class="stat-label">Menu Aktif di Katalog</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#f3e8ff; color:#7c3aed;">
+                            <svg width="26" height="26" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+                        </div>
+                        <div style="min-width:0;">
+                            <div class="stat-val" id="tenantKpiBestAspect" style="font-size:1.2rem; line-height:1.25;">Cita Rasa</div>
+                            <div class="stat-label" id="tenantKpiBestScore">Aspek Terbaik · 4.8 / 5.0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                    <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+                        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; color: var(--text-primary);">
+                            Performa 5 Aspek Mutu &amp; Layanan Standar Kantin
+                        </h3>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                            Gunakan hasil evaluasi ini untuk mempertahankan kelebihan dan memperbaiki kekurangan stan Anda.
+                        </p>
+                        <div style="height: 260px; position: relative;">
+                            <canvas id="tenantAspectChart" class="grafik-ringkas" role="img"></canvas>
+                        </div>
+                    </div>
+
+                    <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+                        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; color: var(--text-primary);">Waktu pengisian ulasan (WIB)</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                            Data jam sibuk transaksi untuk mengantisipasi stok bahan baku dan kesiapan staf saat jam ramai.
+                        </p>
+                        <div style="height: 260px; position: relative;">
+                            <canvas id="tenantPeakChart" class="grafik-ringkas" role="img"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.75rem; box-shadow: var(--shadow-sm);">
+                    <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.25rem;">
+                        Masukan &amp; Komentar Langsung Pelanggan
+                    </h3>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        Ulasan dari mahasiswa, dosen, dan pengunjung yang telah dimoderasi oleh Pengelola Kantin.
+                    </p>
+                    <div id="tenantPortalReviewsList" style="display:flex; flex-direction:column; gap:1rem;"></div>
+                </div>
+            </div>
+        </section>
+</template>

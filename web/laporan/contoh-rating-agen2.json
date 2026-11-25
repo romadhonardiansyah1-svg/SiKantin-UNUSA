@@ -1,0 +1,96 @@
+{
+  "catatan": "Contoh data uji dan hasil harapan untuk Agen 2 (katalog & detail publik). Ulasan tersembunyi tidak boleh mengubah rating, dan tenant tanpa ulasan tayang menampilkan 'Belum ada penilaian'.",
+  "kasus_uji": [
+    {
+      "kasus": "tenant_tanpa_ulasan",
+      "tenant": {
+        "slug": "stand-baru-tanpa-ulasan",
+        "nama": "Stand Baru Kampus A",
+        "kampus": "A",
+        "ulasan": []
+      },
+      "hasil_harapan": {
+        "nilai": null,
+        "label": "Belum ada penilaian",
+        "jumlah": 0,
+        "aspek": [null, null, null, null, null]
+      }
+    },
+    {
+      "kasus": "tenant_satu_ulasan_tayang",
+      "tenant": {
+        "slug": "stand-satu-tayang",
+        "nama": "Warung Barokah",
+        "kampus": "B",
+        "ulasan": [
+          {
+            "status_moderasi": "tayang",
+            "status": "Mahasiswa",
+            "komentar": "Enak dan bersih.",
+            "aspek": [5, 4, 5, 4, 5],
+            "waktu": "2026-11-25T11:30:00+07:00"
+          }
+        ]
+      },
+      "hasil_harapan": {
+        "nilai": 4.6,
+        "label": "4,6",
+        "jumlah": 1,
+        "aspek": [5, 4, 5, 4, 5]
+      }
+    },
+    {
+      "kasus": "tenant_satu_ulasan_tersembunyi",
+      "tenant": {
+        "slug": "stand-satu-tersembunyi",
+        "nama": "Kedai Uji Moderasi",
+        "kampus": "C",
+        "ulasan": [
+          {
+            "status_moderasi": "tersembunyi",
+            "status": "Mahasiswa",
+            "komentar": "Ulasan spam yang disembunyikan admin.",
+            "aspek": [1, 1, 1, 1, 1],
+            "waktu": "2026-11-25T12:00:00+07:00"
+          }
+        ]
+      },
+      "hasil_harapan": {
+        "nilai": null,
+        "label": "Belum ada penilaian",
+        "jumlah": 0,
+        "aspek": [null, null, null, null, null]
+      }
+    },
+    {
+      "kasus": "tenant_campuran_tayang_dan_tersembunyi",
+      "tenant": {
+        "slug": "stand-campuran-moderasi",
+        "nama": "Warung Campuran",
+        "kampus": "A",
+        "ulasan": [
+          {
+            "status_moderasi": "tayang",
+            "status": "Mahasiswa",
+            "komentar": "Pelayanan cepat.",
+            "aspek": [5, 4, 5, 4, 5],
+            "waktu": "2026-11-25T10:15:00+07:00"
+          },
+          {
+            "status_moderasi": "tersembunyi",
+            "status": "Dosen",
+            "komentar": "Disembunyikan moderator.",
+            "aspek": [1, 1, 1, 1, 1],
+            "waktu": "2026-11-25T13:45:00+07:00"
+          }
+        ]
+      },
+      "hasil_harapan": {
+        "nilai": 4.6,
+        "label": "4,6",
+        "jumlah": 1,
+        "aspek": [5, 4, 5, 4, 5]
+      }
+    }
+  ]
+}

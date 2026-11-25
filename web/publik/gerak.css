@@ -1,0 +1,38 @@
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes buka-rincian {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .ui-screen.active .detail-caption-below,
+  #screen-public-review-success.active h1 {
+    animation: buka-rincian 220ms cubic-bezier(.2,.7,.2,1);
+  }
+
+  .gf-footer-link svg,
+  .gf-see-more-circle svg {
+    transition: transform 160ms ease-out;
+  }
+
+  .gf-footer-link:focus-visible svg,
+  .gf-see-more-slot:focus-visible svg {
+    transform: translateX(3px);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .gf-footer-link:hover svg,
+    .gf-see-more-slot:hover svg {
+      transform: translateX(3px);
+    }
+  }
+
+  @keyframes pilih-bintang {
+    0%   { transform: scale(1); }
+    55%  { transform: scale(1.17); }
+    100% { transform: scale(1.1); }
+  }
+
+  .star-picker input:checked + label {
+    animation: pilih-bintang 180ms ease-out;
+  }
+}
