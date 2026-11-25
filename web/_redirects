@@ -1,0 +1,9 @@
+/masuk / 200
+/daftar / 200
+/admin / 200
+/admin/* / 200
+/pemilik / 200
+/pemilik/* / 200
+/tenant/* / 200
+/r/* / 200
+/pratinjau/* / 200

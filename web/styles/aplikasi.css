@@ -1,0 +1,74 @@
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/assets/plus-jakarta-sans.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+}
+[hidden] { display: none !important; }
+:focus-visible { outline: 3px solid #007849; outline-offset: 3px; }
+section[tabindex="-1"]:focus { outline: 0; }
+.skip-link, .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.skip-link:focus { z-index: 999; top: .5rem; left: .5rem; width: auto; height: auto; clip-path: none; padding: .65rem 1rem; background: white; }
+.preview-strip { padding: .36rem 1rem; margin: 0; text-align: center; background: #edf5ef; color: #28543d; font-size: .76rem; }
+.status-note, .aspect-box { border-radius: var(--radius-md); background: var(--bg-body, #f6f8f7); padding: .8rem 1rem; }
+.status-note { font-size: .87rem; margin: 0 0 1rem; color: var(--text-secondary); }
+.status-note a, .field-hint { color: var(--unusa-green); }
+.status-note a { text-decoration: underline; }
+.field-hint, .field-error { display: block; font-size: .77rem; margin-top: .25rem; }
+.field-error { color: #9b2625; }
+.field-error:empty { display: none; }
+button:disabled, input:disabled { opacity: .65; cursor: not-allowed; }
+.gf-card a:not(.gf-footer-review-btn) { color: inherit; }
+.gf-card .gf-footer-link { color: var(--unusa-green); }
+.gf-card, .gf-info, .gf-menu-item, .detail-caption-below { min-width: 0; }
+.gf-title, .menu-card-title, #detailTenantName, .review-card { overflow-wrap: anywhere; }
+.gf-menu-item, .gf-see-more-slot { text-decoration: none; }
+.gf-card { cursor: default; }
+.gf-footer a, .campus-pill, .menu-cat-tab { min-height: 2.75rem; }
+.gf-footer a { display: inline-flex; align-items: center; }
+.empty-note { padding: 1rem; color: var(--text-secondary); }
+.aspect-box { display: flex; justify-content: space-between; gap: .6rem; font-size: .86rem; }
+.review-card { padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: white; }
+.review-card p { margin: .35rem 0 0; }
+.route-message { max-width: 52rem; padding-top: 4rem; padding-bottom: 5rem; }
+.route-message p { margin: .7rem 0 1.35rem; }
+#detailStarContainer, #reviewSuccessStars { color: #996300; letter-spacing: .08em; }
+#detailAvgScore { overflow-wrap: anywhere; }
+body.drawer-open { overflow: hidden; }
+.admin-preview-open #layout-public-wrapper > :is(.site-header, .preview-strip, footer) { display: none; }
+#screen-internal :is(.admin-main, .admin-content, .table-card, .two-col-admin-grid > *, .report-paper) { min-width: 0; }
+#screen-internal .data-table-wrapper { max-width: 100%; overflow-x: auto; }
+#screen-internal .data-table td { overflow-wrap: anywhere; }
+#screen-internal .preview-action { padding: .3rem .55rem; font-size: .8rem; }
+#screen-internal .qr-print-card { max-width: calc(100% - 2rem); }
+#screen-internal #printQrContainer { display: grid; place-items: center; color: var(--text-secondary); text-align: center; }
+#screen-internal .rating-feedback { white-space: normal; }
+@media (min-width: 901px) {
+  #screen-internal #sidebarToggle { display: none !important; }
+}
+@media (max-width: 900px) {
+  #screen-internal :is(.admin-content, .report-paper) { max-width: 100%; padding: 1rem !important; }
+  #screen-internal .internal-page > div { max-width: 100%; }
+  #screen-internal .internal-page > div[style*="display: grid"] { grid-template-columns: minmax(0,1fr) !important; }
+  #screen-internal .action-bar { flex-wrap: wrap; }
+  #screen-admin-tenants div:has(> #adminTenantsFilterCampus) { flex-wrap: wrap; max-width: 100%; }
+}
+@media print {
+  body.admin-preview-open .admin-sidebar, body.admin-preview-open .admin-topbar { display: none; }
+  body.admin-preview-open .admin-main { width: 100%; margin: 0; }
+}
+#tenantGrid { scroll-margin-top: 11rem; }
+.hero-poster-wrap { position: relative; }
+.poster-control { position: absolute; right: .5rem; bottom: .5rem; width: 2.75rem; height: 2.75rem; border: 0; border-radius: 50%; background: #153823d9; color: white; cursor: pointer; }
+.menu-chip:has(input:checked) { border-color: var(--unusa-green); background: #eaf6ef; }
+.star-picker:focus-within { outline: 2px solid var(--unusa-green); outline-offset: 3px; }
+.star-picker input[type="radio"] { display: block; position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; }
+@media (max-width: 767px) {
+  #publicCampusFilterBar { justify-content: flex-start; }
+  #tenantGrid { scroll-margin-top: 13rem; }
+  .detail-profile-container > *, .detail-profile-left { min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SiKantin UNUSA · Katalog kantin</title><meta name="description" content="Cari stand dan menu kantin di Kampus A, B, dan C UNUSA."><meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="/assets/logo-unusa.png"><link rel="preload" href="/assets/plus-jakarta-sans.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/styles/acuan.css"><link rel="stylesheet" href="/styles/aplikasi.css">
+<script type="module" src="/router.js"></script></head>
+<body><a class="skip-link" href="#konten">Lewati navigasi</a><noscript>Aktifkan JavaScript untuk membuka katalog SiKantin UNUSA.</noscript><div id="layout-public-wrapper" class="ui-layout-wrapper active">
+        <header class="site-header">
+            <div class="container">
+                <nav class="navbar">
+                    <a href="/" class="brand">
+                        <img src="/assets/logo-unusa.png" data-asset-path="assets/images/unusa-logo.png" alt="Logo UNUSA" class="brand-logo-img" width="42" height="42">
+                        <div class="brand-text">
+                            <span>SiKantin UNUSA</span>
+                            <small>Katalog &amp; Survei Kepuasan</small>
+                        </div>
+                    </a>
+
+                    <div class="nav-links">
+                        <a href="/" class="nav-btn-subtle">
+                            <svg width="16" height="16" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                            <span>Katalog Kantin</span>
+                        </a>
+                        <a href="/masuk" id="publicAuthNavBtn" class="nav-btn-subtle">
+                            <svg width="16" height="16" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                            <span id="publicAuthNavLabel">Masuk</span>
+                        </a>
+                        </div>
+
+                    <button type="button" class="mobile-nav-toggle" aria-label="Buka Menu Navigasi" aria-controls="mobileNavDrawer" aria-expanded="false">
+                        <svg width="22" height="22" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <p class="preview-strip">Pratinjau frontend · Menu, harga, dan ulasan memakai data contoh.</p><div id="mobileNavBackdrop" class="mobile-nav-backdrop"></div>
+        <aside id="mobileNavDrawer" class="mobile-nav-drawer" aria-label="Menu navigasi" inert="" aria-hidden="true" role="dialog">
+            <div class="mobile-nav-drawer-header">
+                <strong style="color: var(--unusa-green);">SiKantin UNUSA</strong>
+                <button type="button" class="crud-drawer-close-btn" aria-label="Tutup Menu">×</button>
+            </div>
+            <a href="/">Katalog Tenant &amp; Menu</a>
+            <a href="/masuk">Masuk / Daftar</a>
+        </aside>
+
+        <main id="konten" tabindex="-1"><section id="screen-public-index" class="ui-screen" tabindex="-1" hidden="">
+            <div class="hero-cafe-section">
+                <div class="container">
+                    <div class="hero-cafe-card hero-split-v3">
+                        <div class="hero-cafe-content">
+                            <div class="hero-plain-label">Kantin UNUSA · Kampus A, B &amp; C</div>
+
+                            <h1 class="hero-cafe-title">
+                                Mau makan apa <span class="hero-cafe-title-accent">jam istirahat</span> nanti?
+                            </h1>
+
+                            <p class="hero-cafe-subtitle">
+                                Cek menu dan harga tiap stand langsung dari kelas, lalu bagikan penilaianmu lewat QR di meja.
+                            </p>
+
+                            <div class="hero-cafe-actions">
+                                <a href="/#tenantGrid" class="hero-cafe-btn">
+                                    <span>Lihat Daftar Stand</span>
+                                    <svg width="16" height="16" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="hero-poster-wrap">
+                            <div class="hero-poster-track" id="heroPosterTrack" tabindex="0" aria-label="Poster hidangan kantin">
+                                <div class="hero-poster-slide"><img src="/assets/poster-1.jpg" alt="Soto Madura dan Rawon Kantin UNUSA" draggable="false" decoding="async"></div>
+                                <div class="hero-poster-slide"><img src="/assets/poster-2.jpg" alt="Ayam Geprek, Bakso, dan Nasi Campur Kantin UNUSA" draggable="false" decoding="async"></div>
+                                <div class="hero-poster-slide"><img src="/assets/poster-3.jpg" alt="Es Jeruk, Es Teh, dan Tahu Crispy Kantin UNUSA" draggable="false" decoding="async"></div>
+                            </div>
+                        <button class="poster-control" type="button" aria-label="Jeda poster" title="Jeda poster">Ⅱ</button></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="catalog-sticky-toolbar">
+                    <div class="catalog-toolbar-row">
+                        <div class="catalog-search-box">
+                            <svg width="18" height="18" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <input type="text" id="searchTenantInput" class="catalog-search-input" placeholder="Cari nama tenant atau menu (mis. Soto, Es Teh)..." autocomplete="off" aria-label="Cari tenant atau menu">
+                        </div>
+                        <div class="catalog-controls-right">
+                            <select id="publicCategoryFilter" class="catalog-select" aria-label="Filter Kategori Menu">
+                                <option value="ALL">Semua Kategori</option>
+                                <option value="Makanan">Makanan</option>
+                                <option value="Minuman">Minuman</option>
+                                <option value="Snack">Snack</option>
+                            </select>
+                            <select id="publicSortSelect" class="catalog-select" aria-label="Urutkan Tenant">
+                                <option value="default">Urutkan: Standar</option>
+                                <option value="rating_desc">Rating Tertinggi</option>
+                                <option value="reviews_desc">Ulasan Terbanyak</option>
+                                <option value="name_asc">Nama A–Z</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="campus-filter-bar" id="publicCampusFilterBar">
+                        <button type="button" class="campus-pill active" data-campus="ALL">
+                            <span>Semua Kampus</span>
+                            <span class="badge" id="badgeCountALL">17</span>
+                        </button>
+                        <button type="button" class="campus-pill" data-campus="KAMPUS_A">
+                            <span>Kampus A</span>
+                            <span class="badge" id="badgeCountKAMPUS_A">9</span>
+                        </button>
+                        <button type="button" class="campus-pill" data-campus="KAMPUS_B">
+                            <span>Kampus B</span>
+                            <span class="badge" id="badgeCountKAMPUS_B">5</span>
+                        </button>
+                        <button type="button" class="campus-pill" data-campus="KAMPUS_C">
+                            <span>Kampus C</span>
+                            <span class="badge" id="badgeCountKAMPUS_C">3</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="facility-grid" id="facilityGrid">
+                    <div id="facilitySummaryStrip" class="facility-summary-strip">
+                        <span><strong>Fasilitas Kantin UNUSA:</strong> Area makan higienis, wastafel cuci tangan, Wi-Fi Kampus, dan pembayaran QRIS tersedia di Kampus A, B, &amp; C.</span>
+                        <span style="color: var(--text-muted); font-size: 0.8rem;">Pilih tab kampus di atas untuk melihat alamat &amp; rincian fasilitas.</span>
+                    </div>
+                    <div class="facility-card" data-campus="KAMPUS_A">
+                        <div class="facility-card-header">
+                            <div class="facility-icon">
+                                <svg width="22" height="22" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                            </div>
+                            <div class="facility-title">Fasilitas Kantin: Kampus A UNUSA</div>
+                        </div>
+                        <div class="facility-text">
+                            <div class="facility-item"><strong>Lokasi:</strong> Jl. SMEA No. 57, Wonokromo, Surabaya</div>
+                            <div class="facility-item"><strong>Fasilitas:</strong> Area makan beratap kapasitas 150 kursi, wastafel cuci tangan higienis, dispenser air minum isi ulang gratis, pembayaran QRIS terpadu, koneksi Wi-Fi Kampus UNUSA, toilet bersih.</div>
+                        </div>
+                    </div>
+
+                    <div class="facility-card" data-campus="KAMPUS_B">
+                        <div class="facility-card-header">
+                            <div class="facility-icon">
+                                <svg width="22" height="22" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                            </div>
+                            <div class="facility-title">Fasilitas Kantin: Kampus B UNUSA</div>
+                        </div>
+                        <div class="facility-text">
+                            <div class="facility-item"><strong>Lokasi:</strong> Jl. Raya Jemursari No. 51-57, Surabaya</div>
+                            <div class="facility-item"><strong>Fasilitas:</strong> Kantin modern lantai 1 &amp; semi-outdoor, area makan ber-AC, 80 kursi, wastafel sensor otomatis, fasilitas daur ulang sampah sisa makanan, pembayaran cashless/QRIS.</div>
+                        </div>
+                    </div>
+
+                    <div class="facility-card" data-campus="KAMPUS_C">
+                        <div class="facility-card-header">
+                            <div class="facility-icon">
+                                <svg width="22" height="22" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                            </div>
+                            <div class="facility-title">Fasilitas Kantin: Kampus C UNUSA</div>
+                        </div>
+                        <div class="facility-text">
+                            <div class="facility-item"><strong>Lokasi:</strong> Jl. Ketintang Madya No. 81, Surabaya</div>
+                            <div class="facility-item"><strong>Fasilitas:</strong> Green Canteen Fakultas Kedokteran &amp; Kesehatan, etalase makanan berstandar gizi, area makan rindang outdoor, fasilitas cuci tangan sabun cair antiseptik, Wi-Fi UNUSA.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="sr-only" id="jumlahHasil" role="status"></p><div class="tenant-grid" id="tenantGrid" tabindex="-1"></div>
+
+                <div id="noResultsMessage" style="display: none; text-align: center; padding: 3rem 1rem;">
+                    <div style="display:inline-flex; align-items:center; justify-content:center; width:56px; height:56px; border-radius:50%; background:#F1F5F9; color:#475569; margin-bottom:0.75rem;"><svg width="26" height="26" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">Tenant atau Menu Tidak Ditemukan</h3>
+                    <p style="color: var(--text-secondary); max-width: 450px; margin: 0 auto;">
+                        Coba gunakan kata kunci pencarian lain atau pilih tab "Semua Kampus" untuk melihat daftar lengkap tenant SiKantin UNUSA.
+                    </p>
+                <button class="btn btn-outline" type="button" id="resetFilter">Hapus filter</button></div>
+            </div>
+        </section>
+
+        <section id="screen-public-tenant-detail" class="ui-screen" tabindex="-1" hidden="">
+            <div class="container" style="padding-top: 1.25rem; padding-bottom: 4rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div style="font-size: 0.85rem; color: var(--text-muted);">
+                        <a href="/" style="color: var(--text-secondary);" data-katalog-link="">Katalog Kantin</a> »
+                        <span id="detailBreadcrumbCampus" style="color: var(--text-secondary);">Kampus B UNUSA</span> »
+                        <strong id="detailBreadcrumbName" style="color: var(--unusa-green);">Warung Cak Min</strong>
+                    </div>
+                    <a href="/" class="nav-btn-subtle" style="font-size: 0.82rem; padding: 0.35rem 0.8rem;" data-katalog-link="">
+                        ← Kembali ke Katalog
+                    </a>
+                </div>
+
+                <div style="background: white; border-radius: var(--radius-lg); border: 1px solid var(--border-color); padding: 2rem; margin-bottom: 2rem; box-shadow: var(--shadow-sm); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 2rem;">
+                    <div class="detail-profile-left">
+                        <div class="detail-hero-photo-wrap">
+                            <img id="detailTenantBannerImg" alt="Foto Stand Kantin" class="detail-hero-photo">
+                        </div>
+
+                        <div class="detail-caption-below">
+                            <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap;">
+                                <span id="detailCampusBadge" class="badge-campus">Kampus B UNUSA</span>
+                            <span id="detailStall" class="badge-stall"></span></div>
+
+                            <h1 id="detailTenantName" style="font-size: 1.75rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.45rem; line-height: 1.2;">
+                                Warung Cak Min
+                            </h1>
+
+                            <p id="detailTenantDesc" style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 0.9rem; line-height: 1.55;">
+                                Menyajikan Soto Madura daging sapi empuk dengan kuah rempah khas dan Rawon kluwek hangat.
+                            </p>
+
+                            </div>
+                    </div>
+
+                    <div style="flex: 0 0 280px; text-align: center; background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem;">
+                        <div style="font-size: 2.25rem; font-weight: 800; color: var(--unusa-green); line-height: 1;">
+                            <span id="detailAvgScore">4.6</span>
+                            <span style="font-size: 1rem; color: var(--text-muted); font-weight: 500;">/ 5.0</span>
+                        </div>
+                        <div id="detailStarContainer" style="margin: 0.5rem 0;"></div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                            Berdasarkan <strong id="detailReviewCount">6 ulasan</strong> pelanggan
+                        </div>
+
+                        <a class="btn btn-primary btn-block" href="/" data-survey-link="">
+                            <svg width="18" height="18" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            <span>Beri Ulasan Sekarang</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.5rem 2rem; margin-bottom: 2.5rem; box-shadow: var(--shadow-sm);">
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-primary);">
+                        Rincian Penilaian Aspek (Survei Standar Pengelola Kantin)
+                    </h3>
+                    <div id="detailAspectGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;"></div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                    <div>
+                        <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-primary); margin: 0;">Daftar Menu &amp; Harga</h2>
+                        <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0;">Pilihan makanan, minuman, dan snack halal &amp; higienis</p>
+                    </div>
+                    <span id="detailMenuCountBadge" class="badge badge-info" style="font-size: 0.85rem;">5 Menu Tersedia</span>
+                </div>
+
+                <div class="menu-cat-tabs" id="detailMenuCatTabs">
+                    <button type="button" class="menu-cat-tab active" data-cat="ALL">Semua</button>
+                    <button type="button" class="menu-cat-tab" data-cat="Makanan">Makanan</button>
+                    <button type="button" class="menu-cat-tab" data-cat="Minuman">Minuman</button>
+                    <button type="button" class="menu-cat-tab" data-cat="Snack">Snack</button>
+                </div>
+                <div class="menu-grid" id="detailMenuGrid"></div>
+
+                <div style="margin-top: 3rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <div>
+                            <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-primary); margin: 0;">Ulasan Sivitas Akademika</h2>
+                            <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0;">Tanggapan langsung mahasiswa dan pengunjung tanpa login</p>
+                        </div>
+                        <a class="btn btn-secondary" href="/" data-survey-link="">
+                            <svg width="16" height="16" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"></path></svg>
+                            <span>Tulis Ulasan</span>
+                        </a>
+                    </div>
+
+                    <div id="detailReviewsList" style="display: flex; flex-direction: column; gap: 1rem;"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="screen-public-review" class="ui-screen" tabindex="-1" hidden="">
+            <div class="container" style="max-width: 680px; padding-top: 1.25rem; padding-bottom: 4rem;">
+                <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); text-align: center;">
+                    <div style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <span id="reviewFormStallBadge" class="badge-stall">Stand B-01</span>
+                        <span id="reviewFormCampusBadge" class="badge-campus">Kampus B UNUSA</span>
+                    </div>
+                    <h1 id="reviewFormTenantName" style="font-size: 1.5rem; font-weight: 800; color: var(--unusa-green); margin-bottom: 0.25rem;">
+                        Warung Cak Min
+                    </h1>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">
+                        Survei Kepuasan Pelanggan • Terima kasih atas penilaian Anda untuk peningkatan mutu SiKantin UNUSA
+                    </p>
+                </div>
+
+                <p class="status-note">Simulasi survei. Isian hanya tampil di perangkat ini.</p><form id="publicReviewForm" method="dialog">
+                    <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;">
+                        <label class="form-label" style="font-size: 0.95rem;">Status Anda di UNUSA:</label>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 0.8rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; background: #fafafa;">
+                                <input type="radio" name="customer_type" value="Mahasiswa" checked>
+                                <span>Mahasiswa</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 0.8rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; background: #fafafa;">
+                                <input type="radio" name="customer_type" value="Dosen">
+                                <span>Dosen</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 0.8rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; background: #fafafa;">
+                                <input type="radio" name="customer_type" value="Tenaga Kependidikan">
+                                <span>Tenaga Kependidikan</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 0.8rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer; background: #fafafa;">
+                                <input type="radio" name="customer_type" value="Pengunjung">
+                                <span>Pengunjung</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.65rem; flex-wrap:wrap; gap:0.5rem;">
+                            <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-primary); margin: 0;">
+                                Penilaian Aspek (Wajib Pilih 1–5 Bintang)
+                            </h3>
+                            <small style="color: var(--text-muted);">Ketuk bintang sesuai pengalaman Anda</small>
+                        </div>
+                        <div class="rating-unified-card">
+
+                        <div class="rating-group">
+                            <div class="rating-header">
+                                <span class="rating-label">Cita Rasa &amp; Kelezatan</span>
+                                <span class="rating-feedback" style="font-size:0.82rem; color:var(--text-muted); font-weight:600;">Belum dipilih</span>
+                            </div>
+                            <div class="rating-desc">Bagaimana tingkat cita rasa dan kelezatan hidangan yang Anda nikmati?</div>
+                            <div class="star-picker">
+                                <input type="radio" id="rating_rasa_5" name="rating_rasa" value="5" required="" aria-label="5 dari 5">
+                                <label for="rating_rasa_5" title="5 Bintang (Sangat Puas)">★</label>
+                                <input type="radio" id="rating_rasa_4" name="rating_rasa" value="4" required="" aria-label="4 dari 5">
+                                <label for="rating_rasa_4" title="4 Bintang (Puas)">★</label>
+                                <input type="radio" id="rating_rasa_3" name="rating_rasa" value="3" required="" aria-label="3 dari 5">
+                                <label for="rating_rasa_3" title="3 Bintang (Cukup)">★</label>
+                                <input type="radio" id="rating_rasa_2" name="rating_rasa" value="2" required="" aria-label="2 dari 5">
+                                <label for="rating_rasa_2" title="2 Bintang (Kurang)">★</label>
+                                <input type="radio" id="rating_rasa_1" name="rating_rasa" value="1" required="" aria-label="1 dari 5">
+                                <label for="rating_rasa_1" title="1 Bintang (Sangat Kurang)">★</label>
+                            </div>
+                        </div>
+
+                        <div class="rating-group">
+                            <div class="rating-header">
+                                <span class="rating-label">Kebersihan &amp; Higienitas</span>
+                                <span class="rating-feedback" style="font-size:0.82rem; color:var(--text-muted); font-weight:600;">Belum dipilih</span>
+                            </div>
+                            <div class="rating-desc">Bagaimana tingkat kebersihan stan, peralatan makan, dan kerapian penyajian?</div>
+                            <div class="star-picker">
+                                <input type="radio" id="rating_kebersihan_5" name="rating_kebersihan" value="5" required="" aria-label="5 dari 5">
+                                <label for="rating_kebersihan_5" title="5 Bintang">★</label>
+                                <input type="radio" id="rating_kebersihan_4" name="rating_kebersihan" value="4" required="" aria-label="4 dari 5">
+                                <label for="rating_kebersihan_4" title="4 Bintang">★</label>
+                                <input type="radio" id="rating_kebersihan_3" name="rating_kebersihan" value="3" required="" aria-label="3 dari 5">
+                                <label for="rating_kebersihan_3" title="3 Bintang">★</label>
+                                <input type="radio" id="rating_kebersihan_2" name="rating_kebersihan" value="2" required="" aria-label="2 dari 5">
+                                <label for="rating_kebersihan_2" title="2 Bintang">★</label>
+                                <input type="radio" id="rating_kebersihan_1" name="rating_kebersihan" value="1" required="" aria-label="1 dari 5">
+                                <label for="rating_kebersihan_1" title="1 Bintang">★</label>
+                            </div>
+                        </div>
+
+                        <div class="rating-group">
+                            <div class="rating-header">
+                                <span class="rating-label">Kesesuaian Porsi</span>
+                                <span class="rating-feedback" style="font-size:0.82rem; color:var(--text-muted); font-weight:600;">Belum dipilih</span>
+                            </div>
+                            <div class="rating-desc">Apakah porsi makanan atau minuman yang disajikan sesuai dan memuaskan?</div>
+                            <div class="star-picker">
+                                <input type="radio" id="rating_porsi_5" name="rating_porsi" value="5" required="" aria-label="5 dari 5">
+                                <label for="rating_porsi_5" title="5 Bintang">★</label>
+                                <input type="radio" id="rating_porsi_4" name="rating_porsi" value="4" required="" aria-label="4 dari 5">
+                                <label for="rating_porsi_4" title="4 Bintang">★</label>
+                                <input type="radio" id="rating_porsi_3" name="rating_porsi" value="3" required="" aria-label="3 dari 5">
+                                <label for="rating_porsi_3" title="3 Bintang">★</label>
+                                <input type="radio" id="rating_porsi_2" name="rating_porsi" value="2" required="" aria-label="2 dari 5">
+                                <label for="rating_porsi_2" title="2 Bintang">★</label>
+                                <input type="radio" id="rating_porsi_1" name="rating_porsi" value="1" required="" aria-label="1 dari 5">
+                                <label for="rating_porsi_1" title="1 Bintang">★</label>
+                            </div>
+                        </div>
+
+                        <div class="rating-group">
+                            <div class="rating-header">
+                                <span class="rating-label">Kualitas Bahan Baku</span>
+                                <span class="rating-feedback" style="font-size:0.82rem; color:var(--text-muted); font-weight:600;">Belum dipilih</span>
+                            </div>
+                            <div class="rating-desc">Bagaimana kesegaran, kematangan, dan mutu bahan makanan yang disajikan?</div>
+                            <div class="star-picker">
+                                <input type="radio" id="rating_kualitas_5" name="rating_kualitas" value="5" required="" aria-label="5 dari 5">
+                                <label for="rating_kualitas_5" title="5 Bintang">★</label>
+                                <input type="radio" id="rating_kualitas_4" name="rating_kualitas" value="4" required="" aria-label="4 dari 5">
+                                <label for="rating_kualitas_4" title="4 Bintang">★</label>
+                                <input type="radio" id="rating_kualitas_3" name="rating_kualitas" value="3" required="" aria-label="3 dari 5">
+                                <label for="rating_kualitas_3" title="3 Bintang">★</label>
+                                <input type="radio" id="rating_kualitas_2" name="rating_kualitas" value="2" required="" aria-label="2 dari 5">
+                                <label for="rating_kualitas_2" title="2 Bintang">★</label>
+                                <input type="radio" id="rating_kualitas_1" name="rating_kualitas" value="1" required="" aria-label="1 dari 5">
+                                <label for="rating_kualitas_1" title="1 Bintang">★</label>
+                            </div>
+                        </div>
+
+                        <div class="rating-group">
+                            <div class="rating-header">
+                                <span class="rating-label">Kemudahan Pembayaran</span>
+                                <span class="rating-feedback" style="font-size:0.82rem; color:var(--text-muted); font-weight:600;">Belum dipilih</span>
+                            </div>
+                            <div class="rating-desc">Bagaimana kemudahan, kecepatan, dan fleksibilitas metode pembayaran (Tunai/QRIS)?</div>
+                            <div class="star-picker">
+                                <input type="radio" id="rating_cara_pembayaran_5" name="rating_cara_pembayaran" value="5" required="" aria-label="5 dari 5">
+                                <label for="rating_cara_pembayaran_5" title="5 Bintang">★</label>
+                                <input type="radio" id="rating_cara_pembayaran_4" name="rating_cara_pembayaran" value="4" required="" aria-label="4 dari 5">
+                                <label for="rating_cara_pembayaran_4" title="4 Bintang">★</label>
+                                <input type="radio" id="rating_cara_pembayaran_3" name="rating_cara_pembayaran" value="3" required="" aria-label="3 dari 5">
+                                <label for="rating_cara_pembayaran_3" title="3 Bintang">★</label>
+                                <input type="radio" id="rating_cara_pembayaran_2" name="rating_cara_pembayaran" value="2" required="" aria-label="2 dari 5">
+                                <label for="rating_cara_pembayaran_2" title="2 Bintang">★</label>
+                                <input type="radio" id="rating_cara_pembayaran_1" name="rating_cara_pembayaran" value="1" required="" aria-label="1 dari 5">
+                                <label for="rating_cara_pembayaran_1" title="1 Bintang">★</label>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;">
+                        <label class="form-label" style="font-size: 0.95rem;">
+                            Menu yang Anda Beli / Nikmati (Bisa pilih lebih dari satu):
+                        </label>
+                        <div id="reviewFormMenusCheckboxes" class="menu-chip-group"></div>
+                    </div>
+
+                    <div id="customSurveyQuestionsContainer"></div>
+
+                    <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;">
+                        <label class="form-label" for="reviewCommentInput" style="font-size: 0.95rem;">
+                            Komentar, Kesan, atau Masukan untuk Tenant:
+                        </label>
+                        <textarea id="reviewCommentInput" name="comment" rows="3" class="form-control" placeholder="Tulis masukan Anda secara jujur dan membangun untuk perbaikan layanan tenant ini..."></textarea>
+                        </div>
+
+                    <div class="antispam-assurance">
+                        <svg width="18" height="18" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+                        </div>
+
+                    <button type="submit" class="btn btn-primary btn-block" style="padding: 1rem; font-size: 1.05rem; border-radius: var(--radius-full); box-shadow: var(--shadow-md);">Lihat ringkasan pratinjau</button>
+
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <a href="/" style="font-size: 0.85rem; color: var(--text-secondary);" data-detail-link="">
+                            ← Batalkan &amp; Kembali ke Profil Tenant
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section id="screen-public-review-success" class="ui-screen" tabindex="-1" hidden="">
+            <div class="container" style="max-width: 580px; padding: 3rem 1rem; text-align: center;">
+                <div style="background: white; border-radius: var(--radius-lg); border: 1px solid var(--border-color); padding: 3rem 2rem; box-shadow: var(--shadow-md);">
+                    <div style="width: 72px; height: 72px; background: #dcfce7; color: #166534; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                        <svg width="36" height="36" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+
+                    <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.5rem;">Ringkasan simulasi</h1>
+
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.5;">Simulasi untuk <strong id="reviewSuccessTenantName">Warung Cak Min</strong>. Penilaian ini hanya tampil di perangkat Anda.</p>
+
+                    <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 2rem;">
+                        <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 0.25rem;">
+                            Skor Rating yang Anda Berikan
+                        </div>
+                        <div style="font-size: 2.25rem; font-weight: 800; color: var(--unusa-green);">
+                            <span id="reviewSuccessScore">5.0</span> <span style="font-size: 1.1rem; color: var(--text-muted);">/ 5.0</span>
+                        </div>
+                        <div id="reviewSuccessStars" style="margin-top: 0.25rem;"></div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <a href="/" class="btn btn-secondary btn-block" data-detail-link="">
+                            <span id="reviewSuccessBackTenantBtn">Lihat Halaman Warung Cak Min</span>
+                        </a>
+                        <a href="/" class="btn btn-primary btn-block">
+                            <span>Kembali ke Katalog SiKantin UNUSA</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="screen-tenant-login" class="ui-screen" tabindex="-1" hidden="">
+            <div class="container" style="max-width: 440px; padding-top: 3rem; padding-bottom: 5rem;">
+                <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 2.25rem 2rem; box-shadow: var(--shadow-md);">
+                    <div style="text-align: center; margin-bottom: 1.75rem;">
+                        <img src="/assets/logo-unusa.png" data-asset-path="assets/images/unusa-logo.png" alt="Logo UNUSA" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 1rem; filter: drop-shadow(0 4px 12px rgba(0, 104, 55, 0.2));">
+                        <h1 id="authCardTitle" style="font-size: 1.45rem; font-weight: 800; color: var(--text-primary); margin: 0.75rem 0 0.3rem;">
+                            Masuk ke SiKantin UNUSA
+                        </h1>
+                        <p id="authCardSubtitle" style="font-size: 0.86rem; color: var(--text-secondary); margin: 0;">
+                            Gunakan akun sivitas, pemilik tenant, atau pengelola kantin.
+                        </p>
+                    </div>
+
+                    <p id="authNotice" class="status-note" role="status"></p><form id="unifiedLoginForm" method="dialog">
+                        <div class="form-group">
+                            <label class="form-label" for="authLoginIdentifier">Email</label>
+                            <input type="email" id="authLoginIdentifier" class="form-control" required placeholder="nama@student.unusa.ac.id" autocomplete="username">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.4rem;">
+                            <label class="form-label" for="authLoginPassword">Kata Sandi</label>
+                            <input type="password" id="authLoginPassword" class="form-control" placeholder="Tersedia setelah layanan akun aktif" autocomplete="current-password" disabled>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block" style="padding: 0.78rem; font-size: 0.95rem;" disabled>
+                            Masuk
+                        </button>
+
+                        <div style="text-align: center; margin-top: 1.25rem; padding-top: 1.1rem; border-top: 1px solid var(--border-color); font-size: 0.86rem; color: var(--text-secondary);">
+                            Belum punya akun?
+                            <a style="background:none; border:0; padding:0; font:inherit; font-weight:700; color:var(--unusa-green); cursor:pointer;" href="/daftar">Daftar sekarang</a>
+                        </div>
+                    </form>
+
+                    <form id="unifiedRegisterForm" style="display: none;" method="dialog">
+                        <div class="form-group">
+                            <label class="form-label" for="authRegName">Nama Lengkap</label>
+                            <input type="text" id="authRegName" class="form-control" required placeholder="cth: Ahmad Fauzi">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="authRegEmail">Email UNUSA / Pribadi</label>
+                            <input type="email" id="authRegEmail" class="form-control" required placeholder="nama@student.unusa.ac.id" aria-describedby="domainHint domainError">
+                        <small id="domainHint" class="field-hint">Gunakan gmail.com, unusa.ac.id, atau student.unusa.ac.id.</small><span class="field-error" id="domainError" aria-live="polite"></span></div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="authRegStatus">Status di UNUSA</label>
+                            <select id="authRegStatus" class="form-control" required>
+                                <option value="Mahasiswa">Mahasiswa</option>
+                                <option value="Dosen">Dosen</option>
+                                <option value="Tenaga Kependidikan">Tenaga Kependidikan</option>
+                                <option value="Pengunjung">Pengunjung</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.25rem;">
+                            <label class="form-label" for="authRegPassword">Kata Sandi</label>
+                            <input type="password" id="authRegPassword" class="form-control" minlength="6" placeholder="Tersedia setelah layanan akun aktif" disabled>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block" style="padding: 0.78rem; font-size: 0.95rem;" disabled>
+                            Daftar Sekarang
+                        </button>
+
+                        <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; margin: 0.9rem 0 0; text-align: center;">
+                            Pendaftaran ini khusus sivitas &amp; pengunjung. Akun <strong>Pengelola Kantin</strong> didaftarkan langsung oleh sistem dan akun <strong>Pemilik Tenant</strong> dibuatkan oleh Pengelola Kantin.
+                        </p>
+
+                        <div style="text-align: center; margin-top: 1.15rem; padding-top: 1rem; border-top: 1px solid var(--border-color); font-size: 0.86rem; color: var(--text-secondary);">
+                            Sudah punya akun?
+                            <a style="background:none; border:0; padding:0; font:inherit; font-weight:700; color:var(--unusa-green); cursor:pointer;" href="/masuk">Masuk</a>
+                        </div>
+                    </form>
+                </div>
+
+                </div>
+        </section>
+
+        <section tabindex="-1" id="screen-tidak-ditemukan" class="ui-screen" hidden><div class="container route-message"><h1>Halaman tidak ditemukan</h1><p>Periksa tautan atau pilih stand dari katalog.</p><a href="/" class="btn btn-primary">Buka katalog</a></div></section><section class="ui-screen" id="screen-internal" tabindex="-1" hidden></section></main><footer style="background: white; border-top: 1px solid var(--border-color); margin-top: 4rem; padding: 2.5rem 0;">
+            <div class="container">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <img src="/assets/logo-unusa.png" data-asset-path="assets/images/unusa-logo.png" alt="Logo UNUSA" style="width: 48px; height: 48px; object-fit: contain; flex-shrink: 0;">
+                        <div>
+                            <div style="font-weight: 800; color: var(--unusa-green); font-size: 1.1rem; margin-bottom: 0.25rem;">
+                                Sistem Informasi Katalog Tenant SiKantin UNUSA
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">
+                                Universitas Nahdlatul Ulama Surabaya • Kampus A, Kampus B, dan Kampus C
+                            </p>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 1.25rem; font-size: 0.85rem; color: var(--text-secondary);">
+                        <a href="/#tenantGrid">Katalog Menu</a>
+                        <a href="/masuk">Masuk</a>
+                        <a href="/daftar">Daftar Akun</a>
+                    <a href="/pratinjau/admin">Pratinjau pengelola</a><a href="/pratinjau/pemilik">Pratinjau pemilik</a></div>
+                </div>
+            </div>
+        </footer>
+    </div></body></html>

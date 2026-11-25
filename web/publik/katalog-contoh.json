@@ -1,0 +1,512 @@
+[
+  {
+    "slug": "warung-nasi-bu-siti",
+    "nama": "Warung Nasi Bu Siti",
+    "kampus": "A",
+    "stand": "Stand A-01",
+    "deskripsi": "Menyediakan aneka nasi campur khas Jawa Timur, sayur lodeh, ayam bumbu rujak, dan tempe orek lezat dengan harga mahasiswa.",
+    "foto": "/assets/stand-1.jpg",
+    "menu": [
+      {
+        "nama": "Nasi Campur Spesial Bu Siti",
+        "kategori": "Makanan",
+        "harga": 15000,
+        "deskripsi": "Nasi putih dengan lauk ayam suwir bumbu rujak, telur pindang setengah, tempe orek, mie gurih, dan sambal terasi.",
+        "foto": "/assets/geprek-bakso.jpg",
+        "andalan": true
+      },
+      {
+        "nama": "Nasi Sayur Lodeh Tahu Tempe",
+        "kategori": "Makanan",
+        "harga": 12000,
+        "deskripsi": "Sayur lodeh santan gurih dengan isian labu siam, tahu, tempe, dilengkapi kerupuk dan sambal.",
+        "foto": "/assets/minuman-camilan.jpg",
+        "andalan": false
+      },
+      {
+        "nama": "Es Teh Manis Melati",
+        "kategori": "Minuman",
+        "harga": 4000,
+        "deskripsi": "Teh melati dingin dengan aroma wangi dan manis pas.",
+        "foto": "/assets/minuman-camilan.jpg",
+        "andalan": false
+      }
+    ],
+    "ulasan": [
+      {
+        "komentar": "Lauk nasi campurnya bervariasi, harga sangat ramah di kantong mahasiswa. Ibu Siti selalu ramah melayani.",
+        "status": "Mahasiswa",
+        "aspek": [
+          5,
+          4,
+          5,
+          4,
+          5
+        ],
+        "waktu": "2026-10-15T12:20:00+07:00"
+      },
+      {
+        "komentar": "Sayur lodehnya sedap dan hangat, pas buat sarapan sebelum kelas pagi.",
+        "status": "Tenaga Kependidikan",
+        "aspek": [
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "waktu": "2026-10-16T09:35:12+07:00"
+      },
+      {
+        "komentar": "Bumbu rujak ayamnya meresap sempurna. Bersih dan higienis.",
+        "status": "Dosen",
+        "aspek": [
+          5,
+          5,
+          4,
+          5,
+          4
+        ],
+        "waktu": "2026-10-17T13:05:40+07:00"
+      }
+    ]
+  },
+  {
+    "slug": "ayam-geprek-juara-unusa",
+    "nama": "Ayam Geprek Juara UNUSA",
+    "kampus": "A",
+    "stand": "Stand A-02",
+    "deskripsi": "Ayam geprek krispi gurih dengan sambal korek bawang segar level pedas 1-10. Bebas ambil nasi & es teh sepuasnya.",
+    "foto": "/assets/stand-2.jpg",
+    "menu": [
+      {
+        "nama": "Paket Geprek Juara + Es Teh",
+        "kategori": "Makanan",
+        "harga": 16000,
+        "deskripsi": "Nasi putih hangat, ayam fillet krispi geprek sambal bawang pedas nampol level 1-5, lalapan timun, plus es teh jumbo.",
+        "foto": "/assets/minuman-camilan.jpg",
+        "andalan": true
+      },
+      {
+        "nama": "Ayam Geprek Saus Keju",
+        "kategori": "Makanan",
+        "harga": 18000,
+        "deskripsi": "Ayam geprek krispi dibalut saus keju creamy gurih leleh.",
+        "foto": "/assets/geprek-bakso.jpg",
+        "andalan": true
+      },
+      {
+        "nama": "Es Jeruk Peras Asli",
+        "kategori": "Minuman",
+        "harga": 5000,
+        "deskripsi": "Jeruk peras manis alami segar tanpa pemanis buatan.",
+        "foto": "/assets/minuman-camilan.jpg",
+        "andalan": false
+      }
+    ],
+    "ulasan": [
+      {
+        "komentar": "Sambal koreknya pedas nagih! Ayamnya masih krispi panas baru digoreng.",
+        "status": "Mahasiswa",
+        "aspek": [
+          5,
+          4,
+          5,
+          4,
+          5
+        ],
+        "waktu": "2026-10-18T12:05:12+07:00"
+      },
+      {
+        "komentar": "Saus kejunya gurih manis, porsi kenyang pol.",
+        "status": "Mahasiswa",
+        "aspek": [
+          4,
+          4,
+          4,
+          4,
+          5
+        ],
+        "waktu": "2026-10-19T14:15:30+07:00"
+      }
+    ]
+  },
+  {
+    "slug": "mie-bakso-barokah",
+    "nama": "Mie & Bakso Barokah",
+    "kampus": "A",
+    "stand": "Stand A-03",
+    "deskripsi": "Bakso urat sapi asli tanpa bahan pengawet, mie ayam pangsit kuah bening kaldu sapi segar.",
+    "foto": "/assets/stand-3.jpg",
+    "menu": [
+      {
+        "nama": "Bakso Urat Campur Komplit",
+        "kategori": "Makanan",
+        "harga": 16000,
+        "deskripsi": "3 bakso urat sapi super, 2 bakso halus, tahu bakso goreng, siomay basah, kuah kaldu sapi mantap tabur bawang goreng & seledri.",
+        "foto": "/assets/geprek-bakso.jpg",
+        "andalan": true
+      },
+      {
+        "nama": "Mie Ayam Pangsit Kuah",
+        "kategori": "Makanan",
+        "harga": 13000,
+        "deskripsi": "Mie kenyal olahan sendiri dengan topping potongan daging ayam kecap gurih, sawi hijau segar, dan kerupuk pangsit renyah.",
+        "foto": "/assets/minuman-camilan.jpg",
+        "andalan": true
+      },
+      {
+        "nama": "Es Degan Gula Aren",
+        "kategori": "Minuman",
+        "harga": 6000,
+        "deskripsi": "Kelapa muda asli dengan pemanis sirup gula aren alami.",
+        "foto": "/assets/minuman-camilan.jpg",
+        "andalan": false
+      }
+    ],
+    "ulasan": [
+      {
+        "komentar": "Bakso uratnya kenyal dan berasa daging sapinya. Kuahnya gurih kaldu asli.",
+        "status": "Mahasiswa",
+        "aspek": [
+          5,
+          5,
+          4,
+          5,
+          4
+        ],
+        "waktu": "2026-10-18T11:40:00+07:00"
+      }
+    ]
+  },
+  {
+    "slug": "penyetan-mas-doni",
+    "nama": "Penyetan Mas Doni",
+    "kampus": "A",
+    "stand": "Stand A-04",
+    "deskripsi": "Spesialis penyetan Surabaya sambal terasi mentah dan matang: lele goreng, tempe tahu, bebek goreng renyah.",
+    "foto": "/assets/stand-4.jpg",
+    "menu": [],
+    "ulasan": []
+  },
+  {
+    "slug": "soto-lamongan-cak-har",
+    "nama": "Soto Lamongan Cak Har",
+    "kampus": "A",
+    "stand": "Stand A-05",
+    "deskripsi": "Soto ayam Lamongan khas kuah kuning gurih berlimpah koya gurih kerupuk udang.",
+    "foto": "/assets/stand-5.jpg",
+    "menu": [],
+    "ulasan": []
+  },
+  {
+    "slug": "aneka-jus-buah-sehat",
+    "nama": "Aneka Jus & Buah Sehat",
+    "kampus": "A",
+    "stand": "Stand A-06",
+    "deskripsi": "Jus buah murni segar tanpa pemanis buatan: alpukat, mangga, jambu, smoothies pisang naga.",
+    "foto": "/assets/stand-6.jpg",
+    "menu": [],
+    "ulasan": []
+  },
+  {
+    "slug": "dapur-nusantara",
+    "nama": "Dapur Nusantara",
+    "kampus": "A",
+    "stand": "Stand A-07",
+    "deskripsi": "Lontong sayur Padang, tahu telur bumbu petis khas Surabaya, dan nasi kuning komplit.",
+    "foto": "/assets/stand-7.jpg",
+    "menu": [],
+    "ulasan": []
+  },
+  {
+    "slug": "kebab-burger-kampus",
+    "nama": "Kebab & Burger Kampus",
+    "kampus": "A",
+    "stand": "Stand A-08",
+    "deskripsi": "Kebab daging sapi lada hitam, burger keju, hotdog sosis panggang, dan kentang goreng renyah.",
+    "foto": "/assets/stand-8.jpg",
+    "menu": [],
+    "ulasan": []
+  },
+  {
+    "slug": "snack-minuman-berkah",
+    "nama": "Snack & Minuman Berkah",
+    "kampus": "A",
+    "stand": "Stand A-09",
+    "deskripsi": "Aneka jajanan pasar higienis, cireng bumbu rujak, dimsum ayam kukus, teh tarik es, dan kopi tubruk.",
+    "foto": "/assets/stand-9.jpg",
+    "menu": [],
+    "ulasan": []
+  },
+  {
+    "slug": "warung-cak-min",
+    "nama": "Warung Cak Min",
+    "kampus": "B",
+    "stand": "Stand B-01",
+    "deskripsi": "Tenant legendaris Kampus B UNUSA! Menyajikan Soto Madura daging sapi empuk dengan kuah rempah khas dan Rawon hitam mantap kaya kluwek.",
+    "foto": "/assets/stand-10.jpg",
+    "menu": [
+      {
+        "nama": "Soto Madura Cak Min Daging Sapi",
+        "kategori": "Makanan",
+        "harga": 18000,
+        "deskripsi": "Menu andalan Cak Min! Soto daging sapi empuk khas Madura dengan kuah kaldu kaya rempah, daun bawang, seledri, dan emping renyah.",
+        "foto": "/assets/soto-rawon.jpg",
+        "andalan": true
+      },
+      {
+        "nama": "Rawon Daging Sapi Kluwek Spesial",
+        "kategori": "Makanan",
+        "harga": 20000,
+        "deskripsi": "Rawon kuah hitam pekat kaya kluwek pilihan, potongan daging sandung lamur empuk, tauge pendek segar, plus sambal terasi pedas.",
+        "foto": "/assets/soto-rawon.jpg",
+        "andalan": true
+      },
+      {
+        "nama": "Nasi Putih Hangat Porsi Jumbo",
+        "kategori": "Makanan",
+        "harga": 4000,
+        "deskripsi": "Nasi putih pulen hangat disajikan dalam piring terpisah.",
+        "foto": "/assets/geprek-bakso.jpg",
+        "andalan": false
+      },
+      {
+        "nama": "Es Sinom Segar Tradisional Cak Min",
+        "kategori": "Minuman",
+        "harga": 5000,
+        "deskripsi": "Minuman tradisional daun asam muda dan kunyit asli ramuan Cak Min, segar menyehatkan tubuh.",
+        "foto": "/assets/minuman-camilan.jpg",
+        "andalan": true
+      },
+      {
+        "nama": "Es Beras Kencur",
+        "kategori": "Minuman",
+        "harga": 5000,
+        "deskripsi": "Minuman herbal beras kencur beraroma wangi, manis hangat menyegarkan.",
+        "foto": "/assets/minuman-camilan.jpg",
+        "andalan": false
+      }
+    ],
+    "ulasan": [
+      {
+        "komentar": "Sotonya enak banget, kuahnya benar-benar gurih rempah Madura asli! Dagingnya empuk dan porsinya mengenyangkan. Pelayanan Cak Min ramah sekali.",
+        "status": "Mahasiswa",
+        "aspek": [
+          5,
+          5,
+          5,
+          5,
+          5
+        ],
+        "waktu": "2026-10-15T12:15:20+07:00"
+      },
+      {
+        "komentar": "Rawon terenak di Kampus B! Kluweknya pas tidak pahit, dagingnya banyak. Kalau pas jam istirahat siang antri banget tapi sebanding dengan rasanya.",
+        "status": "Dosen",
+        "aspek": [
+          5,
+          4,
+          5,
+          5,
+          4
+        ],
+        "waktu": "2026-10-16T12:45:10+07:00"
+      },
+      {
+        "komentar": "Pembayaran QRIS cepat dan tidak ribet. Soto hangat pas sekali dinikmati waktu istirahat kuliah.",
+        "status": "Mahasiswa",
+        "aspek": [
+          4,
+          4,
+          4,
+          4,
+          5
+        ],
+        "waktu": "2026-10-17T13:10:05+07:00"
+      },
+      {
+        "komentar": "Es sinomnya juara, seger banget dan manisnya pas alami. Sangat cocok setelah makan soto!",
+        "status": "Tenaga Kependidikan",
+        "aspek": [
+          5,
+          5,
+          4,
+          5,
+          5
+        ],
+        "waktu": "2026-10-18T11:50:33+07:00"
+      },
+      {
+        "komentar": "Porsi pas buat makan siang, sambal terasinya mantap!",
+        "status": "Pengunjung",
+        "aspek": [
+          5,
+          5,
+          5,
+          5,
+          5
+        ],
+        "waktu": "2026-10-19T13:25:00+07:00"
+      },
+      {
+        "komentar": "Rasa enak, tapi kalau jam 12 meja di stan agak cepat penuh. Mohon ditambah tisu di meja.",
+        "status": "Mahasiswa",
+        "aspek": [
+          4,
+          3,
+          5,
+          4,
+          4
+        ],
+        "waktu": "2026-10-20T12:30:15+07:00"
+      }
+    ]
+  },
+  {
+    "slug": "bu-lestari-masakan-jawa",
+    "nama": "Bu Lestari Masakan Jawa",
+    "kampus": "B",
+    "stand": "Stand B-02",
+    "deskripsi": "Aneka olahan tumisan sayur segar, nasi goreng babat, mie goreng Jawa, dan ayam kecap manis gurih.",
+    "foto": "/assets/stand-11.jpg",
+    "menu": [],
+    "ulasan": []
+  },
+  {
+    "slug": "ayam-krispi-jemursari",
+    "nama": "Ayam Krispi Jemursari",
+    "kampus": "B",
+    "stand": "Stand B-03",
+    "deskripsi": "Fried chicken renyah bumbu meresap hingga ke tulang dengan aneka saus keju, barbecue, dan saus lava pedas.",
+    "foto": "/assets/stand-12.jpg",
+    "menu": [],
+    "ulasan": []
+  },
+  {
+    "slug": "kedai-kopi-toast-unusa",
+    "nama": "Kedai Kopi & Toast UNUSA",
+    "kampus": "B",
+    "stand": "Stand B-04",
+    "deskripsi": "Kopi susu aren kekinian, cold brew, matcha oat latte, dan roti bakar srikaya keju tebal cocok untuk diskusi skripsi.",
+    "foto": "/assets/stand-13.jpg",
+    "menu": [
+      {
+        "nama": "Kopi Susu Gula Aren UNUSA",
+        "kategori": "Minuman",
+        "harga": 12000,
+        "deskripsi": "Espresso arabika blend dengan fresh milk creamy dan sirup gula aren murni.",
+        "foto": "/assets/minuman-camilan.jpg",
+        "andalan": true
+      },
+      {
+        "nama": "Matcha Green Tea Latte",
+        "kategori": "Minuman",
+        "harga": 14000,
+        "deskripsi": "Bubuk matcha murni berpadu susu segar dingin lembut.",
+        "foto": "/assets/minuman-camilan.jpg",
+        "andalan": false
+      },
+      {
+        "nama": "Roti Bakar Coklat Keju Crunchy",
+        "kategori": "Snack",
+        "harga": 12000,
+        "deskripsi": "Roti tebal dipanggang dengan olesan butter, limpahan keju cheddar parut dan coklat crunchy.",
+        "foto": "/assets/minuman-camilan.jpg",
+        "andalan": true
+      }
+    ],
+    "ulasan": [
+      {
+        "komentar": "Kopi susu terenak di kampus, rotinya renyah dan kejunya melimpah. Tempat favorit buat nugas.",
+        "status": "Mahasiswa",
+        "aspek": [
+          5,
+          5,
+          4,
+          5,
+          5
+        ],
+        "waktu": "2026-10-19T15:10:44+07:00"
+      }
+    ]
+  },
+  {
+    "slug": "pecel-madiun-bu-sri",
+    "nama": "Pecel Madiun Bu Sri",
+    "kampus": "B",
+    "stand": "Stand B-05",
+    "deskripsi": "Nasi pecel pincuk bumbu kacang Madiun asli, rempeyek renyah, serundeng, dan lauk telur asin / tempe bacem.",
+    "foto": "/assets/stand-14.jpg",
+    "menu": [],
+    "ulasan": []
+  },
+  {
+    "slug": "kantin-sehat-gizi",
+    "nama": "Kantin Sehat Gizi",
+    "kampus": "C",
+    "stand": "Stand C-01",
+    "deskripsi": "Bento sehat rendah kalori tinggi protein dikurasi sesuai standar gizi seimbang: ayam panggang rosemary, salad buah madu yogurt, brown rice.",
+    "foto": "/assets/stand-15.jpg",
+    "menu": [
+      {
+        "nama": "Bento Ayam Panggang Brown Rice",
+        "kategori": "Makanan",
+        "harga": 20000,
+        "deskripsi": "Dada ayam panggang herb tanpa kulit, nasi merah kaya serat, brokoli wortel kukus, saus madu mustard sehat.",
+        "foto": "/assets/geprek-bakso.jpg",
+        "andalan": true
+      },
+      {
+        "nama": "Salad Buah Segar Yogurt Madu",
+        "kategori": "Snack",
+        "harga": 14000,
+        "deskripsi": "Potongan apel, melon, semangka, anggur dengan dressing Greek yogurt dan madu murni tabur keju.",
+        "foto": "/assets/minuman-camilan.jpg",
+        "andalan": true
+      },
+      {
+        "nama": "Infused Water Lemon Mint Detox",
+        "kategori": "Minuman",
+        "harga": 5000,
+        "deskripsi": "Air mineral segar dengan irisan lemon impor dan daun mint higienis.",
+        "foto": "/assets/minuman-camilan.jpg",
+        "andalan": false
+      }
+    ],
+    "ulasan": [
+      {
+        "komentar": "Sangat mengapresiasi adanya menu sehat berstandar gizi ini di Kampus C! Rasanya tetap enak dan segar.",
+        "status": "Dosen",
+        "aspek": [
+          5,
+          5,
+          5,
+          5,
+          5
+        ],
+        "waktu": "2026-10-20T12:12:00+07:00"
+      }
+    ]
+  },
+  {
+    "slug": "geprek-penyetan-bu-dewi",
+    "nama": "Geprek & Penyetan Bu Dewi",
+    "kampus": "C",
+    "stand": "Stand C-02",
+    "deskripsi": "Penyetan lele, ayam ungkep goreng rempah, tahu tempe, dan sambal mangga muda musiman.",
+    "foto": "/assets/stand-16.jpg",
+    "menu": [],
+    "ulasan": []
+  },
+  {
+    "slug": "drink-pastry-corner",
+    "nama": "Drink & Pastry Corner",
+    "kampus": "C",
+    "stand": "Stand C-03",
+    "deskripsi": "Aneka minuman segar es leci tea, roti maryam keju coklat lumer, donat kentang lembut, dan aneka yogurt dingin.",
+    "foto": "/assets/stand-17.jpg",
+    "menu": [],
+    "ulasan": []
+  }
+]
