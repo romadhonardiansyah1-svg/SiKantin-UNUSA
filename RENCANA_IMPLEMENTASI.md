@@ -12,9 +12,20 @@ HTML final mengatur tampilan. SKPL bagian 1–4 mengatur hak akses. Untuk alur d
 
 ## Empat tahap pengerjaan
 
-**Frontend yang sudah tersedia.** Katalog, detail tenant, formulir akun, simulasi survei, dan tampilan pengelola serta pemilik dapat ditinjau di [pratinjau Cloudflare](https://sikantin-unusa-frontend.rossabuckerr.workers.dev/). Pratinjau memakai data contoh. Untuk menjalankan salinan lokal gunakan `npm ci` dan `npm run dev`. Pada terminal kedua jalankan `npm run test:browser` dengan Chrome terpasang. Periksa fondasi dan paket rilis dengan `npm run build`. Tahap operasional di bawah masih memerlukan Supabase.
+## Menjalankan SiKantin
 
-Versi ini diterbitkan melalui dashboard Cloudflare pada Worker `sikantin-unusa-frontend`. Untuk rilis berikutnya, unggah folder `web/` ke Worker yang sama atau jalankan `npm run deploy` setelah Wrangler masuk ke akun pada `wrangler.jsonc`.
+Gunakan Node 22.12+, Docker, dan Chrome. Jalankan `npm ci` lalu `npm run dev` untuk pratinjau. `npm run test:browser` menguji pratinjau saat Worker lokal aktif. [Pratinjau Cloudflare](https://sikantin-unusa-frontend.rossabuckerr.workers.dev/)
+
+Untuk pengujian operasional, mulai Supabase lokal dengan `npx --yes supabase@3.4.0 start`. Migrasi menyiapkan tabel, aturan akses, dan bucket foto. Data `supabase/seed.sql` hanya untuk uji lokal. Buat `.dev.vars` dari keluaran **proyek lokal** `npx --yes supabase@3.4.0 status` dengan `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, dan `SUPABASE_SECRET_KEY`. Jalankan `npm run dev -- --ip 127.0.0.1 --port 8787`. Surat verifikasi masuk ke Mailpit lokal di port 54324.
+
+Jalankan `npm run test:operasional` terhadap basis data pengujian. Uji ini membuat akun dan tenant fiktif, mengikuti verifikasi email, dan menyimpan bukti di `.verifikasi/operasional/`. Untuk uji SQL dasar, jalankan `docker exec -i supabase_db_sikantin-unusa psql -X -U postgres -v ON_ERROR_STOP=1` dengan isi `tests/database/katalog.sql` sebagai input. `npm run build` memeriksa fondasi, tipe Worker, tes unit, dan paket deploy.
+
+### Rilis online
+
+1. Hubungkan Supabase tujuan. Cek daftar migrasi lewat `supabase db push --dry-run`, lalu terapkan dengan `supabase db push`. Masukkan data tenant yang disetujui pengelola. Pengujian lokal memakai seed terpisah.
+2. Di Supabase Auth, aktifkan **Confirm email** dan hook **Before User Created** ke `public.sikantin_email_pendaftaran`. Tetapkan Site URL HTTPS Worker dan izinkan `/konfirmasi**` pada origin yang sama. Isi template konfirmasi dengan `supabase/templates/konfirmasi.html`. Siapkan SMTP yang dapat mengirim verifikasi ke alamat pelanggan. Supabase bawaan dan Cloudflare Email Sending Free membatasi penerima. [SMTP Supabase](https://supabase.com/docs/guides/auth/auth-smtp) · [Cloudflare Email Service](https://developers.cloudflare.com/email-service/)
+3. Buat akun pengelola pertama yang sudah terkonfirmasi di Supabase Auth. Tambahkan ID akun itu di `sikantin_private.profil` dengan `peran = 'admin'` dan nama pengguna unik. Simpan URL dan kedua key Supabase sebagai Worker Secrets. Masuk ke akun Cloudflare yang memiliki Worker pada `wrangler.jsonc`, lalu jalankan `npm run deploy`. Worker memuat API, halaman, dan aset bersama.
+4. Uji email HTTPS ke tiga domain yang diizinkan, pindai QR dengan ponsel, dan cocokkan laporan dari dua akun pemilik. Pastikan kriteria kontrak serta prosedur pemulihan data disetujui pengelola.
 
 Nama layar memakai ID HTML tanpa awalan `screen-`. Rute dan folder merupakan usulan implementasi. Keempat agen dapat bekerja paralel. Centang tahap setelah hasil mereka terintegrasi dan memenuhi uji penerimaan. [Pembagian kerja empat agen](DELEGASI_AGEN.md) · [Aturan bahasa dan tampilan](AGENTS.md#bahasa-dan-tampilan)
 

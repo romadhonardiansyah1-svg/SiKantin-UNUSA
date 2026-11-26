@@ -7,9 +7,15 @@ export const surveiUrl = tenant => detailUrl(tenant) + '/survei';
 
 export function statistik(ulasan) {
   if (!ulasan.length) return { nilai: null, aspek: aspek.map(() => null), jumlah: 0 };
-  const rerata = aspek.map((_, i) => ulasan.reduce((total, u) => total + u.aspek[i], 0) / ulasan.length);
-  return { nilai: rerata.reduce((a, b) => a + b, 0) / rerata.length, aspek: rerata, jumlah: ulasan.length };
+  const rata = nilai => nilai.length ? nilai.reduce((a, b) => a + b, 0) / nilai.length : null;
+  const skor = nilai => Number.isFinite(nilai);
+  return {
+    nilai: rata(ulasan.flatMap(u => u.aspek).filter(skor)),
+    aspek: aspek.map((_, i) => rata(ulasan.map(u => u.aspek[i]).filter(skor))),
+    jumlah: ulasan.length
+  };
 }
+export const statistikTenant = tenant => tenant.statistik ?? statistik(tenant.ulasan);
 
 export function filterKatalog(daftar, params) {
   const kampus = params.get('kampus');
@@ -22,8 +28,8 @@ export function filterKatalog(daftar, params) {
   });
   switch (params.get('urut')) {
     case 'name_asc': return hasil.sort((a, b) => a.nama.localeCompare(b.nama, 'id'));
-    case 'reviews_desc': return hasil.sort((a, b) => b.ulasan.length - a.ulasan.length);
-    case 'rating_desc': return hasil.sort((a, b) => (statistik(b.ulasan).nilai ?? 0) - (statistik(a.ulasan).nilai ?? 0));
+    case 'reviews_desc': return hasil.sort((a, b) => statistikTenant(b).jumlah - statistikTenant(a).jumlah);
+    case 'rating_desc': return hasil.sort((a, b) => (statistikTenant(b).nilai ?? 0) - (statistikTenant(a).nilai ?? 0));
     default: return hasil;
   }
 }

@@ -6,7 +6,7 @@ Saat bekerja berempat, ambil tugas sesuai [pembagian peran](DELEGASI_AGEN.md). J
 
 **Fondasi dipegang pemilik proyek.** Keempat agen hanya boleh mengubah modul fitur bagiannya. Daftar berkas yang dikunci ada di `scripts/fondasi.json` dan mencakup dokumen asli, acuan visual, aset, kerangka halaman, router, domain pelanggan, dan konfigurasi rilis. Jika tugas memerlukan perubahan fondasi, ajukan berkas dan alasan kepada pemilik. Pemilik yang mengubah acuan. Jangan memperbarui hash untuk meloloskan pekerjaan.
 
-Pada klona baru jalankan `git config core.hooksPath .githooks`. Jalankan `npm run build` sebelum integrasi. Pemeriksaan hash bekerja saat commit dan build. Publikasikan hanya isi `web/` ke Worker pratinjau. Paket ini menggunakan data contoh. Rilis operasional menunggu RLS, Supabase Auth, dan data kantin yang disetujui.
+Pada klona baru jalankan `git config core.hooksPath .githooks`. Jalankan `npm run build` sebelum integrasi. Pemeriksaan hash bekerja saat commit dan build. Gunakan `npm run deploy` untuk menerbitkan Worker beserta aset dari `web/` sesuai konfigurasi rilis. Data contoh hanya dipakai untuk pratinjau dan pengujian lokal.
 
 - Kerjakan satu alur per perubahan. Cek perubahan anggota lain sebelum mengedit. Koordinasikan perubahan file bersama dengan pemiliknya, termasuk rute, kontrak API, dan urutan migrasi.
 - Cari ID `screen-*` dari rencana. Pakai markup, CSS, dan komponen HTML final sebagai acuan. Periksa definisi terakhir jika handler prototipe ditulis ulang. Tulis satu handler per aksi dan gunakan perhitungan yang sama untuk layar dan ekspor.

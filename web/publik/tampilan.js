@@ -1,16 +1,17 @@
-import { aspek, detailUrl, filterKatalog, harga, skor, statistik, surveiUrl } from './katalog.js';
+import { aspek, detailUrl, filterKatalog, harga, skor, statistikTenant, surveiUrl } from './katalog.js';
 
 const id = nama => document.getElementById(nama);
 const entitas = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 export const teks = nilai => String(nilai).replace(/[&<>"']/g, huruf => entitas[huruf]);
 const kelasKategori = { Makanan: '', Minuman: 'cat-minuman', Snack: 'cat-snack' };
-const img = (path, alt) => `<img src="${teks(path)}" alt="${teks(alt)}" loading="lazy" decoding="async">`;
+const foto = path => typeof path === 'string' && /^\/(?:assets|foto)\/[a-z0-9-]+\.(?:jpg|png|webp)$/i.test(path) ? path : '';
+const img = (path, alt) => foto(path) ? `<img src="${teks(path)}" alt="${teks(alt)}" loading="lazy" decoding="async">` : '';
 const bintang = nilai => '★'.repeat(Math.round(nilai)) + '☆'.repeat(5 - Math.round(nilai));
 
 function kartu(t) {
-  const ringkas = statistik(t.ulasan);
+  const ringkas = statistikTenant(t);
   const detail = detailUrl(t);
-  const nilai = ringkas.jumlah ? `<span class="gf-star" aria-hidden="true">★</span><span class="gf-rating-val">${skor(ringkas.nilai)}</span><span>(${ringkas.jumlah} ulasan)</span>` : 'Belum ada penilaian';
+  const nilai = ringkas.nilai != null ? `<span class="gf-star" aria-hidden="true">★</span><span class="gf-rating-val">${skor(ringkas.nilai)}</span><span>(${ringkas.jumlah} ulasan)</span>` : 'Belum ada penilaian';
   const kategori = [...new Set(t.menu.map(m => m.kategori))].join(', ');
   const menu = t.menu.slice(0, 6).map(m => `
     <a class="gf-menu-item" href="${detail}"><div class="gf-menu-img-box">${img(m.foto, '')}
@@ -44,7 +45,7 @@ export function katalog(daftar, params) {
     const aktif = kode === kampus;
     tombol.classList.toggle('active', aktif);
     tombol.setAttribute('aria-pressed', aktif);
-    id('badgeCount' + kode).textContent = kode === 'ALL' ? daftar.length : daftar.filter(t => 'KAMPUS_' + t.kampus === kode).length;
+    tombol.querySelector('.badge').textContent = kode === 'ALL' ? daftar.length : daftar.filter(t => 'KAMPUS_' + t.kampus === kode).length;
   }
   for (const el of id('facilityGrid').children) {
     const aktif = (el.dataset.campus || 'ALL') === kampus;
@@ -54,6 +55,30 @@ export function katalog(daftar, params) {
   id('tenantGrid').innerHTML = hasil.map(kartu).join('');
   id('noResultsMessage').style.display = hasil.length ? 'none' : 'block';
   id('jumlahHasil').textContent = hasil.length + ' stand ditemukan';
+}
+
+const awalTombol = id('publicCampusFilterBar').querySelector('button[data-campus="KAMPUS_A"]').cloneNode(true);
+const awalFasilitas = id('facilityGrid').querySelector('.facility-card').cloneNode(true);
+export function kampusKatalog(daftar) {
+  const bar = id('publicCampusFilterBar');
+  const fasilitas = id('facilityGrid');
+  bar.querySelectorAll('button:not([data-campus="ALL"])').forEach(button => button.remove());
+  fasilitas.querySelectorAll('.facility-card').forEach(card => card.remove());
+  id('facilitySummaryStrip').firstElementChild.textContent = 'Fasilitas Kantin UNUSA';
+  for (const { kode, nama, alamat, fasilitas: info } of daftar) {
+    const tombol = awalTombol.cloneNode(true);
+    tombol.dataset.campus = 'KAMPUS_' + kode;
+    tombol.firstElementChild.textContent = 'Kampus ' + kode;
+    tombol.lastElementChild.removeAttribute('id');
+    bar.append(tombol);
+    const card = awalFasilitas.cloneNode(true);
+    card.dataset.campus = tombol.dataset.campus;
+    card.querySelector('.facility-title').textContent = nama;
+    const [lokasi, rincian] = card.querySelectorAll('.facility-item');
+    lokasi.textContent = alamat || 'Alamat belum dicatat.';
+    rincian.textContent = info || 'Fasilitas belum dicatat.';
+    fasilitas.append(card);
+  }
 }
 
 export function menuDetail(t, kategori = 'ALL') {
@@ -68,22 +93,26 @@ export function menuDetail(t, kategori = 'ALL') {
     <span class="menu-card-cat-pill ${kelasKategori[m.kategori]}">${teks(m.kategori)}</span>
     ${m.andalan ? '<span class="menu-card-rec-pill">★ Rekomendasi</span>' : ''}</div></div>
     <div class="menu-card-body"><h3 class="menu-card-title">${teks(m.nama)}</h3><p class="menu-card-desc">${teks(m.deskripsi)}</p>
-    <div class="menu-card-footer"><span class="menu-card-price">${harga(m.harga)}</span><span class="badge badge-success">Tersedia</span></div></div></article>
+    <div class="menu-card-footer"><span class="menu-card-price">${harga(m.harga)}</span><span class="badge ${m.tersedia === false ? 'badge-danger' : 'badge-success'}">${m.tersedia === false ? 'Habis' : 'Tersedia'}</span></div></div></article>
   `).join('') || '<p class="empty-note">Belum ada menu pada kategori ini.</p>';
 }
 
 export function detail(t, kembali) {
-  const nilai = statistik(t.ulasan);
+  const nilai = statistikTenant(t);
   id('detailBreadcrumbCampus').textContent = id('detailCampusBadge').textContent = 'Kampus ' + t.kampus + ' UNUSA';
   id('detailBreadcrumbName').textContent = id('detailTenantName').textContent = t.nama;
   id('detailTenantDesc').textContent = t.deskripsi;
-  id('detailTenantBannerImg').src = t.foto;
+  const banner = id('detailTenantBannerImg');
+  const path = foto(t.foto);
+  banner.hidden = !path;
+  if (path) banner.src = path;
+  else banner.removeAttribute('src');
   id('detailTenantBannerImg').alt = 'Foto ' + t.nama;
-  id('detailAvgScore').textContent = nilai.jumlah ? skor(nilai.nilai) : 'Belum ada penilaian';
-  id('detailAvgScore').nextElementSibling.hidden = !nilai.jumlah;
-  id('detailStarContainer').textContent = nilai.jumlah ? bintang(nilai.nilai) : '';
+  id('detailAvgScore').textContent = nilai.nilai != null ? skor(nilai.nilai) : 'Belum ada penilaian';
+  id('detailAvgScore').nextElementSibling.hidden = nilai.nilai == null;
+  id('detailStarContainer').textContent = nilai.nilai != null ? bintang(nilai.nilai) : '';
   id('detailReviewCount').textContent = nilai.jumlah + ' ulasan';
-  id('detailAspectGrid').innerHTML = aspek.map((nama, i) => `<div class="aspect-box"><span>${nama}</span><strong>${nilai.jumlah ? skor(nilai.aspek[i]) + ' / 5' : '—'}</strong></div>`).join('');
+  id('detailAspectGrid').innerHTML = aspek.map((nama, i) => `<div class="aspect-box"><span>${nama}</span><strong>${nilai.aspek[i] != null ? skor(nilai.aspek[i]) + ' / 5' : '—'}</strong></div>`).join('');
   id('detailReviewsList').innerHTML = t.ulasan.map(u => `<article class="review-card"><strong>${teks(u.status)}</strong><p>${teks(u.komentar)}</p></article>`).join('') || '<p class="empty-note">Belum ada ulasan untuk stand ini.</p>';
   for (const link of id('screen-public-tenant-detail').querySelectorAll('[data-survey-link]')) link.href = surveiUrl(t);
   for (const link of id('screen-public-tenant-detail').querySelectorAll('[data-katalog-link]')) link.href = kembali;

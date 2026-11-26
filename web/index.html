@@ -34,7 +34,7 @@
             </div>
         </header>
 
-        <p class="preview-strip">Pratinjau frontend · Menu, harga, dan ulasan memakai data contoh.</p><div id="mobileNavBackdrop" class="mobile-nav-backdrop"></div>
+        <p class="preview-strip" id="previewStatus">Pratinjau frontend · Menu, harga, dan ulasan memakai data contoh.</p><div id="mobileNavBackdrop" class="mobile-nav-backdrop"></div>
         <aside id="mobileNavDrawer" class="mobile-nav-drawer" aria-label="Menu navigasi" inert="" aria-hidden="true" role="dialog">
             <div class="mobile-nav-drawer-header">
                 <strong style="color: var(--unusa-green);">SiKantin UNUSA</strong>
@@ -284,7 +284,7 @@
                     </p>
                 </div>
 
-                <p class="status-note">Simulasi survei. Isian hanya tampil di perangkat ini.</p><form id="publicReviewForm" method="dialog">
+                <p class="status-note" id="reviewNotice" role="status">Simulasi survei. Isian hanya tampil di perangkat ini.</p><form id="publicReviewForm" method="dialog">
                     <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;">
                         <label class="form-label" style="font-size: 0.95rem;">Status Anda di UNUSA:</label>
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem;">
@@ -431,7 +431,7 @@
                         <label class="form-label" for="reviewCommentInput" style="font-size: 0.95rem;">
                             Komentar, Kesan, atau Masukan untuk Tenant:
                         </label>
-                        <textarea id="reviewCommentInput" name="comment" rows="3" class="form-control" placeholder="Tulis masukan Anda secara jujur dan membangun untuk perbaikan layanan tenant ini..."></textarea>
+                        <textarea id="reviewCommentInput" name="comment" rows="3" maxlength="1000" class="form-control" placeholder="Tulis masukan Anda secara jujur dan membangun untuk perbaikan layanan tenant ini..."></textarea>
                         </div>
 
                     <div class="antispam-assurance">
@@ -460,7 +460,7 @@
 
                     <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.5rem;">Ringkasan simulasi</h1>
 
-                    <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.5;">Simulasi untuk <strong id="reviewSuccessTenantName">Warung Cak Min</strong>. Penilaian ini hanya tampil di perangkat Anda.</p>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.5;"><span id="reviewSuccessMessage">Simulasi untuk</span> <strong id="reviewSuccessTenantName">Warung Cak Min</strong>.</p>
 
                     <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 2rem;">
                         <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 0.25rem;">
@@ -505,7 +505,7 @@
 
                         <div class="form-group" style="margin-bottom: 1.4rem;">
                             <label class="form-label" for="authLoginPassword">Kata Sandi</label>
-                            <input type="password" id="authLoginPassword" class="form-control" placeholder="Tersedia setelah layanan akun aktif" autocomplete="current-password" disabled>
+                            <input type="password" id="authLoginPassword" class="form-control" required maxlength="72" autocomplete="current-password" disabled>
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-block" style="padding: 0.78rem; font-size: 0.95rem;" disabled>
@@ -541,7 +541,7 @@
 
                         <div class="form-group" style="margin-bottom: 1.25rem;">
                             <label class="form-label" for="authRegPassword">Kata Sandi</label>
-                            <input type="password" id="authRegPassword" class="form-control" minlength="6" placeholder="Tersedia setelah layanan akun aktif" disabled>
+                            <input type="password" id="authRegPassword" class="form-control" required minlength="8" maxlength="72" autocomplete="new-password" disabled>
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-block" style="padding: 0.78rem; font-size: 0.95rem;" disabled>

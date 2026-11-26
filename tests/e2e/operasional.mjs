@@ -1,0 +1,247 @@
+import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
+import { mkdir, readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import { chromium } from 'playwright-core';
+import { strFromU8, unzipSync } from 'fflate';
+
+const origin = 'http://127.0.0.1:8787';
+const idKampus = '10000000-0000-0000-0000-000000000001';
+const db = 'supabase_db_sikantin-unusa';
+const hasil = new URL('../../.verifikasi/operasional/', import.meta.url);
+const waktu = Date.now().toString(36);
+const sandi = 'UjiSiKantin-' + randomUUID();
+const namaTenant = 'Dapur Uji ' + waktu;
+const slug = 'dapur-uji-' + waktu;
+const email = (nama, domain = 'gmail.com') => nama + '.' + waktu + '@' + domain;
+const url = path => origin + path;
+assert.equal((await (await fetch(url('/api/status'))).json()).operasional, true, 'Jalankan Worker lokal dengan Supabase.');
+await mkdir(hasil, { recursive: true });
+
+const authStatus = execFileSync('docker', ['exec', db, 'psql', '-U', 'postgres', '-d', 'postgres', '-Atc',
+  "select count(*) from supabase_migrations.schema_migrations"], { encoding: 'utf8' });
+assert.equal(Number(authStatus.trim()), 5);
+
+const browser = await chromium.launch({ channel: 'chrome', headless: true });
+async function http(ctx, path, status = 200, method = 'GET', data) {
+  const res = await ctx.request.fetch(path.startsWith('http') ? path : url(path), {
+    method, data, headers: { Origin: origin }, maxRedirects: 0
+  });
+  assert.equal(res.status(),status, method + ' ' + path.replace(/\/r\/[0-9a-f]+/, '/r/[kode]'));
+  if (!res.headers()['content-type']?.includes('application/json')) return res;
+  return res.json();
+}
+async function masuk(page, identitas, peran) {
+  await page.goto(url('/masuk?akses=internal'));
+  await page.locator('#authLoginIdentifier').fill(identitas);
+  await page.locator('#authLoginPassword').fill(sandi, { timeout: 5000 });
+  await page.getByRole('button', { name: 'Masuk', exact: true }).click();
+  await page.waitForURL(url(peran));
+  await page.locator('#screen-internal:not([hidden])').waitFor();
+}
+async function tautanKonfirmasi(alamat) {
+  for (let i = 0; i < 30; i++) {
+    const r = await fetch('http://127.0.0.1:54324/api/v1/messages');
+    assert.ok(r.ok, 'SMTP lokal dapat diakses.');
+    const { messages = [] } = await r.json();
+    const surat = messages.find(m => m.To.some(t => t.Address === alamat));
+    if (surat) {
+      const res = await fetch('http://127.0.0.1:54324/api/v1/message/' + surat.ID);
+      const { HTML } = await res.json();
+      const link = HTML.match(/href="([^"]*\/konfirmasi[^"]*)"/)?.[1].replaceAll('&amp;','&');
+      assert.ok(link && new URL(link).origin === origin && new URL(link).hash.startsWith('#token_hash='),
+        'Token konfirmasi berada di fragmen tautan email.');
+      return link;
+    }
+    await new Promise(resolve => setTimeout(resolve,250));
+  }
+  assert.fail('Email konfirmasi tidak muncul di SMTP lokal.');
+}
+
+try {
+  const anonim = await browser.newContext();
+  assert.match((await fetch(url('/admin/operasional.js'))).headers.get('content-type'), /javascript/);
+  const daftarAwal = await http(anonim,'/api/katalog');
+  assert.ok(daftarAwal.tenant.every(t => t.slug !== 'tenant-contoh-nonaktif' && !('kode_stand' in t)));
+  await http(anonim,'/api/admin/tenant',401);
+  await http(anonim,'/api/laporan',401);
+  await http(anonim,'/api/tidak-ada',404);
+  const spoof = await anonim.request.post(url('/api/auth/masuk'), { headers: { Origin: 'https://example.invalid' }, data: {} });
+  assert.equal(spoof.status(),403);
+
+  const emailAdmin = email('pengelola');
+  await http(anonim,'/api/auth/daftar',201,'POST',{ nama: 'Pengelola Uji', email: emailAdmin, sandi, status: 'Dosen' });
+  const adminPage = await browser.newPage({ viewport: { width: 1440, height: 900 }, acceptDownloads: true });
+  await adminPage.goto(await tautanKonfirmasi(emailAdmin));
+  await adminPage.getByRole('button',{name:'Konfirmasi email',exact:true}).click();
+  await adminPage.waitForURL(url('/'));
+  execFileSync('docker', ['exec', db, 'psql', '-U', 'postgres', '-d', 'postgres', '-v', 'ON_ERROR_STOP=1', '-c',
+    "insert into sikantin_private.profil(id, peran, username) select id, 'admin', 'admin_" + waktu +
+    "' from auth.users where email = '" + emailAdmin + "' and email_confirmed_at is not null"], { stdio: 'pipe' });
+  const admin = adminPage.context();
+  await http(admin,'/api/auth/keluar',200,'POST');
+  await masuk(adminPage,'admin_' + waktu,'/admin');
+  await adminPage.goto(url('/admin/kampus'));
+  await adminPage.getByRole('button',{name:/Tambah Kampus Baru/}).click();
+  const kodeKampus = 'U' + waktu.toUpperCase();
+  await adminPage.locator('#campus_code').fill(kodeKampus);
+  await adminPage.locator('#campus_name').fill('Kampus Uji ' + waktu);
+  await adminPage.locator('#campus_address').fill('Alamat uji');
+  await adminPage.locator('#campus_total_stalls').fill('6');
+  await adminPage.locator('#campus_facility_info').fill('Ruang makan uji');
+  await adminPage.locator('#campusFormSubmitBtn').click();
+  const barisKampus = adminPage.getByRole('row').filter({ hasText: kodeKampus });
+  await barisKampus.getByRole('button',{name:'Ubah'}).click();
+  await adminPage.locator('#campus_facility_info').fill('Fasilitas diperbarui');
+  await adminPage.locator('#campusFormSubmitBtn').click();
+  await barisKampus.getByText('Fasilitas diperbarui').waitFor();
+
+  const pertanyaanBaru = {
+    kunci: 'ruang_' + waktu, label: 'Akses ruang ' + waktu, teks: 'Apakah ruang mudah dijangkau?',
+    tipe: 'boolean', urutan: 6, wajib: false, aktif: true
+  };
+  const pertanyaanId = (await http(admin,'/api/admin/pertanyaan',201,'POST',pertanyaanBaru)).id;
+  await adminPage.goto(url('/admin/tenant/baru'));
+  await adminPage.locator('#tenant_form_campus_id').selectOption(idKampus);
+  await adminPage.locator('#tenant_form_stall_number').fill('A-' + waktu);
+  await adminPage.locator('#tenant_form_name').fill(namaTenant);
+  await adminPage.locator('#tenant_form_owner_name').fill('Pemilik Uji Pertama');
+  await adminPage.locator('#tenant_form_mou').fill('MOU-' + waktu);
+  await adminPage.locator('#tenant_form_photo').setInputFiles(fileURLToPath(new URL('../../web/assets/logo-unusa.png', import.meta.url)));
+  await adminPage.locator('#tenant_form_username').fill('pemilik_' + waktu);
+  await adminPage.locator('#tenant_form_owner_email').fill(email('pemilik'));
+  await adminPage.locator('#tenant_form_password').fill(sandi);
+  await adminPage.locator('#tenantFormSubmitBtn').click();
+  await adminPage.waitForURL(url('/admin/tenant'));
+  const tenant = (await http(admin,'/api/admin/tenant')).find(t => t.slug === slug);
+  assert.ok(tenant?.foto?.startsWith('/foto/'));
+  assert.equal((await fetch(url(tenant.foto))).headers.get('content-type'),'image/png');
+  const row = adminPage.getByRole('row').filter({ hasText: namaTenant });
+  await row.getByRole('link',{name:'Ubah'}).click();
+  await adminPage.reload();
+  await adminPage.locator('#tenant_form_mou').waitFor();
+  assert.equal(await adminPage.locator('#tenant_form_name').inputValue(),namaTenant);
+  assert.equal(await adminPage.locator('#tenant_form_username').inputValue(),'pemilik_' + waktu);
+  await adminPage.locator('#tenant_form_name').fill(namaTenant + ' Diperbarui');
+  await adminPage.locator('#tenantFormSubmitBtn').click();
+  await adminPage.waitForURL(url('/admin/tenant'));
+  assert.equal((await http(admin,'/api/admin/tenant')).find(t => t.id === tenant.id).slug,slug);
+  const kedua = await http(admin,'/api/admin/tenant',201,'POST',{
+    kampus_id: idKampus, nama: 'Kedai Uji ' + waktu, aktif: true, mou_nomor: 'MOU-B-' + waktu
+  });
+  kedua.slug = 'kedai-uji-' + waktu;
+  await http(admin,'/api/admin/pemilik/' + kedua.id,201,'POST',{ username: 'kedua_' + waktu, email: email('pemilik2'), sandi });
+  const menu = await http(admin,'/api/admin/menu',201,'POST',{
+    tenant_id: tenant.id, nama: 'Nasi Uji', kategori: 'Makanan', harga: 12000, tersedia: true
+  });
+  await http(admin,'/api/admin/menu/' + menu.id,200,'PUT',{
+    tenant_id: tenant.id, nama: 'Nasi Uji', kategori: 'Makanan', harga: 12500, tersedia: true
+  });
+  assert.equal((await http(anonim,'/api/katalog')).tenant.find(t => t.slug === slug).menu[0].harga,12500);
+  await adminPage.goto(url('/admin/qr?tenant=' + tenant.id));
+  await adminPage.getByRole('button',{name:'Buat QR',exact:true}).click();
+  const qr = adminPage.locator('#qrPrintFallbackUrl');
+  await adminPage.waitForFunction(() => document.getElementById('qrPrintFallbackUrl')?.textContent.startsWith('http'));
+  const lama = await qr.textContent();
+  const png = adminPage.waitForEvent('download');
+  await adminPage.getByRole('button',{name:'Unduh PNG'}).click();
+  await (await png).saveAs(fileURLToPath(new URL('qr.png',hasil)));
+  adminPage.once('dialog', d => d.accept());
+  await adminPage.getByRole('button',{name:'Ganti QR',exact:true}).click();
+  await adminPage.waitForFunction(url => {
+    const r = document.getElementById('qrPrintFallbackUrl')?.textContent;
+    return r?.startsWith('http') && r !== url;
+  },lama);
+  const link = await qr.textContent();
+  await http(anonim,lama,404);
+  assert.equal((await http(anonim,link,302)).headers().location,'/tenant/' + slug + '/survei');
+  console.log('Pengelola · data dan foto bertahan, ekspor PNG dan pergantian QR lulus.');
+
+  const hp = await browser.newPage({ viewport: { width: 390, height: 860 }, isMobile: true, hasTouch: true });
+  await hp.goto(link);
+  await hp.waitForURL(/\/daftar\?kembali=/);
+  await hp.locator('#authRegName').fill('Pelanggan Uji');
+  await hp.locator('#authRegEmail').fill(email('pelanggan','student.unusa.ac.id'));
+  await hp.locator('#authRegPassword').fill(sandi);
+  await hp.getByRole('button',{name:'Daftar Sekarang',exact:true}).click();
+  await hp.getByText('Cek email Anda', { exact: false }).waitFor();
+  await hp.goto(await tautanKonfirmasi(email('pelanggan','student.unusa.ac.id')));
+  await hp.getByRole('button',{name:'Konfirmasi email',exact:true}).click();
+  await hp.waitForURL(url('/tenant/' + slug + '/survei'));
+  await hp.locator('#screen-public-review:not([hidden])').waitFor();
+  for (const key of ['rasa','kebersihan','porsi','kualitas','cara_pembayaran']) {
+    await hp.locator('label[for="rating_' + key + '_4"]').click();
+  }
+  await hp.getByLabel('Nasi Uji').check();
+  await hp.locator('#rating_' + pertanyaanBaru.kunci).selectOption('ya');
+  await hp.locator('#reviewCommentInput').fill('Masukan uji ' + waktu);
+  const kirim = hp.waitForResponse(r => r.url().endsWith('/ulasan') && r.request().method() === 'POST');
+  await hp.getByRole('button',{name:'Kirim ulasan',exact:true}).click();
+  const tersimpan = await kirim;
+  assert.equal(tersimpan.status(),201);
+  const { id: idUlasan } = await tersimpan.json();
+  await hp.getByRole('heading',{name:'Ulasan terkirim'}).waitFor();
+  assert.equal(await hp.locator('#reviewSuccessScore').textContent(),'4,0');
+  assert.equal((await http(anonim,'/api/katalog')).tenant.find(t => t.slug === slug).statistik.jumlah,0);
+  await http(hp.context(),'/api/laporan',403);
+  await http(admin,'/api/admin/pertanyaan/' + pertanyaanId,200,'PUT',{ ...pertanyaanBaru, label:'Versi baru', aktif:false });
+  await adminPage.goto(url('/admin/ulasan'));
+  const ulasan = adminPage.getByRole('row').filter({ hasText: 'Masukan uji ' + waktu });
+  await ulasan.locator('summary').click();
+  await ulasan.getByText(pertanyaanBaru.label + ' · Ya',{exact:true}).waitFor();
+  await ulasan.getByRole('button',{name:'Verifikasi',exact:true}).click();
+  await ulasan.getByText('Tayang',{exact:true}).waitFor();
+  const statistik = (await http(anonim,'/api/katalog')).tenant.find(t => t.slug === slug).statistik;
+  assert.deepEqual(statistik,{ jumlah:1,nilai:4,aspek:[4,4,4,4,4] });
+  const pertanyaan = await http(hp.context(),'/api/pertanyaan');
+  const payload = { kiriman: randomUUID(), responden: 'Mahasiswa',
+    jawaban: Object.fromEntries(pertanyaan.filter(q => q.tipe === 'rating').map(q => [q.id,3])), menu: [menu.id] };
+  const path = '/api/tenant/' + kedua.slug + '/ulasan';
+  await http(hp.context(),path,422,'POST',payload);
+  const permintaan = [{ ...payload, menu: [] }, { ...payload, menu: [], kiriman: randomUUID() }];
+  const paralel = await Promise.all(permintaan.map(data =>
+    hp.context().request.post(url(path),{ headers:{ Origin:origin }, data })));
+  assert.deepEqual(paralel.map(r => r.status()).sort(),[201,429]);
+  const indexSukses = paralel.findIndex(r => r.status() === 201);
+  const sukses = await paralel[indexSukses].json();
+  assert.deepEqual(await http(hp.context(),path,201,'POST',permintaan[indexSukses]),sukses);
+  console.log('Pelanggan · QR → konfirmasi email → survei → moderasi lulus. Kirim ganda dan batas kirim teruji.');
+
+  const p1 = await browser.newPage({ viewport:{width:390,height:860}, isMobile:true });
+  await masuk(p1,'pemilik_' + waktu,'/pemilik/laporan');
+  assert.match(await p1.locator('#screen-tenant-dashboard h1').textContent(),new RegExp(namaTenant));
+  assert.equal(await p1.locator('#screen-tenant-dashboard .badge-stall').textContent(),'A-' + waktu);
+  assert.equal(await p1.locator('#screen-tenant-dashboard .badge-campus').textContent(),'Kampus A UNUSA');
+  assert.equal(await p1.locator('#tenantKpiReviews').textContent(),'1');
+  const p2 = await browser.newPage();
+  await masuk(p2,'kedua_' + waktu,'/pemilik/laporan');
+  assert.equal(await p2.locator('#tenantKpiReviews').textContent(),'0');
+  await http(p1.context(),'/api/laporan?tenant=' + kedua.id,403);
+  await http(p2.context(),'/api/laporan?tenant=' + tenant.id,403);
+  await http(p1.context(),'/api/admin/tenant',403);
+  await http(p1.context(),'/api/admin/tenant/' + tenant.id,403,'PUT',{ nama:'Uji ditolak' });
+  await p1.screenshot({ path: fileURLToPath(new URL('pemilik-390.png',hasil)) });
+  await adminPage.goto(url('/admin/laporan?tenant=' + tenant.id));
+  await adminPage.locator('#screen-internal:not([hidden])').waitFor();
+  assert.equal(await adminPage.locator('#reportKpiAvg').textContent(),'4,0');
+  const file = adminPage.waitForEvent('download');
+  await adminPage.getByRole('button',{name:/Ekspor Excel/}).click();
+  const xlsx = fileURLToPath(new URL('laporan.xlsx',hasil));
+  await (await file).saveAs(xlsx);
+  const sheet = strFromU8(unzipSync(await readFile(xlsx))['xl/worksheets/sheet1.xml']);
+  assert.ok(sheet.includes(namaTenant) && sheet.includes('Masukan uji ' + waktu));
+  assert.match(sheet, /<c r="B5"><v>4<\/v><\/c>/);
+  await adminPage.pdf({ path:fileURLToPath(new URL('laporan.pdf',hasil)), printBackground:true, preferCSSPageSize:true });
+  await adminPage.screenshot({ path: fileURLToPath(new URL('laporan-1440.png',hasil)) });
+  assert.match(idUlasan, /^[a-f0-9-]{36}$/);
+  execFileSync('docker', ['exec', db, 'psql', '-U', 'postgres', '-d', 'postgres', '-v', 'ON_ERROR_STOP=1', '-c',
+    "update sikantin_private.ulasan set waktu = now() - interval '7 months' where id = '" + idUlasan + "'"], { stdio: 'pipe' });
+  assert.equal((await http(admin,'/api/laporan?bulan=6&tenant=' + tenant.id)).statistik.jumlah,0);
+  assert.equal((await http(admin,'/api/laporan?bulan=12&tenant=' + tenant.id)).statistik.jumlah,1);
+  await http(admin,'/api/admin/pemilik/' + tenant.id,200,'DELETE');
+  await http(p1.context(),'/api/laporan',403);
+  console.log('Laporan · dua pemilik terisolasi, filter periode, pencabutan akses, XLSX, dan cetak PDF lulus.');
+} finally {
+  await browser.close();
+}
