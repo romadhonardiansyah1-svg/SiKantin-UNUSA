@@ -11,6 +11,7 @@ async function api(request: Request, env: Env, url: URL) {
   if (lihat && url.pathname === '/api/status') return json({ operasional: siap(env) });
   if (!siap(env)) throw new HttpError(503, 'Layanan operasional belum terhubung.');
   if (lihat && url.pathname === '/api/katalog') return json(await rpc(env, 'katalog'));
+  if (lihat && url.pathname === '/api/slide') return json(await rpc(env, 'slide'));
   if (bagian.length === 2 && bagian[0] === 'auth') return akun(request, env, bagian[1]);
   if (bagian.length <= 3 && bagian[0] === 'admin' && bagian[1]) {
     return pengelola(env, request, tokenAkses(request), bagian[1], bagian[2]);

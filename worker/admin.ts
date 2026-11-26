@@ -80,12 +80,18 @@ export async function pengelola(env: Env, request: Request, token: string, bagia
     const kode = await rpc<string | null>(env, 'qr', { p_tenant: id, p_aksi: aksi }, token);
     return json({ url: kode ? new URL('/r/' + kode, request.url).href : null });
   }
-  if (!modul.has(bagian)) throw new HttpError(404, 'Bagian pengelola tidak ditemukan.');
-  if (request.method === 'GET' && !id) return json(await rpc(env, 'admin', { p_modul: bagian }, token));
+  const slide = bagian === 'slide' && !id;
+  if (!slide && !modul.has(bagian)) throw new HttpError(404, 'Bagian pengelola tidak ditemukan.');
+  if (!slide && request.method === 'GET' && !id) return json(await rpc(env, 'admin', { p_modul: bagian }, token));
   if (!(request.method === 'POST' && !id) && !(request.method === 'PUT' && id)) {
     throw new HttpError(405, 'Metode tidak diizinkan.');
   }
   const { data, file } = await dataAdmin(request);
+  const posisi = data.posisi;
+  const alt = teks(data.alt);
+  if (slide && (typeof posisi !== 'number' || ![1, 2, 3].includes(posisi) || !alt || alt.length > 120 || !file?.size)) {
+    throw new HttpError(422, 'Pilih slide, isi deskripsi, dan unggah gambar baru.');
+  }
   if (bagian === 'tenant' && !id) {
     data.slug = teks(data.nama).normalize('NFD').toLowerCase().replace(/\p{M}/gu, '')
       .replace(/[^a-z0-9]+/g, '-').slice(0,120).replace(/^-|-$/g, '');
@@ -94,7 +100,7 @@ export async function pengelola(env: Env, request: Request, token: string, bagia
   delete data.foto;
   let namaFoto;
   if (file?.size) {
-    if (!['menu','tenant'].includes(bagian)) throw new HttpError(422, 'Bagian ini tidak memerlukan foto.');
+    if (!['menu','tenant','slide'].includes(bagian)) throw new HttpError(422, 'Bagian ini tidak memerlukan foto.');
     if (file.size > batasFoto) throw new HttpError(413, 'Foto maksimal 2 MB.');
     const bytes = new Uint8Array(await file.arrayBuffer());
     const ekstensi = jenisFoto(bytes);
@@ -104,6 +110,7 @@ export async function pengelola(env: Env, request: Request, token: string, bagia
     data.foto = '/foto/' + namaFoto;
   }
   try {
+    if (slide) return json(await rpc(env, 'simpan_slide', { p_posisi: posisi, p_foto: data.foto, p_alt: alt }, token));
     const hasil = await rpc(env, 'simpan', { p_modul: bagian, p_id: id || null, p_data: data }, token);
     return json({ id: hasil }, id ? 200 : 201);
   } catch (error) {

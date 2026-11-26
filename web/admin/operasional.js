@@ -2,6 +2,7 @@ import { pasangLayar, rute } from '../admin-ui/pratinjau.js';
 import { daftarTenant, formulirTenant } from './tenant.js';
 import { master, moderasi } from './master.js';
 import { pasangKeluar } from './kontrol.js';
+import { pasangSlide } from './slide.js';
 
 const modulMaster = { 'admin-campuses': 'kampus', 'admin-menus': 'menu', 'admin-questions': 'pertanyaan' };
 
@@ -26,7 +27,10 @@ export async function halamanInternal(path, katalog) {
   } else {
     const { dasbor, laporanAdmin, laporanPemilik } = await import('../laporan/tampilan.js');
     if (signal.aborted) return null;
-    if (key === 'admin-dashboard') await dasbor(context);
+    if (key === 'admin-dashboard') {
+      await dasbor(context);
+      if (!signal.aborted) pasangSlide(context);
+    }
     else if (key === 'admin-report') await laporanAdmin(context);
     else await laporanPemilik(context);
   }

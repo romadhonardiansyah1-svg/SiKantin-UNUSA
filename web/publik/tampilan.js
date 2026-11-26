@@ -1,4 +1,5 @@
 import { aspek, detailUrl, filterKatalog, harga, skor, statistikTenant, surveiUrl } from './katalog.js';
+import { muatSlide } from './slide.js';
 
 const id = nama => document.getElementById(nama);
 const entitas = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -35,6 +36,8 @@ function kartu(t) {
 }
 
 export function katalog(daftar, params) {
+  // Poster bawaan tetap tampil ketika pengaturan slide belum bisa dimuat.
+  if (id('previewStatus').hidden) muatSlide().catch(() => {});
   const hasil = filterKatalog(daftar, params);
   const kampus = params.get('kampus') ? 'KAMPUS_' + params.get('kampus') : 'ALL';
   id('searchTenantInput').value = params.get('q') || '';

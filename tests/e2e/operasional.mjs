@@ -21,7 +21,7 @@ await mkdir(hasil, { recursive: true });
 
 const authStatus = execFileSync('docker', ['exec', db, 'psql', '-U', 'postgres', '-d', 'postgres', '-Atc',
   "select count(*) from supabase_migrations.schema_migrations"], { encoding: 'utf8' });
-assert.equal(Number(authStatus.trim()), 5);
+assert.equal(Number(authStatus.trim()), 6);
 
 const browser = await chromium.launch({ channel: 'chrome', headless: true });
 async function http(ctx, path, status = 200, method = 'GET', data) {
@@ -64,7 +64,10 @@ try {
   assert.match((await fetch(url('/admin/operasional.js'))).headers.get('content-type'), /javascript/);
   const daftarAwal = await http(anonim,'/api/katalog');
   assert.ok(daftarAwal.tenant.every(t => t.slug !== 'tenant-contoh-nonaktif' && !('kode_stand' in t)));
+  const slideAwal = await http(anonim, '/api/slide');
+  assert.ok(Array.isArray(slideAwal));
   await http(anonim,'/api/admin/tenant',401);
+  await http(anonim, '/api/admin/slide', 401, 'POST', {});
   await http(anonim,'/api/laporan',401);
   await http(anonim,'/api/tidak-ada',404);
   const spoof = await anonim.request.post(url('/api/auth/masuk'), { headers: { Origin: 'https://example.invalid' }, data: {} });
@@ -82,6 +85,39 @@ try {
   const admin = adminPage.context();
   await http(admin,'/api/auth/keluar',200,'POST');
   await masuk(adminPage,'admin_' + waktu,'/admin');
+  const album = adminPage.locator('#adminSlideBeranda');
+  const bukaAlbum = () => album.getByText('Gambar slide beranda', { exact: true }).click();
+  await bukaAlbum();
+  await album.getByLabel('Nomor slide').selectOption('2');
+  const altSlide = 'Hidangan pameran ' + waktu;
+  await album.getByLabel('Deskripsi gambar').fill(altSlide);
+  const berkasSlide = album.getByLabel('Gambar baru');
+  const simpanSlide = album.getByRole('button', { name: 'Simpan gambar' });
+  await berkasSlide.setInputFiles({ name: 'bukan-gambar.png', mimeType: 'image/png', buffer: Buffer.from('bukan PNG') });
+  await simpanSlide.click();
+  await album.getByText('Foto harus berformat JPG, PNG, atau WebP.').waitFor();
+  assert.deepEqual(await http(anonim, '/api/slide'), slideAwal);
+  await berkasSlide.setInputFiles(fileURLToPath(new URL('../../web/assets/geprek-bakso.jpg', import.meta.url)));
+  await simpanSlide.click();
+  await album.getByText('Gambar slide 2 tersimpan.').waitFor();
+  const slideBaru = await http(anonim, '/api/slide');
+  const slideKedua = slideBaru.find(slide => slide.posisi === 2);
+  assert.equal(slideKedua.alt, altSlide);
+  assert.deepEqual(slideBaru.filter(slide => slide.posisi !== 2), slideAwal.filter(slide => slide.posisi !== 2));
+  assert.equal((await fetch(url(slideKedua.foto))).headers.get('content-type'), 'image/jpeg');
+  await adminPage.reload();
+  await bukaAlbum();
+  await album.getByLabel('Nomor slide').selectOption('2');
+  assert.equal(await album.getByLabel('Deskripsi gambar').inputValue(), altSlide);
+  const beranda = await browser.newPage({ viewport: { width: 390, height: 860 }, reducedMotion: 'reduce' });
+  await beranda.goto(url('/'));
+  await beranda.getByRole('img', { name: altSlide }).waitFor();
+  const slideTampil = beranda.locator('#heroPosterTrack img').nth(1);
+  await slideTampil.evaluate(img => img.decode());
+  assert.equal(await slideTampil.getAttribute('alt'), altSlide);
+  assert.equal(await slideTampil.getAttribute('src'), slideKedua.foto);
+  await beranda.close();
+  console.log('Slide beranda · format ditolak, perubahan tersimpan, dan foto baru tampil di ponsel.');
   await adminPage.goto(url('/admin/kampus'));
   await adminPage.getByRole('button',{name:/Tambah Kampus Baru/}).click();
   const kodeKampus = 'U' + waktu.toUpperCase();
@@ -214,6 +250,7 @@ try {
   assert.equal(await p1.locator('#screen-tenant-dashboard .badge-stall').textContent(),'A-' + waktu);
   assert.equal(await p1.locator('#screen-tenant-dashboard .badge-campus').textContent(),'Kampus A UNUSA');
   assert.equal(await p1.locator('#tenantKpiReviews').textContent(),'1');
+  await http(p1.context(), '/api/admin/slide', 403, 'POST', {});
   const p2 = await browser.newPage();
   await masuk(p2,'kedua_' + waktu,'/pemilik/laporan');
   assert.equal(await p2.locator('#tenantKpiReviews').textContent(),'0');
