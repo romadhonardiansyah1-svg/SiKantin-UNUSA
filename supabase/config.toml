@@ -45,7 +45,7 @@ enable_confirmations = true
 email_sent = 100
 
 [auth.email.template.confirmation]
-subject = "Konfirmasi email SiKantin UNUSA"
+subject = "Konfirmasi akun SiKantin UNUSA"
 content_path = "./supabase/templates/konfirmasi.html"
 
 [auth.hook.before_user_created]

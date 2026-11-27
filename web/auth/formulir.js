@@ -46,6 +46,27 @@ function sesudahMasuk(profil) {
   navigasi(dasbor[profil.peran] || profil.kembali || '/');
 }
 
+function pemberitahuanDaftar(pemicu, pesan) {
+  const dialog = document.createElement('dialog');
+  dialog.setAttribute('aria-labelledby', 'judulPendaftaran');
+  dialog.setAttribute('aria-describedby', 'pesanPendaftaran');
+  Object.assign(dialog.style, {
+    width: 'min(26rem, calc(100% - 2rem))', margin: 'auto', padding: '1.25rem',
+    color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)'
+  });
+  dialog.innerHTML = `
+    <h2 id="judulPendaftaran">Pendaftaran diterima</h2>
+    <p id="pesanPendaftaran" class="status-note"></p>
+    <form method="dialog"><button class="btn btn-primary btn-block" autofocus>Tutup</button></form>`;
+  dialog.querySelector('p').textContent = pesan;
+  dialog.addEventListener('close', () => {
+    dialog.remove();
+    pemicu.focus();
+  }, { once: true });
+  document.body.append(dialog);
+  dialog.showModal();
+}
+
 export function tampilkanAkun(daftar, tenant, internal, operasional = false, profil = null) {
   aktif = operasional;
   staf = internal;
@@ -94,12 +115,21 @@ export function tampilkanKonfirmasi(hash, tenant) {
   const tujuanMasuk = new URLSearchParams();
   if (kembali && kembali !== '/') tujuanMasuk.set('kembali', kembali);
   const keMasuk = '/masuk' + (tujuanMasuk.size ? '?' + tujuanMasuk : '');
+  const fragmen = new URLSearchParams(location.hash.slice(1));
+  if (!token && fragmen.get('type') === 'signup' && fragmen.has('access_token')) {
+    // Tautan bawaan Supabase sudah memverifikasi akun sebelum mengalihkan.
+    location.replace(keMasuk);
+    return;
+  }
   masuk.hidden = baru.hidden = true;
   id('authCardTitle').textContent = 'Konfirmasi email';
   id('authCardSubtitle').textContent = tenant ? 'Lanjutkan pendaftaran untuk mengulas ' + tenant.nama + '.' : 'Aktifkan akun SiKantin Anda.';
   notice.hidden = false;
   if (!token || tersimpan?.berhasil) {
-    const pesan = tersimpan?.berhasil ? 'Email sudah terkonfirmasi.' : 'Tautan konfirmasi tidak lengkap. Buka kembali tautan dari email pendaftaran.';
+    const kedaluwarsa = (fragmen.get('error_code') || params.get('error_code')) === 'otp_expired';
+    let pesan = 'Tautan konfirmasi tidak lengkap. Buka tautan terbaru dari email pendaftaran.';
+    if (tersimpan?.berhasil) pesan = 'Email sudah terkonfirmasi.';
+    else if (kedaluwarsa) pesan = 'Tautan konfirmasi kedaluwarsa atau sudah digunakan. Jika akun sudah aktif, silakan masuk.';
     notice.replaceChildren(pesan + ' ', tautan(keMasuk, 'Masuk'));
     return;
   }
@@ -137,12 +167,14 @@ baru.addEventListener('submit', event => {
   event.preventDefault();
   if (!aktif) return;
   notice.hidden = false;
-  jalankan(baru.querySelector('button'), 'Mendaftar…', async () => {
+  const pemicu = baru.querySelector('button[type="submit"]');
+  jalankan(pemicu, 'Mendaftar…', async () => {
     const hasil = await api('/auth/daftar', { method: 'POST', sesi: false, data: {
       nama: id('authRegName').value, email: email.value, sandi: id('authRegPassword').value,
       status: id('authRegStatus').value, kembali: tujuan
     } });
     id('authRegPassword').value = '';
     notice.textContent = hasil.pesan;
+    if (baru.getClientRects().length) pemberitahuanDaftar(pemicu, hasil.pesan);
   });
 });

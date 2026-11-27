@@ -53,6 +53,7 @@ async function tautanKonfirmasi(alamat) {
     const { messages = [] } = await r.json();
     const surat = messages.find(m => m.To.some(t => t.Address === alamat));
     if (surat) {
+      assert.equal(surat.Subject, 'Konfirmasi akun SiKantin UNUSA');
       const res = await fetch('http://127.0.0.1:54324/api/v1/message/' + surat.ID);
       const { HTML } = await res.json();
       const link = HTML.match(/href="([^"]*\/konfirmasi[^"]*)"/)?.[1].replaceAll('&amp;','&');
@@ -82,10 +83,18 @@ try {
   const emailAdmin = email('pengelola');
   await http(anonim,'/api/auth/daftar',201,'POST',{ nama: 'Pengelola Uji', email: emailAdmin, sandi, status: 'Dosen' });
   const adminPage = await browser.newPage({ viewport: { width: 1440, height: 900 }, acceptDownloads: true });
-  await adminPage.goto(await tautanKonfirmasi(emailAdmin));
-  await adminPage.getByRole('button',{name:'Konfirmasi email',exact:true}).click();
-  await adminPage.waitForURL(url('/masuk?konfirmasi=berhasil'));
+  const tujuanKonfirmasi = new URL(await tautanKonfirmasi(emailAdmin));
+  const tokenKonfirmasi = new URLSearchParams(tujuanKonfirmasi.hash.slice(1)).get('token_hash');
+  tujuanKonfirmasi.hash = '';
+  const tautanBawaan = new URL('http://127.0.0.1:54321/auth/v1/verify');
+  tautanBawaan.search = new URLSearchParams({
+    token: tokenKonfirmasi, type: 'signup', redirect_to: tujuanKonfirmasi.href
+  });
+  await adminPage.goto(tautanBawaan.href);
+  await adminPage.waitForURL(url('/masuk'));
   await http(adminPage.context(), '/api/auth/sesi', 401);
+  await adminPage.goto(tautanBawaan.href);
+  await adminPage.getByText(/Tautan konfirmasi kedaluwarsa atau sudah digunakan/).waitFor();
   execFileSync('docker', ['exec', db, 'psql', '-U', 'postgres', '-d', 'postgres', '-v', 'ON_ERROR_STOP=1', '-c',
     "insert into sikantin_private.profil(id, peran, username) select id, 'admin', 'admin_" + waktu +
     "' from auth.users where email = '" + emailAdmin + "' and email_confirmed_at is not null"], { stdio: 'pipe' });
@@ -302,8 +311,14 @@ try {
   await hp.locator('#authRegEmail').fill(email('pelanggan','student.unusa.ac.id'));
   await hp.locator('#authRegPassword').fill(sandi);
   await hp.locator('#authRegStatus').selectOption('Dosen');
-  await hp.getByRole('button',{name:'Daftar Sekarang',exact:true}).click();
-  await hp.getByText('Cek email Anda', { exact: false }).waitFor();
+  const daftarSekarang = hp.getByRole('button',{name:'Daftar Sekarang',exact:true});
+  await daftarSekarang.click();
+  const pemberitahuan = hp.getByRole('dialog', { name: 'Pendaftaran diterima' });
+  await pemberitahuan.getByText('Cek email Anda untuk mengonfirmasi pendaftaran.').waitFor();
+  await hp.screenshot({ path: fileURLToPath(new URL('pendaftaran-berhasil.png', hasil)) });
+  await pemberitahuan.getByRole('button', { name: 'Tutup', exact: true }).click();
+  await pemberitahuan.waitFor({ state: 'detached' });
+  assert.ok(await daftarSekarang.evaluate(tombol => tombol === document.activeElement));
   const emailPelanggan = email('pelanggan','student.unusa.ac.id');
   const alias = emailPelanggan.split('@')[0];
   await hp.goto(await tautanKonfirmasi(emailPelanggan));
