@@ -125,6 +125,27 @@ try {
   assert.equal(await slideTampil.getAttribute('src'), slideKedua.foto);
   await beranda.close();
   console.log('Slide beranda · format ditolak, perubahan tersimpan, dan foto baru tampil di ponsel.');
+  let lanjutKampus;
+  const tungguKampus = new Promise(resolve => { lanjutKampus = resolve; });
+  const polaKampus = '**/api/admin/kampus';
+  await adminPage.route(polaKampus, async route => {
+    await tungguKampus;
+    await route.continue();
+  });
+  try {
+    const diminta = adminPage.waitForRequest(polaKampus);
+    await adminPage.goto(url('/admin/kampus'), { waitUntil: 'commit' });
+    await diminta;
+    const kerangka = adminPage.locator('#kerangkaMuat');
+    await kerangka.getByText('Memuat dasbor…', { exact: true }).waitFor({ timeout: 5000 });
+    await kerangka.screenshot({ path: fileURLToPath(new URL('skeleton-pengelola-1440.png', hasil)) });
+    await adminPage.getByRole('link', { name: 'Katalog Kantin', exact: true }).click();
+    await adminPage.locator('#tenantGrid .gf-card').first().waitFor();
+    assert.ok(await kerangka.isHidden());
+  } finally {
+    lanjutKampus();
+    await adminPage.unrouteAll({ behavior: 'wait' });
+  }
   await adminPage.goto(url('/admin/kampus'));
   await adminPage.getByRole('button',{name:/Tambah Kampus Baru/}).click();
   const kodeKampus = 'U' + waktu.toUpperCase();

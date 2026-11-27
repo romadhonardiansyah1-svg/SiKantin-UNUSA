@@ -1,4 +1,5 @@
 import { aspek, harga, skor, statistik } from '../publik/katalog.js';
+import { mulaiMuat } from '../muat.js';
 
 export const rute = {
   '/pratinjau/admin': ['admin-dashboard', 'Dasbor analitik pengelola kantin'],
@@ -30,10 +31,14 @@ export function tutupInternal() {
 
 async function templates() {
   if (!sumber) {
-    sumber = fetch('/admin-ui/layar').then(async response => {
-      if (!response.ok) throw new Error('layar');
+    mulaiMuat('/admin-ui/layar');
+    sumber = fetch('/admin-ui/layar', { signal: AbortSignal.timeout?.(15000) }).then(async response => {
+      if (!response.ok) throw new Error('HTTP ' + response.status);
       return new DOMParser().parseFromString(await response.text(), 'text/html');
-    }).catch(err => { sumber = null; throw err; });
+    }).catch(error => {
+      sumber = null;
+      throw new Error('Tampilan dasbor belum dapat dimuat.', { cause: error });
+    });
   }
   return sumber;
 }

@@ -1,6 +1,52 @@
 .poster-control { display: none; }
 
+#previewStatus:not([data-siap]),
+#konten[data-muat] > section { display: none !important; }
+
+.muat-halaman { padding-block: 1.2rem 2rem; }
+.muat-pesan { color: var(--text-secondary); font-size: .875rem; margin-bottom: .8rem; }
+.muat-halaman > * + * { margin-top: .85rem; }
+.muat-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: .85rem; }
+.muat-panel {
+  display: grid;
+  gap: .75rem;
+  padding: 1rem;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+.muat-formulir { max-width: 28rem; margin-inline: auto; padding: 1.5rem; }
+.muat-bentuk {
+  position: relative;
+  overflow: hidden;
+  background: #e8eef2;
+  border-radius: var(--radius-md);
+}
+.muat-hero { min-height: clamp(12rem, 26vw, 21rem); background: #e4eee8; }
+.muat-foto { height: 5rem; }
+.muat-isian { height: 2.7rem; }
+.muat-garis { height: .85rem; width: min(80%, 20rem); }
+.muat-panel > .muat-garis:last-child { width: min(55%, 14rem); }
+.muat-baris-tabel { display: grid; grid-template-columns: 1.5fr 1fr .65fr; gap: .75rem; padding-block: .4rem; }
+.muat-baris-tabel + .muat-baris-tabel { border-top: 1px solid var(--border-color); }
+
+@media (min-width: 901px) {
+  .muat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 @media (prefers-reduced-motion: no-preference) {
+  @keyframes kilau-muat {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
+  }
+  .muat-bentuk::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 30%, #fff9 50%, transparent 70%);
+    animation: kilau-muat 1.25s ease-in-out 3;
+  }
+
   @keyframes buka-rincian {
     from { opacity: 0; transform: translateY(6px); }
     to   { opacity: 1; transform: translateY(0); }
