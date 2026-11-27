@@ -61,7 +61,7 @@ Pada baris tenant, sediakan buat, lihat, ganti, cabut, unduh PNG, dan cetak QR. 
 
 Tombol **Isi Survei** dan QR menuju `/tenant/:slug/survei`. Pelanggan dengan sesi aktif dan email terkonfirmasi langsung membuka formulir. Pengunjung diarahkan ke **Daftar** dengan pilihan **Sudah punya akun? Masuk**. Bawa slug tenant melalui konfirmasi dan masuk, lalu buka kembali survei tenant tersebut. Validasi slug di server. Jika dibatalkan, kembali ke detail tenant.
 
-Admin melakukan CRUD pertanyaan, mengatur urutan, status aktif, dan wajib isi. Lima aspek awal DPPL meliputi rasa, kebersihan, porsi, kualitas, dan kemudahan pembayaran. Simpan jawaban tambahan bertipe bintang, teks, atau ya/tidak, status responden di UNUSA, serta menu terpilih. Komentar boleh kosong.
+Admin melakukan CRUD pertanyaan, mengatur urutan, status aktif, dan wajib isi. Lima aspek awal DPPL meliputi rasa, kebersihan, porsi, kualitas, dan kemudahan pembayaran. Simpan jawaban tambahan bertipe bintang, teks, atau ya/tidak, status UNUSA dari akun pelanggan, serta menu terpilih. Komentar boleh kosong. Rating katalog menghitung ulasan Menunggu dan Tayang. Komentar muncul setelah ulasan Tayang.
 
 `POST /api/tenant/:slug/ulasan` memanggil satu fungsi Postgres. Dari sesi, periksa peran pelanggan serta email aktif yang terkonfirmasi dan memenuhi aturan domain tahap 2. Validasi tenant aktif, kepemilikan menu, jawaban wajib, dan skor 1–5. Simpan ulasan beserta jawaban memakai waktu server dalam satu transaksi. Kunci pasangan akun–tenant saat memeriksa batas kirim. Gunakan ID kiriman unik per pelanggan agar percobaan ulang memperoleh hasil pertama. Tutup akses tulis langsung ke tabel ulasan. Setelah tersimpan, tampilkan konfirmasi dengan pilihan kembali ke detail atau katalog.
 

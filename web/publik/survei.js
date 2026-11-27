@@ -1,5 +1,5 @@
 import { detailUrl, skor } from './katalog.js';
-import { api, navigasi } from '../api.js';
+import { api, navigasi, profilAktif, segarkanKatalog } from '../api.js';
 
 const id = nama => document.getElementById(nama);
 const form = id('publicReviewForm');
@@ -10,6 +10,13 @@ const acuan = kartuBintang.cloneNode(true);
 const tambahan = id('customSurveyQuestionsContainer');
 const tombol = form.querySelector('button[type="submit"]');
 const notice = id('reviewNotice');
+const pilihanStatus = form.querySelector('[name="customer_type"]').closest('label').parentElement;
+const statusAkun = document.createElement('p');
+statusAkun.id = 'reviewStatusAkun';
+statusAkun.className = 'status-note';
+statusAkun.style.margin = '0';
+statusAkun.hidden = true;
+pilihanStatus.before(statusAkun);
 let stand = null;
 let ringkasan = null;
 let pertanyaan = null;
@@ -85,6 +92,9 @@ export function bukaSurvei(t, daftar = null) {
   }
   pertanyaan = daftar;
   stand = t;
+  pilihanStatus.hidden = Boolean(daftar);
+  statusAkun.hidden = !daftar;
+  statusAkun.textContent = profilAktif?.status ?? 'Pengunjung';
   tombol.textContent = daftar ? 'Kirim ulasan' : 'Lihat ringkasan pratinjau';
   pesan(daftar ? '' : 'Simulasi survei. Isian hanya tampil di perangkat ini.');
   id('reviewFormCampusBadge').textContent = 'Kampus ' + t.kampus + ' UNUSA';
@@ -119,11 +129,12 @@ form.addEventListener('submit', async event => {
   pesan('');
   try {
     const hasil = await api(detailUrl(tenant) + '/ulasan', { method: 'POST', data: {
-      kiriman, jawaban, menu: values.getAll('menu'), responden: values.get('customer_type'), komentar: values.get('comment')
+      kiriman, jawaban, menu: values.getAll('menu'), komentar: values.get('comment')
     } });
     ringkasan = { slug: tenant.slug, nilai: hasil.nilai, pratinjau: false };
     kiriman = null;
     navigasi(tujuan);
+    segarkanKatalog();
   } catch (error) {
     pesan(error.message);
   } finally {

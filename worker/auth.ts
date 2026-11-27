@@ -2,7 +2,7 @@ import { emailPelangganValid } from '../web/auth/domain.js';
 import { bacaJson, HttpError, json, rpc, supabase, teks, tujuanSurvei, type Env } from './http.ts';
 
 type Token = { access_token: string; refresh_token: string; expires_in: number };
-export type Sesi = { peran: 'admin' | 'pemilik' | 'pelanggan'; tenant_id: string | null };
+export type Sesi = { peran: 'admin' | 'pemilik' | 'pelanggan'; tenant_id: string | null; status: string | null };
 export const responden = ['Mahasiswa', 'Dosen', 'Tenaga Kependidikan', 'Pengunjung'];
 const pesanDomain = 'Gunakan @gmail.com, @unusa.ac.id, atau @student.unusa.ac.id.';
 const namaAkses = 'sikantin_akses';

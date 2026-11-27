@@ -1,6 +1,7 @@
 import { emailPelangganValid } from './domain.js';
+import { dasbor } from './navigasi.js';
 import { detailUrl, surveiUrl } from '../publik/katalog.js';
-import { api, navigasi } from '../api.js';
+import { api, catatSesi, keluar, navigasi } from '../api.js';
 
 const id = nama => document.getElementById(nama);
 const masuk = id('unifiedLoginForm');
@@ -41,7 +42,8 @@ async function jalankan(button, pesan, aksi) {
   finally { button.textContent = teks; button.disabled = false; }
 }
 function sesudahMasuk(profil) {
-  navigasi(profil.peran === 'admin' ? '/admin' : profil.peran === 'pemilik' ? '/pemilik/laporan' : profil.kembali || '/');
+  catatSesi(profil);
+  navigasi(dasbor[profil.peran] || profil.kembali || '/');
 }
 
 export function tampilkanAkun(daftar, tenant, internal, operasional = false, profil = null) {
@@ -65,12 +67,9 @@ export function tampilkanAkun(daftar, tenant, internal, operasional = false, pro
   if (profil) {
     masuk.hidden = baru.hidden = true;
     id('authCardTitle').textContent = 'Akun SiKantin';
-    const path = profil.peran === 'admin' ? '/admin' : profil.peran === 'pemilik' ? '/pemilik/laporan' : tujuan || '/';
+    const path = dasbor[profil.peran] || tujuan || '/';
     const teks = profil.peran === 'pelanggan' ? (tujuan ? 'Lanjut ke survei' : 'Kembali ke katalog') : 'Buka dasbor';
-    notice.append(tautan(path, teks), tombol('Keluar', async () => {
-      await api('/auth/keluar', { method: 'POST', sesi: false });
-      navigasi('/');
-    }));
+    notice.append(tautan(path, teks), tombol('Keluar', keluar));
     return;
   }
   if (!aktif) notice.append('Layanan akun belum aktif di pratinjau ini. ');

@@ -33,20 +33,42 @@ export async function api(path, { method = 'GET', data, sesi = true } = {}) {
   }
 }
 
-export async function layananAktif() {
-  try { return (await api('/status', { sesi: false })).operasional; }
-  catch (error) {
+let cekLayanan;
+export function layananAktif() {
+  return cekLayanan ??= api('/status', { sesi: false }).then(hasil => hasil.operasional).catch(error => {
     if (error.status === 404) return false;
     throw error;
-  }
+  });
 }
 
-export async function sesiAktif() {
-  try { return await api('/auth/sesi'); }
-  catch (error) {
+export let profilAktif = null;
+let cekSesi;
+export function catatSesi(profil) {
+  cekSesi = undefined;
+  profilAktif = profil;
+  document.dispatchEvent(new Event('sesi-berubah'));
+}
+
+export function sesiAktif() {
+  if (cekSesi) return cekSesi;
+  const permintaan = api('/auth/sesi').catch(error => {
     if ([401,403].includes(error.status)) return null;
     throw error;
-  }
+  }).then(profil => {
+    if (cekSesi === permintaan) catatSesi(profil);
+    return profilAktif;
+  }).finally(() => {
+    if (cekSesi === permintaan) cekSesi = undefined;
+  });
+  cekSesi = permintaan;
+  return permintaan;
 }
 
 export const navigasi = tujuan => document.dispatchEvent(new CustomEvent('navigasi', { detail: tujuan }));
+export const segarkanKatalog = () => document.dispatchEvent(new Event('katalog-berubah'));
+
+export async function keluar() {
+  await api('/auth/keluar', { method: 'POST', sesi: false });
+  catatSesi(null);
+  navigasi('/');
+}

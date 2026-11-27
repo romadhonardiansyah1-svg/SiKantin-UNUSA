@@ -36,7 +36,7 @@ async function api(request: Request, env: Env, url: URL) {
     const token = tokenAkses(request);
     const data = await bacaJson(request);
     return json(await rpc(env, 'kirim_ulasan', {
-      p_slug: bagian[1], p_kiriman: teks(data.kiriman), p_responden: teks(data.responden),
+      p_slug: bagian[1], p_kiriman: teks(data.kiriman), p_responden: null,
       p_komentar: teks(data.komentar), p_menu: data.menu ?? [], p_jawaban: data.jawaban ?? {}
     }, token), 201);
   }

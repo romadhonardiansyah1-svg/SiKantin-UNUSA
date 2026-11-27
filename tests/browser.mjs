@@ -21,6 +21,7 @@ try {
     });
     const kode = /\b[A-C]-\d{2}\b/;
     await page.goto(origin);
+    assert.equal(new URL(page.url()).pathname, '/');
     const tenant = page.locator('.gf-card');
     await tenant.first().waitFor();
     assert.equal(await tenant.count(), 17);
@@ -42,6 +43,13 @@ try {
       assert.ok(await menu.evaluate(e => e === document.activeElement));
     }
     await page.locator('[data-campus="KAMPUS_B"].campus-pill').click();
+    const peta = page.getByRole('link', { name: 'Buka lokasi Kampus B UNUSA di Google Maps' });
+    assert.ok(await peta.isVisible());
+    const tujuanPeta = new URL(await peta.getAttribute('href'));
+    assert.equal(tujuanPeta.origin + tujuanPeta.pathname, 'https://www.google.com/maps/search/');
+    assert.equal(tujuanPeta.searchParams.get('api'), '1');
+    assert.match(tujuanPeta.searchParams.get('query'), /Kampus B UNUSA.*Jl\. Raya Jemursari/);
+    assert.equal(await peta.getAttribute('target'), '_blank');
     await page.locator('#searchTenantInput').fill('soto');
     assert.equal(await tenant.count(), 1);
     await tenant.getByRole('link', { name: 'Warung Cak Min', exact: true }).click();

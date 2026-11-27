@@ -21,7 +21,7 @@ await mkdir(hasil, { recursive: true });
 
 const authStatus = execFileSync('docker', ['exec', db, 'psql', '-U', 'postgres', '-d', 'postgres', '-Atc',
   "select count(*) from supabase_migrations.schema_migrations"], { encoding: 'utf8' });
-assert.equal(Number(authStatus.trim()), 6);
+assert.equal(Number(authStatus.trim()), 7);
 
 const browser = await chromium.launch({ channel: 'chrome', headless: true });
 async function http(ctx, path, status = 200, method = 'GET', data) {
@@ -200,12 +200,16 @@ try {
   await hp.locator('#authRegName').fill('Pelanggan Uji');
   await hp.locator('#authRegEmail').fill(email('pelanggan','student.unusa.ac.id'));
   await hp.locator('#authRegPassword').fill(sandi);
+  await hp.locator('#authRegStatus').selectOption('Dosen');
   await hp.getByRole('button',{name:'Daftar Sekarang',exact:true}).click();
   await hp.getByText('Cek email Anda', { exact: false }).waitFor();
   await hp.goto(await tautanKonfirmasi(email('pelanggan','student.unusa.ac.id')));
   await hp.getByRole('button',{name:'Konfirmasi email',exact:true}).click();
   await hp.waitForURL(url('/tenant/' + slug + '/survei'));
   await hp.locator('#screen-public-review:not([hidden])').waitFor();
+  assert.equal((await http(hp.context(), '/api/auth/sesi')).status, 'Dosen');
+  assert.equal(await hp.locator('#reviewStatusAkun').textContent(), 'Dosen');
+  assert.equal(await hp.locator('[name="customer_type"]:visible').count(), 0);
   for (const key of ['rasa','kebersihan','porsi','kualitas','cara_pembayaran']) {
     await hp.locator('label[for="rating_' + key + '_4"]').click();
   }
@@ -219,7 +223,12 @@ try {
   const { id: idUlasan } = await tersimpan.json();
   await hp.getByRole('heading',{name:'Ulasan terkirim'}).waitFor();
   assert.equal(await hp.locator('#reviewSuccessScore').textContent(),'4,0');
-  assert.equal((await http(anonim,'/api/katalog')).tenant.find(t => t.slug === slug).statistik.jumlah,0);
+  const sebelumModerasi = (await http(anonim,'/api/katalog')).tenant.find(t => t.slug === slug);
+  assert.deepEqual(sebelumModerasi.statistik, { jumlah:1,nilai:4,aspek:[4,4,4,4,4] });
+  assert.deepEqual(sebelumModerasi.ulasan, []);
+  await hp.locator('#reviewSuccessBackTenantBtn').click();
+  await hp.locator('#detailAvgScore').waitFor();
+  assert.equal(await hp.locator('#detailAvgScore').textContent(), '4,0');
   await http(hp.context(),'/api/laporan',403);
   await http(admin,'/api/admin/pertanyaan/' + pertanyaanId,200,'PUT',{ ...pertanyaanBaru, label:'Versi baru', aktif:false });
   await adminPage.goto(url('/admin/ulasan'));
@@ -231,7 +240,7 @@ try {
   const statistik = (await http(anonim,'/api/katalog')).tenant.find(t => t.slug === slug).statistik;
   assert.deepEqual(statistik,{ jumlah:1,nilai:4,aspek:[4,4,4,4,4] });
   const pertanyaan = await http(hp.context(),'/api/pertanyaan');
-  const payload = { kiriman: randomUUID(), responden: 'Mahasiswa',
+  const payload = { kiriman: randomUUID(), responden: 'Pengunjung',
     jawaban: Object.fromEntries(pertanyaan.filter(q => q.tipe === 'rating').map(q => [q.id,3])), menu: [menu.id] };
   const path = '/api/tenant/' + kedua.slug + '/ulasan';
   await http(hp.context(),path,422,'POST',payload);
@@ -242,7 +251,9 @@ try {
   const indexSukses = paralel.findIndex(r => r.status() === 201);
   const sukses = await paralel[indexSukses].json();
   assert.deepEqual(await http(hp.context(),path,201,'POST',permintaan[indexSukses]),sukses);
-  console.log('Pelanggan · QR → konfirmasi email → survei → moderasi lulus. Kirim ganda dan batas kirim teruji.');
+  const ulasanKedua = (await http(admin, '/api/admin/ulasan')).find(u => u.id === sukses.id);
+  assert.equal(ulasanKedua.responden, 'Dosen');
+  console.log('Pelanggan · status akun, rating langsung, moderasi komentar, dan batas kirim lulus.');
 
   const p1 = await browser.newPage({ viewport:{width:390,height:860}, isMobile:true });
   await masuk(p1,'pemilik_' + waktu,'/pemilik/laporan');
@@ -276,9 +287,31 @@ try {
     "update sikantin_private.ulasan set waktu = now() - interval '7 months' where id = '" + idUlasan + "'"], { stdio: 'pipe' });
   assert.equal((await http(admin,'/api/laporan?bulan=6&tenant=' + tenant.id)).statistik.jumlah,0);
   assert.equal((await http(admin,'/api/laporan?bulan=12&tenant=' + tenant.id)).statistik.jumlah,1);
+  await http(admin, '/api/admin/ulasan/' + idUlasan, 200, 'PUT', { status: 'sembunyi' });
+  assert.equal((await http(anonim, '/api/katalog')).tenant.find(t => t.slug === slug).statistik.nilai, null);
   await http(admin,'/api/admin/pemilik/' + tenant.id,200,'DELETE');
   await http(p1.context(),'/api/laporan',403);
   console.log('Laporan · dua pemilik terisolasi, filter periode, pencabutan akses, XLSX, dan cetak PDF lulus.');
+
+  await hp.setViewportSize({ width: 1440, height: 900 });
+  await hp.goto(url('/'));
+  await hp.locator('#screen-public-index:not([hidden])').waitFor();
+  assert.equal(hp.url(), url('/'));
+  await hp.getByRole('button', { name: 'Keluar', exact: true }).waitFor();
+  assert.equal(await hp.getByRole('link', { name: 'Masuk', exact: true }).count(), 0);
+  assert.equal(await hp.getByRole('link', { name: 'Daftar Akun', exact: true }).count(), 0);
+  await hp.setViewportSize({ width: 390, height: 860 });
+  const menuPonsel = hp.getByRole('button', { name: 'Buka Menu Navigasi' });
+  await menuPonsel.click();
+  const drawer = hp.locator('#mobileNavDrawer');
+  assert.equal(await drawer.getByRole('link', { name: 'Masuk / Daftar' }).count(), 0);
+  await drawer.getByRole('button', { name: 'Keluar', exact: true }).click();
+  await hp.waitForFunction(() => document.querySelector('.mobile-nav-toggle').getAttribute('aria-expanded') === 'false');
+  await http(hp.context(), '/api/auth/sesi', 401);
+  await menuPonsel.click();
+  await drawer.getByRole('link', { name: 'Masuk / Daftar' }).waitFor();
+  assert.equal(hp.url(), url('/'));
+  console.log('Katalog · halaman awal dan navigasi pelanggan desktop serta ponsel lulus.');
 } finally {
   await browser.close();
 }

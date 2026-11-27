@@ -1,4 +1,4 @@
-import { api, navigasi } from '../api.js';
+import { api, keluar } from '../api.js';
 
 const id = nama => document.getElementById(nama);
 export function pilih(key, daftar, label, semua) {
@@ -48,12 +48,9 @@ export async function jalankan(button, status, aksi) {
 export function pasangKeluar(link) {
   if (!link) return;
   const status = pesanDi(link.parentElement);
-  const keluar = tombol('Keluar', button => jalankan(button, status, async () => {
-    await api('/auth/keluar', { method: 'POST', sesi: false });
-    navigasi('/');
-  }));
-  keluar.className = link.className;
-  link.replaceWith(keluar);
+  const tombolKeluar = tombol('Keluar', button => jalankan(button, status, keluar));
+  tombolKeluar.className = link.className;
+  link.replaceWith(tombolKeluar);
 }
 export const admin = modul => api('/admin/' + modul);
 export function simpan(modul, id, data, foto) {
@@ -65,7 +62,7 @@ export function simpan(modul, id, data, foto) {
   }
   return api('/admin/' + modul + (id ? '/' + id : ''), { method: id ? 'PUT' : 'POST', data });
 }
-export const segarkanKatalog = () => document.dispatchEvent(new Event('katalog-berubah'));
+export { segarkanKatalog } from '../api.js';
 export const tanggal = new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Jakarta' });
 export const cocok = (q, ...data) => data.join(' ').toLocaleLowerCase('id').includes(q.trim().toLocaleLowerCase('id'));
 export const val = key => id(key)?.value || '';

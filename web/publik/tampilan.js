@@ -62,6 +62,31 @@ export function katalog(daftar, params) {
 
 const awalTombol = id('publicCampusFilterBar').querySelector('button[data-campus="KAMPUS_A"]').cloneNode(true);
 const awalFasilitas = id('facilityGrid').querySelector('.facility-card').cloneNode(true);
+
+function tautanLokasi(kartu, nama, alamat) {
+  const halaman = new URL('https://www.google.com/maps/search/');
+  halaman.search = new URLSearchParams({ api: '1', query: [nama, alamat].filter(Boolean).join(', ') });
+  const kepala = kartu.querySelector('.facility-card-header');
+  const tautan = document.createElement('a');
+  tautan.className = kepala.className;
+  tautan.href = halaman.href;
+  tautan.target = '_blank';
+  tautan.rel = 'noopener noreferrer';
+  tautan.title = 'Buka lokasi ' + nama + ' di Google Maps';
+  tautan.setAttribute('aria-label', tautan.title);
+  tautan.append(...kepala.childNodes);
+  const ikon = tautan.querySelector('svg');
+  ikon.setAttribute('aria-hidden', 'true');
+  ikon.innerHTML = '<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/>';
+  kepala.replaceWith(tautan);
+}
+
+for (const kartu of id('facilityGrid').querySelectorAll('.facility-card')) {
+  const nama = kartu.querySelector('.facility-title').textContent.replace(/^Fasilitas Kantin:\s*/, '');
+  const alamat = kartu.querySelector('.facility-item').textContent.replace(/^Lokasi:\s*/, '');
+  tautanLokasi(kartu, nama, alamat);
+}
+
 export function kampusKatalog(daftar) {
   const bar = id('publicCampusFilterBar');
   const fasilitas = id('facilityGrid');
@@ -80,6 +105,7 @@ export function kampusKatalog(daftar) {
     const [lokasi, rincian] = card.querySelectorAll('.facility-item');
     lokasi.textContent = alamat || 'Alamat belum dicatat.';
     rincian.textContent = info || 'Fasilitas belum dicatat.';
+    tautanLokasi(card, nama, alamat);
     fasilitas.append(card);
   }
 }
