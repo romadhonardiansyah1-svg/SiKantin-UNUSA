@@ -115,15 +115,14 @@ export async function akun(request: Request, env: Env, aksi: string) {
   if (aksi === 'konfirmasi') {
     const hash = teks(data.token_hash);
     if (!/^[0-9a-z_-]{20,160}$/i.test(hash)) throw new HttpError(422, 'Tautan konfirmasi tidak valid.');
-    let token: Token;
-    try { token = await auth<Token>(env, 'verify', { token_hash: hash, type: 'email' }); }
+    try { await auth(env, 'verify', { token_hash: hash, type: 'email' }); }
     catch (error) {
       if (error instanceof HttpError && [400,401,403,422].includes(error.status)) {
         throw new HttpError(422, 'Tautan konfirmasi kedaluwarsa atau sudah digunakan.');
       }
       throw error;
     }
-    return json({ ...await sesi(env, token.access_token), kembali }, 200, setCookie(request, token));
+    return json({ berhasil: true }, 200, setCookie(request));
   }
   throw new HttpError(404, 'Layanan akun tidak ditemukan.');
 }

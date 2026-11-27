@@ -1,4 +1,4 @@
-import { aspek, detailUrl, filterKatalog, harga, skor, statistikTenant, surveiUrl } from './katalog.js';
+import { aspek, detailUrl, filterKatalog, harga, jamOperasional, skor, statistikTenant, surveiUrl } from './katalog.js';
 import { muatSlide } from './slide.js';
 
 const id = nama => document.getElementById(nama);
@@ -13,6 +13,7 @@ function kartu(t) {
   const ringkas = statistikTenant(t);
   const detail = detailUrl(t);
   const ulasan = t.ulasan.find(u => u.komentar);
+  const jam = jamOperasional(t);
   const nilai = ringkas.nilai != null ? `<span class="gf-star" aria-hidden="true">★</span><span class="gf-rating-val">${skor(ringkas.nilai)}</span><span>(${ringkas.jumlah} ulasan)</span>` : 'Belum ada penilaian';
   const kategori = [...new Set(t.menu.map(m => m.kategori))].join(', ');
   const menu = t.menu.slice(0, 6).map(m => `
@@ -27,6 +28,7 @@ function kartu(t) {
     <div class="gf-campus-row"><span class="gf-campus-label">
       <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
       Kampus ${teks(t.kampus)} UNUSA</span><span class="gf-sep" aria-hidden="true">|</span><span class="gf-pay-label">Tunai &amp; QRIS</span></div>
+    ${jam ? `<div class="gf-campus-row"><span>Jam buka ${teks(jam)}</span></div>` : ''}
     <div class="gf-tags-row">${ringkas.nilai >= 4.5 ? '<span class="gf-tag-pill is-emerald">Rating Tinggi</span>' : ''}<span class="gf-tag-pill">${mulai}</span></div></div></div>
     <div class="gf-menu-carousel">${menu}<a class="gf-see-more-slot" href="${detail}"><span class="gf-see-more-circle">
       <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><span class="gf-see-more-label">Lihat lainnya</span></a></div>
@@ -130,11 +132,18 @@ export function menuDetail(t, kategori = 'ALL') {
   `).join('') || '<p class="empty-note">Belum ada menu pada kategori ini.</p>';
 }
 
+const deskripsiTenant = id('detailTenantDesc');
+const jamTenant = document.createElement('p');
+jamTenant.className = 'status-note';
+deskripsiTenant.after(jamTenant);
+
 export function detail(t, kembali) {
   const nilai = statistikTenant(t);
   id('detailBreadcrumbCampus').textContent = id('detailCampusBadge').textContent = 'Kampus ' + t.kampus + ' UNUSA';
   id('detailBreadcrumbName').textContent = id('detailTenantName').textContent = t.nama;
-  id('detailTenantDesc').textContent = t.deskripsi;
+  deskripsiTenant.textContent = t.deskripsi;
+  const jam = jamOperasional(t);
+  jamTenant.textContent = jam ? 'Jam buka ' + jam : 'Jam operasional belum dicatat.';
   const banner = id('detailTenantBannerImg');
   const path = foto(t.foto);
   banner.hidden = !path;
@@ -147,7 +156,7 @@ export function detail(t, kembali) {
   id('detailReviewCount').textContent = nilai.jumlah + ' ulasan';
   id('detailAspectGrid').innerHTML = aspek.map((nama, i) => `<div class="aspect-box"><span>${nama}</span><strong>${nilai.aspek[i] != null ? skor(nilai.aspek[i]) + ' / 5' : '—'}</strong></div>`).join('');
   id('detailReviewsList').innerHTML = t.ulasan.filter(u => u.komentar)
-    .map(u => `<article class="review-card"><strong>${teks(u.status)}</strong><p>${teks(u.komentar)}</p></article>`)
+    .map(u => `<article class="review-card"><strong>${teks(u.nama_pengulas || 'Pelanggan')}</strong><p>${teks(u.komentar)}</p></article>`)
     .join('') || '<p class="empty-note">Belum ada komentar untuk stand ini.</p>';
   for (const link of id('screen-public-tenant-detail').querySelectorAll('[data-survey-link]')) link.href = surveiUrl(t);
   for (const link of id('screen-public-tenant-detail').querySelectorAll('[data-katalog-link]')) link.href = kembali;

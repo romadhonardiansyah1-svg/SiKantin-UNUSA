@@ -73,6 +73,9 @@ export function tampilkanAkun(daftar, tenant, internal, operasional = false, pro
     return;
   }
   if (!aktif) notice.append('Layanan akun belum aktif di pratinjau ini. ');
+  if (aktif && !daftar && new URLSearchParams(location.search).get('konfirmasi') === 'berhasil') {
+    notice.append('Email sudah terkonfirmasi. Masuk untuk melanjutkan. ');
+  }
   if (tenant) {
     if (!aktif) notice.append(tautan('/pratinjau' + tujuan, 'Coba formulir survei'), ' · ');
     notice.append(tautan(detailUrl(tenant), 'Kembali ke ' + tenant.nama));
@@ -84,16 +87,30 @@ export function tampilkanAkun(daftar, tenant, internal, operasional = false, pro
 }
 
 export function tampilkanKonfirmasi(hash, tenant) {
+  const tersimpan = history.state?.konfirmasiEmail;
+  const params = new URLSearchParams(location.search);
+  const token = hash || params.get('token_hash') || tersimpan?.token;
+  const kembali = tenant ? surveiUrl(tenant) : tersimpan?.kembali || params.get('kembali');
+  const tujuanMasuk = new URLSearchParams();
+  if (kembali && kembali !== '/') tujuanMasuk.set('kembali', kembali);
+  const keMasuk = '/masuk' + (tujuanMasuk.size ? '?' + tujuanMasuk : '');
   masuk.hidden = baru.hidden = true;
   id('authCardTitle').textContent = 'Konfirmasi email';
   id('authCardSubtitle').textContent = tenant ? 'Lanjutkan pendaftaran untuk mengulas ' + tenant.nama + '.' : 'Aktifkan akun SiKantin Anda.';
   notice.hidden = false;
-  notice.replaceChildren(hash ? tombol('Konfirmasi email', async () => {
-    const hasil = await api('/auth/konfirmasi', {
-      method: 'POST', sesi: false, data: { token_hash: hash, kembali: tenant ? surveiUrl(tenant) : '' }
-    });
-    sesudahMasuk(hasil);
-  }) : tautan('/daftar', 'Daftar lagi'));
+  if (!token || tersimpan?.berhasil) {
+    const pesan = tersimpan?.berhasil ? 'Email sudah terkonfirmasi.' : 'Tautan konfirmasi tidak lengkap. Buka kembali tautan dari email pendaftaran.';
+    notice.replaceChildren(pesan + ' ', tautan(keMasuk, 'Masuk'));
+    return;
+  }
+  history.replaceState({ ...history.state, konfirmasiEmail: { token, kembali } }, '', '/konfirmasi');
+  notice.replaceChildren(tombol('Konfirmasi email', async () => {
+    await api('/auth/konfirmasi', { method: 'POST', sesi: false, data: { token_hash: token } });
+    history.replaceState({ ...history.state, konfirmasiEmail: { kembali, berhasil: true } }, '', '/konfirmasi');
+    catatSesi(null);
+    tujuanMasuk.set('konfirmasi', 'berhasil');
+    navigasi('/masuk?' + tujuanMasuk);
+  }), tautan(keMasuk, 'Sudah konfirmasi? Masuk'));
 }
 const email = id('authRegEmail');
 function periksaEmail() {

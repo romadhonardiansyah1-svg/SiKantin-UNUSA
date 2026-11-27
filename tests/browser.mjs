@@ -22,6 +22,8 @@ try {
     const kode = /\b[A-C]-\d{2}\b/;
     await page.goto(origin);
     assert.equal(new URL(page.url()).pathname, '/');
+    assert.equal(await page.locator('#heroPosterTrack img').count(), 3);
+    assert.ok(await page.locator('.poster-control').isHidden(), 'Poster bergerak tanpa tombol jeda atau putar.');
     const tenant = page.locator('.gf-card');
     await tenant.first().waitFor();
     assert.equal(await tenant.count(), 17);
@@ -32,6 +34,11 @@ try {
     await page.evaluate(() => document.fonts.ready);
     await tenant.first().locator('.gf-thumb-wrap img').evaluate(img => img.decode());
     assert.ok(await page.evaluate(() => document.fonts.check('16px "Plus Jakarta Sans"')));
+    if (width === 1440) {
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      await page.waitForFunction(() => document.getElementById('heroPosterTrack').scrollLeft > 0, null, { timeout: 7000 });
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+    }
     await page.screenshot({ path: fileURLToPath(new URL('katalog-' + width + '.png', bukti)) });
     if (width === 1440) await tenant.nth(1).screenshot({ path: fileURLToPath(new URL('kartu-ayam-geprek.png', bukti)) });
     const menu = page.getByRole('button', { name: 'Buka Menu Navigasi' });

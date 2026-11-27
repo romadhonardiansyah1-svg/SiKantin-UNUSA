@@ -1,6 +1,6 @@
 import { api } from '../api.js';
 import { grafik, id, isi, tabel, tautan } from '../admin-ui/pratinjau.js';
-import { aspek, skor } from '../publik/katalog.js';
+import { aspek, jamOperasional, skor } from '../publik/katalog.js';
 import { admin, jalankan, pesanDi, pilih, tanggal, unduh, val } from '../admin/kontrol.js';
 
 const nilai = x => x == null ? '—' : skor(x);
@@ -26,7 +26,7 @@ function komentar(key, rows) {
     const item = document.createElement('article');
     item.className = 'review-card';
     const label = document.createElement('strong');
-    label.textContent = [u.tenant,u.status,tanggal.format(new Date(u.waktu)) + ' WIB'].join(' · ');
+    label.textContent = [u.nama_pengulas || 'Pelanggan', u.tenant, tanggal.format(new Date(u.waktu)) + ' WIB'].join(' · ');
     const isi = document.createElement('p');
     isi.textContent = u.komentar;
     item.append(label,isi);
@@ -122,21 +122,24 @@ export async function laporanPemilik({ panel, signal }) {
   if (signal.aborted) return;
   const judul = panel.querySelector('h1');
   judul.textContent = 'Portal Evaluasi · ' + data.tenant;
-  judul.nextElementSibling.hidden = true;
+  const jam = jamOperasional(data);
+  judul.nextElementSibling.textContent = jam ? 'Jam buka ' + jam : 'Jam operasional belum dicatat.';
   const stand = panel.querySelector('.badge-stall');
   stand.textContent = data.kode_stand || '';
   stand.hidden = !data.kode_stand;
   panel.querySelector('.badge-campus').textContent = data.kampus_nama;
   panel.querySelector('.badge').textContent = 'Pemilik tenant';
   panel.querySelector('a[href^="/admin/qr"]').remove();
-  panel.querySelector('a[href^="/tenant/"]').href = '/tenant/' + data.slug;
+  const tautanPublik = panel.querySelector('a[href^="/tenant/"]');
+  tautanPublik.href = '/tenant/' + data.slug;
+  tautanPublik.hidden = data.katalog_aktif === false;
   isi('tenantKpiAvg', nilai(data.statistik.nilai));
   isi('tenantKpiReviews', data.statistik.jumlah);
   isi('tenantKpiMenus', data.jumlah_menu);
   const terbaik = Math.max(0,...data.statistik.aspek);
   isi('tenantKpiBestAspect', terbaik ? aspek[data.statistik.aspek.indexOf(terbaik)] : '—');
   isi('tenantKpiBestScore', terbaik ? 'Aspek terbaik · ' + nilai(terbaik) + ' / 5' : 'Belum ada penilaian');
-  id('tenantPortalReviewsList').previousElementSibling.textContent = 'Komentar yang tampil di katalog untuk tenant ini.';
+  id('tenantPortalReviewsList').previousElementSibling.textContent = 'Komentar pelanggan untuk tenant ini.';
   komentar('tenantPortalReviewsList',data.ulasan);
   grafikLaporan('tenantAspectChart','tenantPeakChart',data);
 }

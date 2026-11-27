@@ -82,12 +82,36 @@ export function filterStatus(key, gambar, signal) {
 
 export const cocokStatus = (data, filter) => filter.value === 'semua' || data.aktif === (filter.value === 'aktif');
 
+export function konfirmasiHapus(pemicu, judul, pesan, hapus) {
+  const dialog = document.createElement('dialog');
+  dialog.setAttribute('aria-label', judul);
+  Object.assign(dialog.style, {
+    maxWidth: 'min(26rem, calc(100% - 2rem))', padding: '1.25rem',
+    color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)'
+  });
+  const judulDialog = document.createElement('h3');
+  judulDialog.textContent = judul;
+  const keterangan = document.createElement('p');
+  keterangan.textContent = pesan;
+  const batal = tombol('Batal', () => dialog.close());
+  batal.autofocus = true;
+  const setuju = tombol('Hapus sekarang', () => dialog.close('hapus'));
+  setuju.classList.replace('btn-outline', 'btn-danger');
+  dialog.append(judulDialog, keterangan, kelompok(batal, setuju));
+  pemicu.after(dialog);
+  dialog.addEventListener('close', () => {
+    dialog.remove();
+    if (dialog.returnValue === 'hapus') hapus();
+  }, { once: true });
+  dialog.showModal();
+}
+
 export function aksiData(modul, data, status, selesai) {
   let sibuk = false;
   const url = '/admin/' + modul + '/' + data.id;
   const aktif = !data.aktif;
   function ubah(hapus, button) {
-    if (sibuk || (hapus && !window.confirm('Hapus data ini secara permanen?'))) return;
+    if (sibuk) return;
     sibuk = true;
     return jalankan(button, status, async () => {
       await api(url, hapus ? { method: 'DELETE' } : { method: 'PATCH', data: { aktif } });
@@ -97,10 +121,19 @@ export function aksiData(modul, data, status, selesai) {
       status(hapus ? 'Data dihapus.' : aktif ? 'Data diaktifkan.' : 'Data diarsipkan.');
     }).finally(() => { sibuk = false; });
   }
-  return [
-    tombol(aktif ? 'Aktifkan' : 'Arsipkan', button => ubah(false, button)),
-    tombol('Hapus', button => ubah(true, button))
-  ];
+  const tindakan = [tombol(aktif ? 'Aktifkan' : 'Arsipkan', button => ubah(false, button))];
+  if (data.alasan_hapus) {
+    const alasan = document.createElement('small');
+    alasan.textContent = data.alasan_hapus;
+    tindakan.push(alasan);
+  } else {
+    const pesan = modul === 'tenant' ? 'Menu dan QR tenant ikut dihapus. Akses pemilik dicabut.'
+      : 'Data ini akan dihapus secara permanen.';
+    tindakan.push(tombol('Hapus', button => {
+      if (!sibuk) konfirmasiHapus(button, 'Hapus ' + (data.nama || data.label) + '?', pesan, () => ubah(true, button));
+    }));
+  }
+  return tindakan;
 }
 export { segarkanKatalog };
 export const tanggal = new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Jakarta' });

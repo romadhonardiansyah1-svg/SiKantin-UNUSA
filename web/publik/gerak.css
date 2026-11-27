@@ -1,3 +1,5 @@
+.poster-control { display: none; }
+
 @media (prefers-reduced-motion: no-preference) {
   @keyframes buka-rincian {
     from { opacity: 0; transform: translateY(6px); }

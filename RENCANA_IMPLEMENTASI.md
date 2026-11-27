@@ -49,7 +49,7 @@ Terima alamat valid dengan domain persis `gmail.com`, `unusa.ac.id`, atau `stude
 
 Di `/masuk`, tautan pratinjau peran membuka login staf. Worker memetakan username ke email privat, Supabase memverifikasi sandi. Admin awal disiapkan pengelola Supabase. Peran dari server menentukan tujuan `/admin` atau `/pemilik/laporan`. URL privat tanpa sesi kembali ke login, salah peran ditolak. Logout mengakhiri sesi dan kembali ke katalog.
 
-Admin mengelola kampus, tenant, menu, dan akses pemilik. Nomor MoU opsional. Basis data membuat nomor stand unik saat tenant disimpan. Hapus data yang belum terhubung dan arsipkan data yang sudah dipakai. Data arsip dapat diaktifkan kembali. Untuk foto tenant/menu, batasi unggahan Storage ke admin, validasi JPG/PNG/WebP hingga 2 MB. [Akses Storage](https://supabase.com/docs/guides/storage/security/access-control)
+Admin mengelola kampus, tenant, menu, dan akses pemilik. Nomor MoU opsional. Basis data membuat nomor stand unik saat tenant disimpan. Jam buka dan tutup diisi berpasangan dalam WIB. Saat tenant tanpa riwayat survei dihapus, menu dan QR ikut dihapus serta akses pemilik dicabut. Arsipkan data yang sudah dipakai untuk menyimpan riwayatnya. [Akses Storage](https://supabase.com/docs/guides/storage/security/access-control)
 
 Pada baris tenant, sediakan buat, lihat, ganti, cabut, unduh PNG, dan cetak QR. Isi QR dan teks kartu harus sama persis, yaitu origin aplikasi ditambah `/r/:token`. Token valid membuka survei tenant terkait. Token lama atau tenant nonaktif menampilkan pesan QR tidak berlaku.
 
@@ -65,7 +65,7 @@ Admin mengelola pertanyaan dan mengurutkannya. Lima aspek utama tetap aktif untu
 
 `POST /api/tenant/:slug/ulasan` memanggil satu fungsi Postgres. Dari sesi, periksa peran pelanggan serta email aktif yang terkonfirmasi dan memenuhi aturan domain tahap 2. Validasi tenant aktif, kepemilikan menu, jawaban wajib, dan skor 1–5. Simpan ulasan beserta jawaban memakai waktu server dalam satu transaksi. Kunci pasangan akun–tenant saat memeriksa batas kirim. Gunakan ID kiriman unik per pelanggan agar percobaan ulang memperoleh hasil pertama. Tutup akses tulis langsung ke tabel ulasan. Setelah tersimpan, tampilkan konfirmasi dengan pilihan kembali ke detail atau katalog.
 
-- [ ] **Lulus** bila akun baru dari QR kembali ke tenant asal setelah konfirmasi, dan akun lama dari katalog kembali ke tenant asal setelah masuk. Pengiriman sebelum konfirmasi atau dengan isian wajib kosong ditolak. Klik ganda menyimpan satu ulasan. Dua kiriman baru serentak dengan sisa satu jatah menghasilkan satu sukses dan satu penolakan (429). Cek rating dan komentar langsung tayang, lalu uji sembunyikan, tampilkan kembali, tandai spam, dan hapus.
+- [ ] **Lulus** bila konfirmasi email mengembalikan pelanggan ke halaman masuk dan pengguna baru maupun lama kembali ke survei asal setelah masuk. Pengiriman sebelum konfirmasi atau dengan isian wajib kosong ditolak. Klik ganda menyimpan satu ulasan. Dua kiriman baru serentak dengan sisa satu jatah menghasilkan satu sukses dan satu penolakan (429). Cek rating dan komentar langsung tayang dengan nama pengulas, lalu uji sembunyikan, tampilkan kembali, tandai spam, dan hapus.
 
 ### 4. Laporan pemilik, ekspor admin, dan rilis
 

@@ -9,7 +9,8 @@ const bidang = {
   tenant_form_name: 'nama', tenant_form_owner_name: 'nama_pemilik', tenant_form_phone: 'kontak',
   tenant_form_description: 'deskripsi', tenant_form_contract_start: 'kontrak_mulai',
   tenant_form_contract_end: 'kontrak_selesai', tenant_form_contract_status: 'status_kontrak',
-  tenant_form_mou: 'mou_nomor', tenant_form_is_active: 'aktif'
+  tenant_form_mou: 'mou_nomor', tenant_form_is_active: 'aktif',
+  tenant_form_jam_buka: 'jam_buka', tenant_form_jam_tutup: 'jam_tutup'
 };
 
 export async function daftarTenant({ signal }, publik) {
@@ -64,6 +65,16 @@ export async function formulirTenant({ signal }, tenantId) {
   const akses = sandi.closest('.form-group').parentElement;
   const email = field(akses, 'tenant_form_owner_email', 'Email akun pemilik', 'email');
   field(id('tenant_form_contract_status').closest('.form-group').parentElement, 'tenant_form_mou', 'Nomor MoU (opsional)');
+  const deskripsi = id('tenant_form_description').closest('.form-group');
+  const jam = document.createElement('div');
+  jam.className = 'tenant-form-row-2';
+  deskripsi.after(jam);
+  const buka = field(jam, 'tenant_form_jam_buka', 'Jam buka (WIB)', 'time');
+  const tutup = field(jam, 'tenant_form_jam_tutup', 'Jam tutup (WIB)', 'time');
+  function wajibJam() {
+    buka.required = tutup.required = Boolean(buka.value || tutup.value);
+  }
+  jam.addEventListener('input', wajibJam, { signal });
   const nomor = id('tenant_form_stall_number');
   nomor.disabled = false;
   nomor.required = false;
@@ -78,6 +89,8 @@ export async function formulirTenant({ signal }, tenantId) {
   username.autocomplete = 'off';
   username.pattern = '[a-z0-9_.\\-]{3,40}';
   isiForm(bidang, data);
+  for (const input of [buka, tutup]) input.value = input.value.slice(0, 5);
+  wajibJam();
   const submit = id('tenantFormSubmitBtn');
   const status = pesanDi(form, true);
   submit.disabled = false;

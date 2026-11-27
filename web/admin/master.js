@@ -1,6 +1,6 @@
 import { id, isi, tabel } from '../admin-ui/pratinjau.js';
 import { harga, kunciAspek, skor } from '../publik/katalog.js';
-import { admin, aksiData, cocok, cocokStatus, dataForm, field, filterStatus, isiForm, jalankan,
+import { admin, aksiData, cocok, cocokStatus, dataForm, field, filterStatus, isiForm, jalankan, konfirmasiHapus,
   kelompok, pesanDi, pilih, segarkanKatalog, simpan, tanggal, tombol, val } from './kontrol.js';
 
 const layar = {
@@ -145,13 +145,14 @@ export async function moderasi({ panel, signal }) {
       const aksi = [['Tampilkan kembali','tayang'],['Sembunyikan','sembunyi'],['Tandai spam','spam'],['Hapus','dihapus']]
         .filter(([,target]) => u.status !== target)
         .map(([label,target]) => tombol(label, button => {
-          if (target === 'dihapus' && !window.confirm('Hapus ulasan ini dari daftar moderasi dan laporan?')) return;
-          return jalankan(button, status, async () => {
+          const ubah = () => jalankan(button, status, async () => {
             await simpan('ulasan',u.id,{ status: target });
             u.status = target;
             segarkanKatalog();
             if (!signal.aborted) gambar();
           });
+          if (target === 'dihapus') konfirmasiHapus(button, 'Hapus ulasan?', 'Ulasan akan dihapus dari moderasi dan laporan.', ubah);
+          else ubah();
         }));
       const detail = document.createElement('details');
       const judul = document.createElement('summary');

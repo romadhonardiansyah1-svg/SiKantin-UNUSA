@@ -4,6 +4,12 @@ const rupiah = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'ID
 export const harga = nilai => rupiah.format(nilai);
 export const skor = nilai => nilai.toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 export const detailUrl = tenant => '/tenant/' + encodeURIComponent(tenant.slug);
+export function jamOperasional({ jam_buka, jam_tutup }) {
+  if (!jam_buka || !jam_tutup) return '';
+  const buka = jam_buka.slice(0, 5).replace(':', '.');
+  const tutup = jam_tutup.slice(0, 5).replace(':', '.');
+  return buka + '–' + tutup + ' WIB' + (tutup < buka ? ' (tutup esok hari)' : '');
+}
 export const surveiUrl = tenant => detailUrl(tenant) + '/survei';
 
 export function statistik(ulasan) {
