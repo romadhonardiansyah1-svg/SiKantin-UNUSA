@@ -1,14 +1,30 @@
 import { surveiUrl, tujuanSurvei } from './publik/katalog.js';
-import { katalog, detail, menuDetail } from './publik/tampilan.js';
-import { tampilkanAkun } from './auth/formulir.js';
+import { katalog, detail, kampusKatalog, menuDetail } from './publik/tampilan.js';
+import { tampilkanAkun, tampilkanKonfirmasi } from './auth/formulir.js';
 import { bukaSurvei, hasilSurvei } from './publik/survei.js';
 import { internal, tutupInternal } from './admin-ui/pratinjau.js';
+import { api, layananAktif, sesiAktif } from './api.js';
 
 const id = nama => document.getElementById(nama);
 const layar = [...document.querySelectorAll('#konten > section')];
 let daftar = [];
+let contoh;
 let tenant = null;
 let posisiRute = 0;
+let operasional = false;
+let katalogUsang = false;
+let konfirmasi;
+async function muatContoh() {
+  const response = await fetch('/publik/katalog-contoh.json');
+  if (!response.ok) throw new Error('Data pratinjau gagal dimuat.');
+  return response.json();
+}
+async function muatKatalog() {
+  const data = await api('/katalog', { sesi: false });
+  daftar = data.tenant;
+  kampusKatalog(data.kampus);
+  katalogUsang = false;
+}
 function tampil(nama, judul, fokus) {
   const kini = id('screen-' + nama);
   for (const el of layar) {
@@ -22,14 +38,36 @@ function tampil(nama, judul, fokus) {
 function ke(url, ganti = false) {
   const state = { katalog: location.pathname === '/' ? '/' + location.search : history.state?.katalog || '/' };
   history[ganti ? 'replaceState' : 'pushState'](state, '', url);
-  render(true);
+  renderAman(true);
 }
+function gagal(judul, pesan, ulang = false) {
+  const halaman = id('screen-tidak-ditemukan');
+  halaman.querySelector('h1').textContent = judul;
+  halaman.querySelector('p').textContent = pesan;
+  const link = halaman.querySelector('a');
+  link.textContent = ulang ? 'Coba lagi' : 'Kembali ke katalog';
+  link.href = ulang ? location.pathname + location.search : '/';
+  link.onclick = ulang ? event => { event.preventDefault(); event.stopPropagation(); location.reload(); } : null;
+  tampil('tidak-ditemukan', judul, true);
+}
+async function renderAman(fokus = false) {
+  const sebelum = posisiRute + 1;
+  try { await render(fokus); }
+  catch (error) {
+    if (posisiRute === sebelum) gagal('Halaman gagal dimuat', error.message, true);
+  }
+}
+
 async function render(fokus = false) {
   const giliran = ++posisiRute;
   tutupInternal();
   const path = location.pathname.replace(/\/+$/, '') || '/';
   const params = new URLSearchParams(location.search);
   tutupMenu(false);
+  if (operasional && katalogUsang && /^(\/$|\/tenant\/|\/(?:masuk|daftar|konfirmasi)$)/.test(path)) {
+    await muatKatalog();
+    if (giliran !== posisiRute) return;
+  }
   if (path === '/') {
     katalog(daftar, params);
     tampil('public-index', 'Katalog kantin', fokus);
@@ -37,47 +75,74 @@ async function render(fokus = false) {
     return;
   }
   const rute = path.match(/^(\/pratinjau)?\/tenant\/([a-z0-9-]+)(?:\/(survei|ringkasan))?$/);
-  tenant = rute && daftar.find(t => t.slug === rute[2]);
+  if (rute?.[1] && operasional) {
+    contoh ??= await muatContoh();
+    if (giliran !== posisiRute) return;
+  }
+  tenant = rute && (rute[1] ? contoh ?? daftar : daftar).find(t => t.slug === rute[2]);
   if (tenant && !rute[1] && !rute[3]) {
     const kembali = history.state?.katalog || '/';
     detail(tenant, /^\/(?:\?[^#]*)?$/.test(kembali) ? kembali : '/');
     tampil('public-tenant-detail', tenant.nama, fokus);
     return;
   }
-  if (tenant && !rute[1] && rute[3] === 'survei') {
-    ke('/masuk?kembali=' + encodeURIComponent(surveiUrl(tenant)), true);
-    return;
-  }
-  if (tenant && rute[1] && (rute[3] === 'survei' || rute[3] === 'ringkasan')) {
+  if (tenant && rute[3]) {
+    const pratinjau = Boolean(rute[1]);
     if (rute[3] === 'ringkasan') {
-      if (!hasilSurvei(tenant)) return ke('/pratinjau' + surveiUrl(tenant), true);
-      tampil('public-review-success', 'Ringkasan simulasi', fokus);
+      if (!hasilSurvei(tenant, pratinjau)) return ke((pratinjau ? '/pratinjau' : '') + surveiUrl(tenant), true);
+      tampil('public-review-success', pratinjau ? 'Ringkasan simulasi' : 'Ulasan terkirim', fokus);
     } else {
-      bukaSurvei(tenant);
+      if (!pratinjau) {
+        const profil = operasional ? await sesiAktif() : null;
+        if (giliran !== posisiRute) return;
+        if (!profil) return ke((operasional ? '/daftar' : '/masuk') + '?kembali=' + encodeURIComponent(surveiUrl(tenant)), true);
+        if (profil.peran !== 'pelanggan') return gagal('Survei pelanggan', 'Masuk dengan akun pelanggan untuk mengirim ulasan.');
+        const pertanyaan = await api('/pertanyaan');
+        if (giliran !== posisiRute) return;
+        bukaSurvei(tenant, pertanyaan);
+      } else bukaSurvei(tenant);
       tampil('public-review', 'Survei · ' + tenant.nama, fokus);
     }
     return;
   }
   if (/^\/(admin|pemilik)(\/|$)/.test(path)) {
-    ke('/masuk?akses=internal', true);
-    return;
+    const profil = operasional ? await sesiAktif() : null;
+    if (giliran !== posisiRute) return;
+    if (!profil) return ke('/masuk?akses=internal', true);
+    if (profil.peran !== path.split('/')[1]) return gagal('Akses ditolak', 'Halaman ini dibatasi sesuai peran akun.');
+    const { halamanInternal } = await import('./admin/operasional.js');
+    if (giliran !== posisiRute) return;
+    const judul = await halamanInternal(path, daftar);
+    if (giliran !== posisiRute) return;
+    if (judul) return tampil('internal', judul, fokus);
   }
   if (path === '/masuk' || path === '/daftar') {
     const daftarAkun = path === '/daftar';
-    tampilkanAkun(daftarAkun, tujuanSurvei(params.get('kembali'), daftar), params.get('akses') === 'internal');
+    const profil = operasional ? await sesiAktif() : null;
+    if (giliran !== posisiRute) return;
+    tampilkanAkun(daftarAkun, tujuanSurvei(params.get('kembali'), daftar), params.get('akses') === 'internal', operasional, profil);
     tampil('tenant-login', daftarAkun ? 'Daftar akun' : 'Masuk', fokus);
     return;
   }
+  if (path === '/konfirmasi' && operasional) {
+    const hash = new URLSearchParams(location.hash.slice(1)).get('token_hash');
+    if (hash) {
+      konfirmasi = { hash, kembali: params.get('kembali') };
+      history.replaceState(history.state, '', '/konfirmasi');
+    }
+    tampilkanKonfirmasi(konfirmasi?.hash, tujuanSurvei(konfirmasi?.kembali, daftar));
+    return tampil('tenant-login', 'Konfirmasi email', fokus);
+  }
   if (/^\/pratinjau\/(?:admin(?:\/|$)|pemilik$)/.test(path)) {
-    const ada = await internal(path, daftar);
+    contoh ??= operasional ? await muatContoh() : daftar;
+    if (giliran !== posisiRute) return;
+    const ada = await internal(path, contoh);
     if (giliran !== posisiRute) return;
     if (ada) return tampil('internal', id('screen-internal').querySelector('h1').textContent, fokus);
   }
   const qr = path.startsWith('/r/');
-  const gagal = id('screen-tidak-ditemukan');
-  gagal.querySelector('h1').textContent = qr ? 'Kode QR belum tersedia' : 'Halaman tidak ditemukan';
-  gagal.querySelector('p').textContent = qr ? 'Buka survei contoh melalui halaman tenant di katalog.' : 'Periksa tautan atau pilih stand dari katalog.';
-  tampil('tidak-ditemukan', gagal.querySelector('h1').textContent, fokus);
+  gagal(qr ? (operasional ? 'Kode QR tidak berlaku' : 'Kode QR belum tersedia') : 'Halaman tidak ditemukan',
+    qr ? 'Buka halaman tenant di katalog untuk mengisi survei.' : 'Periksa tautan atau pilih tenant dari katalog.');
 }
 
 function ubahFilter(nama, nilai, tambah = false) {
@@ -122,7 +187,8 @@ document.addEventListener('keydown', event => {
 matchMedia('(min-width: 901px)').addEventListener('change', () => tutupMenu(false));
 document.addEventListener('click', event => {
   const a = event.target.closest('a[href]');
-  if (!a || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || a.target || a.origin !== location.origin) return;
+  if (!a || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || a.target || a.hasAttribute('download')
+      || a.origin !== location.origin || a.pathname.startsWith('/r/')) return;
   if (a.hash && a.pathname === location.pathname && (!a.search || a.search === location.search)) {
     const tujuan = document.getElementById(a.hash.slice(1));
     if (tujuan) { event.preventDefault(); tujuan.focus({ preventScroll: true }); tujuan.scrollIntoView(); }
@@ -132,7 +198,8 @@ document.addEventListener('click', event => {
   ke(a.pathname + a.search + a.hash);
 });
 document.addEventListener('navigasi', e => ke(e.detail));
-window.addEventListener('popstate', () => render(true));
+document.addEventListener('katalog-berubah', () => { katalogUsang = true; });
+window.addEventListener('popstate', () => renderAman(true));
 id('searchTenantInput').addEventListener('input', e => ubahFilter('q', e.target.value));
 id('publicCategoryFilter').addEventListener('change', e => ubahFilter('kategori', e.target.value, true));
 id('publicSortSelect').addEventListener('change', e => ubahFilter('urut', e.target.value, true));
@@ -165,17 +232,13 @@ setInterval(() => {
 }, 4200);
 
 try {
-  const response = await fetch('/publik/katalog-contoh.json');
-  if (!response.ok) throw new Error('katalog');
-  daftar = await response.json();
-  await render();
+  operasional = await layananAktif();
+  id('previewStatus').hidden = operasional;
+  if (operasional) {
+    document.querySelectorAll('a[href^="/pratinjau"]').forEach(link => { link.hidden = true; });
+    await muatKatalog();
+  } else daftar = contoh = await muatContoh();
+  await renderAman();
 } catch {
-  const el = id('screen-tidak-ditemukan');
-  el.querySelector('h1').textContent = 'Katalog gagal dimuat';
-  el.querySelector('p').textContent = 'Periksa koneksi Anda, lalu coba lagi.';
-  const ulang = el.querySelector('a');
-  ulang.textContent = 'Coba lagi';
-  ulang.href = location.href;
-  ulang.addEventListener('click', event => { event.preventDefault(); event.stopPropagation(); location.reload(); });
-  tampil('tidak-ditemukan', 'Katalog gagal dimuat', false);
+  gagal('Katalog gagal dimuat', 'Periksa koneksi Anda, lalu coba lagi.', true);
 }

@@ -15,6 +15,9 @@ section[tabindex="-1"]:focus { outline: 0; }
 .status-note { font-size: .87rem; margin: 0 0 1rem; color: var(--text-secondary); }
 .status-note a, .field-hint { color: var(--unusa-green); }
 .status-note a { text-decoration: underline; }
+.admin-aksi { display: flex; align-items: center; flex-wrap: wrap; gap: .35rem; }
+#printQrContainer canvas { max-width: 100%; height: auto; }
+#qrPrintFallbackUrl { overflow-wrap: anywhere; }
 .field-hint, .field-error { display: block; font-size: .77rem; margin-top: .25rem; }
 .field-error { color: #9b2625; }
 .field-error:empty { display: none; }

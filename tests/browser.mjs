@@ -9,6 +9,53 @@ await mkdir(bukti, { recursive: true });
 const browser = await chromium.launch({ channel: 'chrome', headless: true });
 let jumlah = 0;
 try {
+  const lambat = await browser.newPage({ viewport: { width: 390, height: 900 }, reducedMotion: 'no-preference' });
+  let selesaikan;
+  const tunggu = new Promise(resolve => { selesaikan = resolve; });
+  await lambat.route('**/api/status', async route => {
+    await tunggu;
+    await route.continue();
+  });
+  try {
+    await lambat.goto(origin, { waitUntil: 'commit' });
+    const kerangka = lambat.locator('#kerangkaMuat');
+    await kerangka.waitFor({ timeout: 4000 });
+    assert.equal(await lambat.locator('#konten').getAttribute('aria-busy'), 'true');
+    await kerangka.getByText('Memuat katalog kantin…', { exact: true }).waitFor();
+    const gerak = () => kerangka.locator('.muat-bentuk').first().evaluate(el => getComputedStyle(el, '::after').animationName);
+    assert.equal(await gerak(), 'kilau-muat');
+    await lambat.emulateMedia({ reducedMotion: 'reduce' });
+    assert.equal(await gerak(), 'none');
+    await kerangka.screenshot({ path: fileURLToPath(new URL('skeleton-katalog-390.png', bukti)) });
+    selesaikan();
+    await lambat.locator('#tenantGrid .gf-card').first().waitFor();
+    assert.ok(await kerangka.isHidden());
+    assert.equal(await lambat.locator('#konten').getAttribute('aria-busy'), null);
+  } finally {
+    selesaikan();
+    await lambat.close();
+  }
+
+  const gagal = await browser.newPage();
+  let gagalkan;
+  const tungguGalat = new Promise(resolve => { gagalkan = resolve; });
+  await gagal.route('**/api/status', async route => {
+    await tungguGalat;
+    await route.abort('failed');
+  });
+  try {
+    await gagal.goto(origin, { waitUntil: 'commit' });
+    await gagal.locator('#kerangkaMuat').waitFor({ timeout: 4000 });
+    gagalkan();
+    await gagal.getByRole('heading', { name: 'Katalog gagal dimuat' }).waitFor();
+    assert.ok(await gagal.getByRole('link', { name: 'Coba lagi' }).isVisible());
+    assert.ok(await gagal.locator('#kerangkaMuat').isHidden());
+    assert.ok(await gagal.locator('#previewStatus').isHidden());
+  } finally {
+    gagalkan();
+    await gagal.close();
+  }
+
   for (const width of [390, 768, 1440]) {
     const page = await browser.newPage({ viewport: { width, height: 900 }, hasTouch: width <= 768, isMobile: width === 390, reducedMotion: 'reduce' });
     const errors = [];
@@ -21,6 +68,9 @@ try {
     });
     const kode = /\b[A-C]-\d{2}\b/;
     await page.goto(origin);
+    assert.equal(new URL(page.url()).pathname, '/');
+    assert.equal(await page.locator('#heroPosterTrack img').count(), 3);
+    assert.ok(await page.locator('.poster-control').isHidden(), 'Poster bergerak tanpa tombol jeda atau putar.');
     const tenant = page.locator('.gf-card');
     await tenant.first().waitFor();
     assert.equal(await tenant.count(), 17);
@@ -31,6 +81,11 @@ try {
     await page.evaluate(() => document.fonts.ready);
     await tenant.first().locator('.gf-thumb-wrap img').evaluate(img => img.decode());
     assert.ok(await page.evaluate(() => document.fonts.check('16px "Plus Jakarta Sans"')));
+    if (width === 1440) {
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      await page.waitForFunction(() => document.getElementById('heroPosterTrack').scrollLeft > 0, null, { timeout: 7000 });
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+    }
     await page.screenshot({ path: fileURLToPath(new URL('katalog-' + width + '.png', bukti)) });
     if (width === 1440) await tenant.nth(1).screenshot({ path: fileURLToPath(new URL('kartu-ayam-geprek.png', bukti)) });
     const menu = page.getByRole('button', { name: 'Buka Menu Navigasi' });
@@ -41,7 +96,20 @@ try {
       assert.equal(await menu.getAttribute('aria-expanded'), 'false');
       assert.ok(await menu.evaluate(e => e === document.activeElement));
     }
+    assert.match(await page.locator('#facilitySummaryStrip').textContent(), /Area makan higienis/);
     await page.locator('[data-campus="KAMPUS_B"].campus-pill').click();
+    const fasilitas = page.locator('.facility-card:visible').filter({ hasText: 'Fasilitas Kantin: Kampus B UNUSA' });
+    assert.ok(await fasilitas.isVisible());
+    assert.match(await fasilitas.textContent(), /Lokasi:.*Jl\. Raya Jemursari/s);
+    const peta = page.getByRole('link', { name: 'Lihat lokasi kampus di Google Maps · Kampus B UNUSA' });
+    assert.ok(await peta.isVisible());
+    assert.match(await peta.textContent(), /Lihat lokasi kampus/);
+    assert.ok(await peta.evaluate(a => a.previousElementSibling.classList.contains('facility-card')));
+    const tujuanPeta = new URL(await peta.getAttribute('href'));
+    assert.equal(tujuanPeta.origin + tujuanPeta.pathname, 'https://www.google.com/maps/search/');
+    assert.equal(tujuanPeta.searchParams.get('api'), '1');
+    assert.match(tujuanPeta.searchParams.get('query'), /Kampus B UNUSA.*Jl\. Raya Jemursari/);
+    assert.equal(await peta.getAttribute('target'), '_blank');
     await page.locator('#searchTenantInput').fill('soto');
     assert.equal(await tenant.count(), 1);
     await tenant.getByRole('link', { name: 'Warung Cak Min', exact: true }).click();

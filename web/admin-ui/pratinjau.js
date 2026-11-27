@@ -1,6 +1,7 @@
 import { aspek, harga, skor, statistik } from '../publik/katalog.js';
+import { mulaiMuat } from '../muat.js';
 
-const rute = {
+export const rute = {
   '/pratinjau/admin': ['admin-dashboard', 'Dasbor analitik pengelola kantin'],
   '/pratinjau/admin/kampus': ['admin-campuses', 'Manajemen kampus'],
   '/pratinjau/admin/tenant': ['admin-tenants', 'Tenant & kode QR'],
@@ -12,8 +13,8 @@ const rute = {
   '/pratinjau/admin/qr': ['admin-qr-print', 'Kartu QR meja'],
   '/pratinjau/pemilik': ['tenant-dashboard', 'Portal evaluasi pemilik']
 };
-const id = key => document.getElementById(key);
-const isi = (key, value) => { id(key).textContent = value; };
+export const id = key => document.getElementById(key);
+export const isi = (key, value) => { id(key).textContent = value; };
 const val = key => id(key)?.value || '';
 const tanggal = new Intl.DateTimeFormat('id-ID', { timeZone: 'Asia/Jakarta', dateStyle: 'medium' });
 const jam = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Jakarta', hour: '2-digit', hourCycle: 'h23' });
@@ -30,15 +31,19 @@ export function tutupInternal() {
 
 async function templates() {
   if (!sumber) {
-    sumber = fetch('/admin-ui/layar').then(async response => {
-      if (!response.ok) throw new Error('layar');
+    mulaiMuat('/admin-ui/layar');
+    sumber = fetch('/admin-ui/layar', { signal: AbortSignal.timeout?.(15000) }).then(async response => {
+      if (!response.ok) throw new Error('HTTP ' + response.status);
       return new DOMParser().parseFromString(await response.text(), 'text/html');
-    }).catch(err => { sumber = null; throw err; });
+    }).catch(error => {
+      sumber = null;
+      throw new Error('Tampilan dasbor belum dapat dimuat.', { cause: error });
+    });
   }
   return sumber;
 }
 
-function tabel(key, baris) {
+export function tabel(key, baris) {
   const body = id(key);
   body.replaceChildren();
   if (!baris.length) {
@@ -56,7 +61,7 @@ function tabel(key, baris) {
     }
   }
 }
-function tautan(url, nama) {
+export function tautan(url, nama) {
   const a = document.createElement('a');
   a.href = url;
   a.textContent = nama;
@@ -74,11 +79,12 @@ const cocok = (key, t) => !val(key) || val(key) === t.slug;
 const cari = (key, ...values) => values.join(' ').toLocaleLowerCase('id').includes(val(key).trim().toLocaleLowerCase('id'));
 const tanggapan = tenants => tenants.flatMap(t => t.ulasan.map(u => ({ t, u }))).sort((a,b) => b.u.waktu.localeCompare(a.u.waktu));
 
-function grafik(key, judul, tipe, labels, data) {
+export function grafik(key, judul, tipe, labels, data) {
   const canvas = id(key);
   canvas.setAttribute('aria-label', judul + '. ' + labels.map((l, i) => l + ' ' + (data[i] ?? '—')).join(', '));
   const old = window.Chart.getChart(canvas);
   if (old) {
+    old.data.labels = labels;
     old.data.datasets[0].data = data;
     old.update('none');
     return;
@@ -192,34 +198,16 @@ function proses(key, daftar) {
     diagram('tenantAspectChart','tenantPeakChart',t.ulasan);
   }
 }
-export async function internal(path, katalogPublik) {
-  const route=rute[path];
-  if (!route) return false;
+export async function pasangLayar(key, title, path, operasional = false) {
   const controller=new AbortController();
   events=controller;
   const {signal}=controller;
-  const [key,title]=route;
   const panel=id('screen-internal');
-  const perluStand = ['admin-tenants', 'admin-qr-print', 'tenant-dashboard'].includes(key);
-  let doc, standContoh;
-  try {
-    [doc, standContoh] = await Promise.all([
-      templates(),
-      perluStand ? import('./stand-contoh.js') : null,
-      ['admin-dashboard','admin-report','tenant-dashboard'].includes(key) ? import('../vendor/chart-4.6.2.js') : null
-    ]);
-  } catch {
-    if (signal.aborted) return false;
-    panel.replaceChildren();
-    const h=document.createElement('h1');
-    h.textContent='Pratinjau gagal dimuat';
-    panel.append(h, tautan(path, 'Coba lagi'));
-    return true;
-  }
-  if(signal.aborted) return false;
-  const daftar = standContoh
-    ? katalogPublik.map(t => ({ ...t, stand: standContoh.kodeStand[t.slug] ?? 'Belum ditetapkan' }))
-    : katalogPublik;
+  const [doc] = await Promise.all([
+    templates(),
+    ['admin-dashboard','admin-report','tenant-dashboard'].includes(key) ? import('../vendor/chart-4.6.2.js') : null
+  ]);
+  if (signal.aborted) return null;
   const clone=key => doc.getElementById(key).content.cloneNode(true);
   const admin=key.startsWith('admin-') && key!=='admin-qr-print';
   panel.classList.toggle('internal-admin',admin);
@@ -227,30 +215,36 @@ export async function internal(path, katalogPublik) {
   if(admin){
     panel.querySelector('main').append(clone(key));
     isi('adminTopbarTitle',title);
-    isi('adminTopbarDate','Pratinjau · Data contoh');
-    const kembali = panel.querySelector('.admin-sidebar .btn-danger');
-    kembali.replaceChildren(kembali.querySelector('svg'), 'Kembali ke katalog');
-    for(const a of panel.querySelectorAll('.admin-nav-item'))a.classList.toggle('active',a.pathname===path);
+    isi('adminTopbarDate', operasional ? tanggal.format(new Date()) : 'Pratinjau · Data contoh');
+    if (operasional) isi('adminTopbarRole', 'Pengelola kantin');
   }
-  for(const k of ['adminMenusFilterTenant','adminReviewsFilterTenant','reportFilterTenant']) pilihTenant(k,daftar);
-  pilihTenant('qrPrintTenantSelect',daftar,false);
-  if(key==='admin-qr-print'){
-    const tujuan=new URLSearchParams(location.search).get('tenant');
-    if(daftar.some(t=>t.slug===tujuan)) id('qrPrintTenantSelect').value=tujuan;
+  if (operasional) {
+    for (const link of panel.querySelectorAll('a[href^="/pratinjau/admin"]')) link.href = link.pathname.slice(10) + link.search;
+  }
+  for (const a of panel.querySelectorAll('.admin-nav-item')) {
+    const aktif = a.pathname === path || (key === 'admin-tenant-form' && a.pathname === (operasional ? '/admin/tenant' : '/pratinjau/admin/tenant'));
+    a.classList.toggle('active', aktif);
+    if (aktif) a.setAttribute('aria-current', 'page');
   }
   function panelSamping(buka) {
+    const terbuka = id('adminSidebar')?.classList.contains('open');
     id('adminSidebar')?.classList.toggle('open',buka);
     id('adminSidebarBackdrop')?.classList.toggle('open',buka);
     id('sidebarToggle')?.setAttribute('aria-expanded',buka);
+    if (buka) id('adminSidebar')?.querySelector('a')?.focus();
+    if (!buka && terbuka) id('sidebarToggle')?.focus();
   }
   let pemicu;
-  function drawer(buka) {
+  function drawer(buka, tombol) {
     const box=panel.querySelector('.crud-drawer-panel');
     if(!box) return;
     box.classList.toggle('open',buka);
     id('crudDrawerBackdrop')?.classList.toggle('open',buka);
     box.inert=!buka;
-    if(buka) box.querySelector('[data-drawer="close"]')?.focus();
+    if(buka) {
+      pemicu = tombol ?? pemicu;
+      box.querySelector('[data-drawer="close"]')?.focus();
+    }
     else pemicu?.focus();
   }
   drawer(false);
@@ -259,12 +253,34 @@ export async function internal(path, katalogPublik) {
     if(!b)return;
     if(b.id==='sidebarToggle') panelSamping(!id('adminSidebar').classList.contains('open'));
     if(b.id==='adminSidebarBackdrop') panelSamping(false);
-    if(b.dataset.drawer==='open'){pemicu=b;drawer(true);}
+    if(b.dataset.drawer==='open') drawer(true,b);
     if(b.dataset.drawer==='close'||b.id==='crudDrawerBackdrop') drawer(false);
     if(b.hasAttribute('data-print'))window.print();
-    if(b.hasAttribute('data-filter'))proses(key,daftar);
   },{signal});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){drawer(false);panelSamping(false);}}, {signal});
+  return { panel, signal, drawer };
+}
+
+export async function internal(path, katalogPublik) {
+  const route=rute[path];
+  if (!route) return false;
+  const [key,title]=route;
+  const context = await pasangLayar(key,title,path);
+  if (!context) return false;
+  const {panel,signal} = context;
+  const perluStand = ['admin-tenants', 'admin-qr-print', 'tenant-dashboard'].includes(key);
+  const standContoh = perluStand ? (await import('./stand-contoh.js')).kodeStand : null;
+  if (signal.aborted) return false;
+  const daftar = standContoh
+    ? katalogPublik.map(t => ({ ...t, stand: standContoh[t.slug] ?? 'Belum ditetapkan' }))
+    : katalogPublik;
+  for(const k of ['adminMenusFilterTenant','adminReviewsFilterTenant','reportFilterTenant']) pilihTenant(k,daftar);
+  pilihTenant('qrPrintTenantSelect',daftar,false);
+  if(key==='admin-qr-print'){
+    const tujuan=new URLSearchParams(location.search).get('tenant');
+    if(daftar.some(t=>t.slug===tujuan)) id('qrPrintTenantSelect').value=tujuan;
+  }
+  panel.addEventListener('click', e => { if (e.target.closest('[data-filter]')) proses(key,daftar); }, {signal});
   panel.addEventListener('change',()=>proses(key,daftar),{signal});
   panel.addEventListener('input',e=>{if(e.target.matches('input[type="text"],input[type="search"]'))proses(key,daftar);},{signal});
   panel.addEventListener('submit',e=>e.preventDefault(),{signal});

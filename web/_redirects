@@ -1,7 +1,7 @@
 /masuk / 200
 /daftar / 200
+/konfirmasi / 200
 /admin / 200
-/admin/* / 200
 /pemilik / 200
 /pemilik/* / 200
 /tenant/* / 200

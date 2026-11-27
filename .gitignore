@@ -4,3 +4,5 @@ node_modules/
 .serena/
 .env*
 .dev.vars*
+supabase/.temp/
+supabase/.branches/
