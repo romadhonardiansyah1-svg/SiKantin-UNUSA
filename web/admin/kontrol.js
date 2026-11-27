@@ -1,4 +1,4 @@
-import { api, keluar } from '../api.js';
+import { api, keluar, segarkanKatalog } from '../api.js';
 
 const id = nama => document.getElementById(nama);
 export function pilih(key, daftar, label, semua) {
@@ -10,6 +10,7 @@ export function tombol(label, klik) {
   const b = document.createElement('button');
   b.type = 'button';
   b.className = 'btn btn-outline preview-action';
+  b.style.whiteSpace = 'nowrap';
   b.textContent = label;
   b.addEventListener('click', () => klik(b));
   return b;
@@ -17,6 +18,9 @@ export function tombol(label, klik) {
 export function kelompok(...nodes) {
   const wrap = document.createElement('div');
   wrap.className = 'admin-aksi';
+  for (const node of nodes) {
+    if (node instanceof HTMLAnchorElement) node.style.whiteSpace = 'nowrap';
+  }
   wrap.append(...nodes);
   return wrap;
 }
@@ -62,7 +66,43 @@ export function simpan(modul, id, data, foto) {
   }
   return api('/admin/' + modul + (id ? '/' + id : ''), { method: id ? 'PUT' : 'POST', data });
 }
-export { segarkanKatalog } from '../api.js';
+
+export function filterStatus(key, gambar, signal) {
+  const hitung = id(key + 'CountBadge');
+  const filter = document.createElement('select');
+  filter.setAttribute('aria-label', 'Status data');
+  filter.className = 'form-control';
+  filter.style.width = 'auto';
+  filter.append(new Option('Aktif', 'aktif'), new Option('Diarsipkan', 'arsip'), new Option('Semua status', 'semua'));
+  hitung.before(kelompok(filter));
+  filter.parentElement.append(hitung);
+  filter.addEventListener('change', gambar, { signal });
+  return filter;
+}
+
+export const cocokStatus = (data, filter) => filter.value === 'semua' || data.aktif === (filter.value === 'aktif');
+
+export function aksiData(modul, data, status, selesai) {
+  let sibuk = false;
+  const url = '/admin/' + modul + '/' + data.id;
+  const aktif = !data.aktif;
+  function ubah(hapus, button) {
+    if (sibuk || (hapus && !window.confirm('Hapus data ini secara permanen?'))) return;
+    sibuk = true;
+    return jalankan(button, status, async () => {
+      await api(url, hapus ? { method: 'DELETE' } : { method: 'PATCH', data: { aktif } });
+      if (!hapus) data.aktif = aktif;
+      segarkanKatalog();
+      selesai(hapus);
+      status(hapus ? 'Data dihapus.' : aktif ? 'Data diaktifkan.' : 'Data diarsipkan.');
+    }).finally(() => { sibuk = false; });
+  }
+  return [
+    tombol(aktif ? 'Aktifkan' : 'Arsipkan', button => ubah(false, button)),
+    tombol('Hapus', button => ubah(true, button))
+  ];
+}
+export { segarkanKatalog };
 export const tanggal = new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Jakarta' });
 export const cocok = (q, ...data) => data.join(' ').toLocaleLowerCase('id').includes(q.trim().toLocaleLowerCase('id'));
 export const val = key => id(key)?.value || '';

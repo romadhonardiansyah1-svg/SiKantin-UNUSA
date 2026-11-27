@@ -1,4 +1,5 @@
 export const aspek = ['Cita rasa', 'Kebersihan', 'Porsi', 'Kualitas bahan', 'Pembayaran'];
+export const kunciAspek = ['rasa', 'kebersihan', 'porsi', 'kualitas', 'cara_pembayaran'];
 const rupiah = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
 export const harga = nilai => rupiah.format(nilai);
 export const skor = nilai => nilai.toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 1 });

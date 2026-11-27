@@ -1,9 +1,8 @@
-import { detailUrl, skor } from './katalog.js';
+import { detailUrl, kunciAspek, skor } from './katalog.js';
 import { api, navigasi, profilAktif, segarkanKatalog } from '../api.js';
 
 const id = nama => document.getElementById(nama);
 const form = id('publicReviewForm');
-const penilaian = ['rasa', 'kebersihan', 'porsi', 'kualitas', 'cara_pembayaran'];
 const label = ['Sangat kurang', 'Kurang', 'Cukup', 'Baik', 'Sangat baik'];
 const kartuBintang = form.querySelector('.rating-unified-card');
 const acuan = kartuBintang.cloneNode(true);
@@ -114,7 +113,7 @@ form.addEventListener('submit', async event => {
   const tenant = stand;
   const tujuan = detailUrl(tenant) + '/ringkasan';
   if (!pertanyaan) {
-    const nilai = penilaian.map(key => Number(values.get('rating_' + key)));
+    const nilai = kunciAspek.map(key => Number(values.get('rating_' + key)));
     ringkasan = { slug: tenant.slug, nilai: nilai.reduce((a, b) => a + b, 0) / nilai.length, pratinjau: true };
     navigasi('/pratinjau' + tujuan);
     return;

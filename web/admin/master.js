@@ -1,6 +1,7 @@
 import { id, isi, tabel } from '../admin-ui/pratinjau.js';
-import { harga, skor } from '../publik/katalog.js';
-import { admin, cocok, dataForm, field, isiForm, jalankan, kelompok, pesanDi, pilih, segarkanKatalog, simpan, tanggal, tombol, val } from './kontrol.js';
+import { harga, kunciAspek, skor } from '../publik/katalog.js';
+import { admin, aksiData, cocok, cocokStatus, dataForm, field, filterStatus, isiForm, jalankan,
+  kelompok, pesanDi, pilih, segarkanKatalog, simpan, tanggal, tombol, val } from './kontrol.js';
 
 const layar = {
   kampus: {
@@ -42,6 +43,8 @@ export async function master(modul, { panel, signal, drawer }) {
   if (signal.aborted) return;
   const form = id(config.form);
   const status = pesanDi(form, true);
+  const statusDaftar = pesanDi(id(config.tabel + 'CountBadge').closest('.table-card'));
+  const filter = filterStatus(config.tabel, gambar, signal);
   const simpanBtn = form.querySelector('button[type="submit"]');
   simpanBtn.disabled = false;
   let foto, editing;
@@ -66,16 +69,31 @@ export async function master(modul, { panel, signal, drawer }) {
     status('');
     isi(config.judul, (editing ? 'Ubah ' : 'Tambah ') + config.nama);
     if (modul === 'menu') id('menu_form_tenant_id').disabled = Boolean(editing);
-    if (modul === 'pertanyaan') id('question_form_key').readOnly = Boolean(editing);
+    if (modul === 'pertanyaan') {
+      const inti = kunciAspek.includes(data.kunci);
+      id('question_form_key').readOnly = Boolean(editing);
+      id('question_form_type').disabled = inti;
+      const aktif = id('question_form_is_active');
+      aktif.disabled = inti;
+      if (inti) aktif.checked = true;
+    }
     drawer(true, trigger);
   }
   function gambar() {
-    const daftarTampil = modul === 'menu' ? daftar.filter(m =>
+    const daftarTampil = daftar.filter(m => cocokStatus(m, filter) && (modul !== 'menu' || (
       cocok(val('adminMenusSearch'),m.nama,m.deskripsi) &&
       (!val('adminMenusFilterTenant') || m.tenant_id === val('adminMenusFilterTenant')) &&
-      (!val('adminMenusFilterCategory') || m.kategori === val('adminMenusFilterCategory'))) : daftar;
+      (!val('adminMenusFilterCategory') || m.kategori === val('adminMenusFilterCategory')))));
     tabel(config.tabel + 'TableBody', daftarTampil.map(data => {
-      const aksi = tombol('Ubah', button => edit(data,button));
+      const inti = modul === 'pertanyaan' && kunciAspek.includes(data.kunci);
+      const ubah = tombol('Ubah', button => edit(data,button));
+      const tindakan = inti && data.aktif ? [] : aksiData(modul, data, statusDaftar, hapus => {
+        if (signal.aborted) return;
+        if (hapus) daftar = daftar.filter(row => row.id !== data.id);
+        gambar();
+        filter.focus();
+      });
+      const aksi = kelompok(ubah, ...(inti ? tindakan.slice(0, 1) : tindakan));
       if (modul === 'kampus') return [data.kode, [data.nama,data.alamat].filter(Boolean).join(' · '),
         data.fasilitas || '—', tenant.filter(t => t.kampus_id === data.id && t.aktif).length + ' / ' + data.jumlah_stand, aksi];
       if (modul === 'menu') return [data.nama + ' · ' + data.kategori, namaTenant.get(data.tenant_id) || '—',
@@ -94,12 +112,14 @@ export async function master(modul, { panel, signal, drawer }) {
   form.addEventListener('submit', event => {
     event.preventDefault();
     jalankan(simpanBtn, status, async () => {
-      const hasil = await simpan(modul, editing, dataForm(bidang), foto?.files[0]);
+      const data = dataForm(bidang);
+      const hasil = await simpan(modul, editing, data, foto?.files[0]);
       editing = hasil.id;
       segarkanKatalog();
       const terbaru = await admin(modul);
       if (signal.aborted) return;
       daftar = terbaru;
+      if (!cocokStatus(data, filter)) filter.value = data.aktif ? 'aktif' : 'arsip';
       drawer(false);
       gambar();
       panel.querySelector('[data-drawer="open"]').focus();
@@ -122,7 +142,7 @@ export async function moderasi({ panel, signal }) {
     const rows = daftar.filter(u => u.status !== 'dihapus' && (!t || u.tenant_id === t)
       && (!filter.value || u.status === filter.value) && cocok(val('adminReviewsSearch'),u.komentar,u.tenant,...(u.menu ?? [])));
     tabel('adminReviewsTableBody', rows.map(u => {
-      const aksi = [['Verifikasi','tayang'],['Sembunyikan','sembunyi'],['Tandai spam','spam'],['Hapus','dihapus']]
+      const aksi = [['Tampilkan kembali','tayang'],['Sembunyikan','sembunyi'],['Tandai spam','spam'],['Hapus','dihapus']]
         .filter(([,target]) => u.status !== target)
         .map(([label,target]) => tombol(label, button => {
           if (target === 'dihapus' && !window.confirm('Hapus ulasan ini dari daftar moderasi dan laporan?')) return;

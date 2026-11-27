@@ -83,6 +83,15 @@ export async function pengelola(env: Env, request: Request, token: string, bagia
   const slide = bagian === 'slide' && !id;
   if (!slide && !modul.has(bagian)) throw new HttpError(404, 'Bagian pengelola tidak ditemukan.');
   if (!slide && request.method === 'GET' && !id) return json(await rpc(env, 'admin', { p_modul: bagian }, token));
+  if (id && bagian !== 'ulasan' && ['PATCH', 'DELETE'].includes(request.method)) {
+    const hapus = request.method === 'DELETE';
+    const aktif = hapus ? null : (await bacaJson(request)).aktif;
+    if (!hapus && typeof aktif !== 'boolean') throw new HttpError(422, 'Status aktif tidak valid.');
+    await rpc(env, 'kelola_master', {
+      p_modul: bagian, p_id: id, p_aksi: hapus ? 'hapus' : aktif ? 'aktifkan' : 'arsipkan'
+    }, token);
+    return json({ berhasil: true });
+  }
   if (!(request.method === 'POST' && !id) && !(request.method === 'PUT' && id)) {
     throw new HttpError(405, 'Metode tidak diizinkan.');
   }

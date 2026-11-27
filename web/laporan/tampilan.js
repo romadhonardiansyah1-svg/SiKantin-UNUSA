@@ -40,15 +40,13 @@ const lihatLaporan = params => {
 };
 
 export async function dasbor({ panel, signal }) {
-  const [kampus, ulasan, laporan] = await Promise.all([admin('kampus'),admin('ulasan'),lihatLaporan({})]);
+  const [kampus, laporan] = await Promise.all([admin('kampus'),lihatLaporan({})]);
   if (signal.aborted) return;
   pilih('adminDashboardCampusFilter', kampus, k => k.nama, 'Semua kampus');
   isi('adminSumberUlasan', 'Ringkasan ulasan yang tayang.');
   const filter = id('adminDashboardCampusFilter');
   const status = pesanDi(panel.querySelector('#screen-admin-dashboard'));
-  const tunggu = ulasan.filter(u => u.status === 'menunggu').length;
-  id('adminAttentionCard').hidden = !tunggu;
-  id('adminAttentionList').replaceChildren(tautan('/admin/ulasan', tunggu + ' ulasan menunggu verifikasi'));
+  id('adminAttentionCard').hidden = true;
   function gambar(data) {
     isi('adminStatTenants', data.per_tenant.length);
     isi('adminStatMenus', data.jumlah_menu);
@@ -138,6 +136,7 @@ export async function laporanPemilik({ panel, signal }) {
   const terbaik = Math.max(0,...data.statistik.aspek);
   isi('tenantKpiBestAspect', terbaik ? aspek[data.statistik.aspek.indexOf(terbaik)] : '—');
   isi('tenantKpiBestScore', terbaik ? 'Aspek terbaik · ' + nilai(terbaik) + ' / 5' : 'Belum ada penilaian');
+  id('tenantPortalReviewsList').previousElementSibling.textContent = 'Komentar yang tampil di katalog untuk tenant ini.';
   komentar('tenantPortalReviewsList',data.ulasan);
   grafikLaporan('tenantAspectChart','tenantPeakChart',data);
 }

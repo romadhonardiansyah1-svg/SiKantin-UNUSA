@@ -21,7 +21,7 @@ await mkdir(hasil, { recursive: true });
 
 const authStatus = execFileSync('docker', ['exec', db, 'psql', '-U', 'postgres', '-d', 'postgres', '-Atc',
   "select count(*) from supabase_migrations.schema_migrations"], { encoding: 'utf8' });
-assert.equal(Number(authStatus.trim()), 7);
+assert.equal(Number(authStatus.trim()), 10);
 
 const browser = await chromium.launch({ channel: 'chrome', headless: true });
 async function http(ctx, path, status = 200, method = 'GET', data) {
@@ -132,37 +132,70 @@ try {
   await adminPage.locator('#campus_facility_info').fill('Fasilitas diperbarui');
   await adminPage.locator('#campusFormSubmitBtn').click();
   await barisKampus.getByText('Fasilitas diperbarui').waitFor();
+  await barisKampus.getByRole('button', { name: 'Arsipkan' }).click();
+  await adminPage.getByText('Data diarsipkan.', { exact: true }).waitFor();
+  await barisKampus.waitFor({ state: 'detached' });
+  await adminPage.getByLabel('Status data').selectOption('arsip');
+  await barisKampus.getByRole('button', { name: 'Aktifkan' }).click();
+  await barisKampus.waitFor({ state: 'detached' });
+  await adminPage.getByLabel('Status data').selectOption('aktif');
+  await barisKampus.waitFor();
+  const kampusUji = (await http(admin, '/api/admin/kampus')).find(k => k.kode === kodeKampus);
+  const tamu = await Promise.all(['Satu', 'Dua'].map(nama => http(admin, '/api/admin/tenant', 201, 'POST', {
+    kampus_id: kampusUji.id, nama: nama + ' ' + waktu, kode_stand: 'MANUAL-UJI'
+  })));
+  const standBaru = (await http(admin, '/api/admin/tenant')).filter(t => tamu.some(x => x.id === t.id));
+  assert.equal(new Set(standBaru.map(t => t.kode_stand)).size, 2);
+  assert.ok(standBaru.every(t => /^\d+$/.test(t.kode_stand)));
+  assert.deepEqual((await http(admin, '/api/laporan?kampus=' + kampusUji.id)).per_tenant, []);
+  await http(admin, '/api/admin/kampus/' + kampusUji.id, 409, 'DELETE');
+  await Promise.all(tamu.map(t => http(admin, '/api/admin/tenant/' + t.id, 200, 'DELETE')));
+  adminPage.once('dialog', d => d.accept());
+  await barisKampus.getByRole('button', { name: 'Hapus' }).click();
+  await barisKampus.waitFor({ state: 'detached' });
+  assert.ok((await http(admin, '/api/admin/kampus')).every(k => k.id !== kampusUji.id));
 
   const pertanyaanBaru = {
     kunci: 'ruang_' + waktu, label: 'Akses ruang ' + waktu, teks: 'Apakah ruang mudah dijangkau?',
     tipe: 'boolean', urutan: 6, wajib: false, aktif: true
   };
   const pertanyaanId = (await http(admin,'/api/admin/pertanyaan',201,'POST',pertanyaanBaru)).id;
+  const inti = (await http(admin, '/api/admin/pertanyaan')).find(q => q.kunci === 'rasa');
+  await http(admin, '/api/admin/pertanyaan/' + inti.id, 409, 'DELETE');
+  await http(admin, '/api/admin/pertanyaan/' + inti.id, 409, 'PATCH', { aktif: false });
+  await http(admin, '/api/admin/pertanyaan/' + inti.id, 409, 'PUT', { ...inti, aktif: false });
   await adminPage.goto(url('/admin/tenant/baru'));
   await adminPage.locator('#tenant_form_campus_id').selectOption(idKampus);
-  await adminPage.locator('#tenant_form_stall_number').fill('A-' + waktu);
+  assert.ok(await adminPage.locator('#tenant_form_stall_number').evaluate(el => el.readOnly && !el.required));
   await adminPage.locator('#tenant_form_name').fill(namaTenant);
   await adminPage.locator('#tenant_form_owner_name').fill('Pemilik Uji Pertama');
-  await adminPage.locator('#tenant_form_mou').fill('MOU-' + waktu);
+  assert.equal(await adminPage.getByLabel('Nomor MoU (opsional)').inputValue(), '');
   await adminPage.locator('#tenant_form_photo').setInputFiles(fileURLToPath(new URL('../../web/assets/logo-unusa.png', import.meta.url)));
   await adminPage.locator('#tenant_form_username').fill('pemilik_' + waktu);
   await adminPage.locator('#tenant_form_owner_email').fill(email('pemilik'));
   await adminPage.locator('#tenant_form_password').fill(sandi);
+  const buatPemilik = adminPage.waitForResponse(r => r.url().includes('/api/admin/pemilik/') && r.request().method() === 'POST');
   await adminPage.locator('#tenantFormSubmitBtn').click();
+  assert.equal((await buatPemilik).status(), 201);
   await adminPage.waitForURL(url('/admin/tenant'));
   const tenant = (await http(admin,'/api/admin/tenant')).find(t => t.slug === slug);
   assert.ok(tenant?.foto?.startsWith('/foto/'));
+  assert.match(tenant.kode_stand, /^\d+$/);
+  assert.equal(tenant.mou_nomor, null);
   assert.equal((await fetch(url(tenant.foto))).headers.get('content-type'),'image/png');
   const row = adminPage.getByRole('row').filter({ hasText: namaTenant });
   await row.getByRole('link',{name:'Ubah'}).click();
   await adminPage.reload();
   await adminPage.locator('#tenant_form_mou').waitFor();
+  assert.equal(await adminPage.locator('#tenant_form_stall_number').inputValue(), tenant.kode_stand);
   assert.equal(await adminPage.locator('#tenant_form_name').inputValue(),namaTenant);
   assert.equal(await adminPage.locator('#tenant_form_username').inputValue(),'pemilik_' + waktu);
   await adminPage.locator('#tenant_form_name').fill(namaTenant + ' Diperbarui');
   await adminPage.locator('#tenantFormSubmitBtn').click();
   await adminPage.waitForURL(url('/admin/tenant'));
-  assert.equal((await http(admin,'/api/admin/tenant')).find(t => t.id === tenant.id).slug,slug);
+  const diperbarui = (await http(admin,'/api/admin/tenant')).find(t => t.id === tenant.id);
+  assert.equal(diperbarui.slug, slug);
+  assert.equal(diperbarui.kode_stand, tenant.kode_stand);
   const kedua = await http(admin,'/api/admin/tenant',201,'POST',{
     kampus_id: idKampus, nama: 'Kedai Uji ' + waktu, aktif: true, mou_nomor: 'MOU-B-' + waktu
   });
@@ -174,6 +207,10 @@ try {
   await http(admin,'/api/admin/menu/' + menu.id,200,'PUT',{
     tenant_id: tenant.id, nama: 'Nasi Uji', kategori: 'Makanan', harga: 12500, tersedia: true
   });
+  const menuSementara = await http(admin, '/api/admin/menu', 201, 'POST', {
+    tenant_id: tenant.id, nama: 'Menu sementara ' + waktu, kategori: 'Makanan', harga: 1000
+  });
+  await http(admin, '/api/admin/menu/' + menuSementara.id, 200, 'DELETE');
   assert.equal((await http(anonim,'/api/katalog')).tenant.find(t => t.slug === slug).menu[0].harga,12500);
   await adminPage.goto(url('/admin/qr?tenant=' + tenant.id));
   await adminPage.getByRole('button',{name:'Buat QR',exact:true}).click();
@@ -225,20 +262,40 @@ try {
   assert.equal(await hp.locator('#reviewSuccessScore').textContent(),'4,0');
   const sebelumModerasi = (await http(anonim,'/api/katalog')).tenant.find(t => t.slug === slug);
   assert.deepEqual(sebelumModerasi.statistik, { jumlah:1,nilai:4,aspek:[4,4,4,4,4] });
-  assert.deepEqual(sebelumModerasi.ulasan, []);
+  assert.equal(sebelumModerasi.ulasan[0].komentar, 'Masukan uji ' + waktu);
   await hp.locator('#reviewSuccessBackTenantBtn').click();
   await hp.locator('#detailAvgScore').waitFor();
+  await hp.locator('#detailReviewsList').getByText('Masukan uji ' + waktu).waitFor();
   assert.equal(await hp.locator('#detailAvgScore').textContent(), '4,0');
   await http(hp.context(),'/api/laporan',403);
-  await http(admin,'/api/admin/pertanyaan/' + pertanyaanId,200,'PUT',{ ...pertanyaanBaru, label:'Versi baru', aktif:false });
+  const versi = await http(admin,'/api/admin/pertanyaan/' + pertanyaanId,200,'PUT',{
+    ...pertanyaanBaru, label:'Versi baru', aktif:false
+  });
+  await http(admin, '/api/admin/pertanyaan/' + versi.id, 409, 'DELETE');
+  const soalKosong = await http(admin, '/api/admin/pertanyaan', 201, 'POST', {
+    ...pertanyaanBaru, kunci: 'kosong_' + waktu
+  });
+  await http(admin, '/api/admin/pertanyaan/' + soalKosong.id, 200, 'DELETE');
+  assert.match((await http(admin, '/api/admin/menu/' + menu.id, 409, 'DELETE')).pesan, /Arsipkan/);
+  await http(admin, '/api/admin/tenant/' + tenant.id, 409, 'DELETE');
+  assert.equal((await http(admin, '/api/admin/tenant')).find(t => t.id === tenant.id).kode_stand, tenant.kode_stand);
   await adminPage.goto(url('/admin/ulasan'));
   const ulasan = adminPage.getByRole('row').filter({ hasText: 'Masukan uji ' + waktu });
   await ulasan.locator('summary').click();
   await ulasan.getByText(pertanyaanBaru.label + ' · Ya',{exact:true}).waitFor();
-  await ulasan.getByRole('button',{name:'Verifikasi',exact:true}).click();
+  await ulasan.getByRole('button',{name:'Sembunyikan',exact:true}).click();
+  await ulasan.getByText('Disembunyikan',{exact:true}).waitFor();
+  const tersembunyi = (await http(anonim,'/api/katalog')).tenant.find(t => t.slug === slug);
+  assert.equal(tersembunyi.statistik.jumlah, 0);
+  assert.deepEqual(tersembunyi.ulasan, []);
+  await ulasan.getByRole('button',{name:'Tampilkan kembali',exact:true}).click();
   await ulasan.getByText('Tayang',{exact:true}).waitFor();
   const statistik = (await http(anonim,'/api/katalog')).tenant.find(t => t.slug === slug).statistik;
   assert.deepEqual(statistik,{ jumlah:1,nilai:4,aspek:[4,4,4,4,4] });
+  await http(admin, '/api/admin/tenant/' + tenant.id, 200, 'PATCH', { aktif: false });
+  const arsip = (await http(admin, '/api/laporan')).per_tenant.find(t => t.id === tenant.id);
+  assert.equal(arsip.statistik.jumlah, 1);
+  await http(admin, '/api/admin/tenant/' + tenant.id, 200, 'PATCH', { aktif: true });
   const pertanyaan = await http(hp.context(),'/api/pertanyaan');
   const payload = { kiriman: randomUUID(), responden: 'Pengunjung',
     jawaban: Object.fromEntries(pertanyaan.filter(q => q.tipe === 'rating').map(q => [q.id,3])), menu: [menu.id] };
@@ -258,17 +315,18 @@ try {
   const p1 = await browser.newPage({ viewport:{width:390,height:860}, isMobile:true });
   await masuk(p1,'pemilik_' + waktu,'/pemilik/laporan');
   assert.match(await p1.locator('#screen-tenant-dashboard h1').textContent(),new RegExp(namaTenant));
-  assert.equal(await p1.locator('#screen-tenant-dashboard .badge-stall').textContent(),'A-' + waktu);
+  assert.equal(await p1.locator('#screen-tenant-dashboard .badge-stall').textContent(),tenant.kode_stand);
   assert.equal(await p1.locator('#screen-tenant-dashboard .badge-campus').textContent(),'Kampus A UNUSA');
   assert.equal(await p1.locator('#tenantKpiReviews').textContent(),'1');
   await http(p1.context(), '/api/admin/slide', 403, 'POST', {});
   const p2 = await browser.newPage();
   await masuk(p2,'kedua_' + waktu,'/pemilik/laporan');
-  assert.equal(await p2.locator('#tenantKpiReviews').textContent(),'0');
+  assert.equal(await p2.locator('#tenantKpiReviews').textContent(),'1');
   await http(p1.context(),'/api/laporan?tenant=' + kedua.id,403);
   await http(p2.context(),'/api/laporan?tenant=' + tenant.id,403);
   await http(p1.context(),'/api/admin/tenant',403);
   await http(p1.context(),'/api/admin/tenant/' + tenant.id,403,'PUT',{ nama:'Uji ditolak' });
+  await http(p1.context(),'/api/admin/tenant/' + tenant.id,403,'DELETE');
   await p1.screenshot({ path: fileURLToPath(new URL('pemilik-390.png',hasil)) });
   await adminPage.goto(url('/admin/laporan?tenant=' + tenant.id));
   await adminPage.locator('#screen-internal:not([hidden])').waitFor();

@@ -42,9 +42,15 @@ try {
       assert.equal(await menu.getAttribute('aria-expanded'), 'false');
       assert.ok(await menu.evaluate(e => e === document.activeElement));
     }
+    assert.match(await page.locator('#facilitySummaryStrip').textContent(), /Area makan higienis/);
     await page.locator('[data-campus="KAMPUS_B"].campus-pill').click();
-    const peta = page.getByRole('link', { name: 'Buka lokasi Kampus B UNUSA di Google Maps' });
+    const fasilitas = page.locator('.facility-card:visible').filter({ hasText: 'Fasilitas Kantin: Kampus B UNUSA' });
+    assert.ok(await fasilitas.isVisible());
+    assert.match(await fasilitas.textContent(), /Lokasi:.*Jl\. Raya Jemursari/s);
+    const peta = page.getByRole('link', { name: 'Lihat lokasi kampus di Google Maps · Kampus B UNUSA' });
     assert.ok(await peta.isVisible());
+    assert.match(await peta.textContent(), /Lihat lokasi kampus/);
+    assert.ok(await peta.evaluate(a => a.previousElementSibling.classList.contains('facility-card')));
     const tujuanPeta = new URL(await peta.getAttribute('href'));
     assert.equal(tujuanPeta.origin + tujuanPeta.pathname, 'https://www.google.com/maps/search/');
     assert.equal(tujuanPeta.searchParams.get('api'), '1');

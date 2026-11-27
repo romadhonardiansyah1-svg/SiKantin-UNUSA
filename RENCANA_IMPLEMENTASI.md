@@ -49,7 +49,7 @@ Terima alamat valid dengan domain persis `gmail.com`, `unusa.ac.id`, atau `stude
 
 Di `/masuk`, tautan pratinjau peran membuka login staf. Worker memetakan username ke email privat, Supabase memverifikasi sandi. Admin awal disiapkan pengelola Supabase. Peran dari server menentukan tujuan `/admin` atau `/pemilik/laporan`. URL privat tanpa sesi kembali ke login, salah peran ditolak. Logout mengakhiri sesi dan kembali ke katalog.
 
-Admin menjalankan CRUD kampus/fasilitas, tenant, menu, serta akun pemilik setelah MoU disetujui secara luring. Aktifkan akses pemilik setelah relasi tenant tersimpan. Simpan/batal kembali ke daftar asal. Pertahankan riwayat dengan mengarsipkan master yang pernah diulas. Untuk foto tenant/menu, batasi unggahan Storage ke admin, validasi JPG/PNG/WebP hingga 2 MB. [Akses Storage](https://supabase.com/docs/guides/storage/security/access-control)
+Admin mengelola kampus, tenant, menu, dan akses pemilik. Nomor MoU opsional. Basis data membuat nomor stand unik saat tenant disimpan. Hapus data yang belum terhubung dan arsipkan data yang sudah dipakai. Data arsip dapat diaktifkan kembali. Untuk foto tenant/menu, batasi unggahan Storage ke admin, validasi JPG/PNG/WebP hingga 2 MB. [Akses Storage](https://supabase.com/docs/guides/storage/security/access-control)
 
 Pada baris tenant, sediakan buat, lihat, ganti, cabut, unduh PNG, dan cetak QR. Isi QR dan teks kartu harus sama persis, yaitu origin aplikasi ditambah `/r/:token`. Token valid membuka survei tenant terkait. Token lama atau tenant nonaktif menampilkan pesan QR tidak berlaku.
 
@@ -61,11 +61,11 @@ Pada baris tenant, sediakan buat, lihat, ganti, cabut, unduh PNG, dan cetak QR. 
 
 Tombol **Isi Survei** dan QR menuju `/tenant/:slug/survei`. Pelanggan dengan sesi aktif dan email terkonfirmasi langsung membuka formulir. Pengunjung diarahkan ke **Daftar** dengan pilihan **Sudah punya akun? Masuk**. Bawa slug tenant melalui konfirmasi dan masuk, lalu buka kembali survei tenant tersebut. Validasi slug di server. Jika dibatalkan, kembali ke detail tenant.
 
-Admin melakukan CRUD pertanyaan, mengatur urutan, status aktif, dan wajib isi. Lima aspek awal DPPL meliputi rasa, kebersihan, porsi, kualitas, dan kemudahan pembayaran. Simpan jawaban tambahan bertipe bintang, teks, atau ya/tidak, status UNUSA dari akun pelanggan, serta menu terpilih. Komentar boleh kosong. Rating katalog menghitung ulasan Menunggu dan Tayang. Komentar muncul setelah ulasan Tayang.
+Admin mengelola pertanyaan dan mengurutkannya. Lima aspek utama tetap aktif untuk menghitung rating. Pertanyaan tambahan dapat diarsipkan atau dihapus jika belum dijawab. Rating dan komentar terbit setelah survei tersimpan. Pengelola dapat menyembunyikan, menandai spam, menghapus, atau menampilkan kembali ulasan.
 
 `POST /api/tenant/:slug/ulasan` memanggil satu fungsi Postgres. Dari sesi, periksa peran pelanggan serta email aktif yang terkonfirmasi dan memenuhi aturan domain tahap 2. Validasi tenant aktif, kepemilikan menu, jawaban wajib, dan skor 1–5. Simpan ulasan beserta jawaban memakai waktu server dalam satu transaksi. Kunci pasangan akun–tenant saat memeriksa batas kirim. Gunakan ID kiriman unik per pelanggan agar percobaan ulang memperoleh hasil pertama. Tutup akses tulis langsung ke tabel ulasan. Setelah tersimpan, tampilkan konfirmasi dengan pilihan kembali ke detail atau katalog.
 
-- [ ] **Lulus** bila akun baru dari QR kembali ke tenant asal setelah konfirmasi, dan akun lama dari katalog kembali ke tenant asal setelah masuk. Pengiriman sebelum konfirmasi atau dengan isian wajib kosong ditolak. Klik ganda menyimpan satu ulasan. Dua kiriman baru serentak dengan sisa satu jatah menghasilkan satu sukses dan satu penolakan (429). Verifikasi, sembunyikan, tandai spam, atau hapus sebagai admin, lalu cek ulang daftar dan rating publik.
+- [ ] **Lulus** bila akun baru dari QR kembali ke tenant asal setelah konfirmasi, dan akun lama dari katalog kembali ke tenant asal setelah masuk. Pengiriman sebelum konfirmasi atau dengan isian wajib kosong ditolak. Klik ganda menyimpan satu ulasan. Dua kiriman baru serentak dengan sisa satu jatah menghasilkan satu sukses dan satu penolakan (429). Cek rating dan komentar langsung tayang, lalu uji sembunyikan, tampilkan kembali, tandai spam, dan hapus.
 
 ### 4. Laporan pemilik, ekspor admin, dan rilis
 

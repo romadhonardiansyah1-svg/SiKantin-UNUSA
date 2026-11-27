@@ -12,6 +12,7 @@ const bintang = nilai => '★'.repeat(Math.round(nilai)) + '☆'.repeat(5 - Math
 function kartu(t) {
   const ringkas = statistikTenant(t);
   const detail = detailUrl(t);
+  const ulasan = t.ulasan.find(u => u.komentar);
   const nilai = ringkas.nilai != null ? `<span class="gf-star" aria-hidden="true">★</span><span class="gf-rating-val">${skor(ringkas.nilai)}</span><span>(${ringkas.jumlah} ulasan)</span>` : 'Belum ada penilaian';
   const kategori = [...new Set(t.menu.map(m => m.kategori))].join(', ');
   const menu = t.menu.slice(0, 6).map(m => `
@@ -29,7 +30,7 @@ function kartu(t) {
     <div class="gf-tags-row">${ringkas.nilai >= 4.5 ? '<span class="gf-tag-pill is-emerald">Rating Tinggi</span>' : ''}<span class="gf-tag-pill">${mulai}</span></div></div></div>
     <div class="gf-menu-carousel">${menu}<a class="gf-see-more-slot" href="${detail}"><span class="gf-see-more-circle">
       <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><span class="gf-see-more-label">Lihat lainnya</span></a></div>
-    ${t.ulasan.length ? `<div class="gf-review-snippet"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" style="flex-shrink:0"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span class="gf-review-snippet-text">“${teks(t.ulasan[0].komentar)}”</span></div>` : ''}
+    ${ulasan ? `<div class="gf-review-snippet"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" style="flex-shrink:0"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span class="gf-review-snippet-text">“${teks(ulasan.komentar)}”</span></div>` : ''}
     <div class="gf-footer"><a class="gf-footer-link" href="${detail}">Kunjungi toko (${t.menu.length} menu)
       <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg></a>
     <a class="gf-footer-review-btn" href="${surveiUrl(t)}">Beri Ulasan</a></div></article>`;
@@ -66,19 +67,23 @@ const awalFasilitas = id('facilityGrid').querySelector('.facility-card').cloneNo
 function tautanLokasi(kartu, nama, alamat) {
   const halaman = new URL('https://www.google.com/maps/search/');
   halaman.search = new URLSearchParams({ api: '1', query: [nama, alamat].filter(Boolean).join(', ') });
-  const kepala = kartu.querySelector('.facility-card-header');
+  const kepala = kartu.querySelector('.facility-card-header').cloneNode(true);
   const tautan = document.createElement('a');
-  tautan.className = kepala.className;
+  tautan.className = 'facility-card';
+  tautan.dataset.campus = kartu.dataset.campus;
   tautan.href = halaman.href;
   tautan.target = '_blank';
   tautan.rel = 'noopener noreferrer';
-  tautan.title = 'Buka lokasi ' + nama + ' di Google Maps';
-  tautan.setAttribute('aria-label', tautan.title);
-  tautan.append(...kepala.childNodes);
-  const ikon = tautan.querySelector('svg');
+  kepala.querySelector('.facility-title').textContent = 'Lokasi ' + nama;
+  const ikon = kepala.querySelector('svg');
   ikon.setAttribute('aria-hidden', 'true');
   ikon.innerHTML = '<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/>';
-  kepala.replaceWith(tautan);
+  const cta = document.createElement('span');
+  cta.className = 'gf-footer-link';
+  cta.textContent = 'Lihat lokasi kampus di Google Maps';
+  tautan.setAttribute('aria-label', cta.textContent + ' · ' + nama);
+  tautan.append(kepala, cta);
+  kartu.after(tautan);
 }
 
 for (const kartu of id('facilityGrid').querySelectorAll('.facility-card')) {
@@ -92,7 +97,6 @@ export function kampusKatalog(daftar) {
   const fasilitas = id('facilityGrid');
   bar.querySelectorAll('button:not([data-campus="ALL"])').forEach(button => button.remove());
   fasilitas.querySelectorAll('.facility-card').forEach(card => card.remove());
-  id('facilitySummaryStrip').firstElementChild.textContent = 'Fasilitas Kantin UNUSA';
   for (const { kode, nama, alamat, fasilitas: info } of daftar) {
     const tombol = awalTombol.cloneNode(true);
     tombol.dataset.campus = 'KAMPUS_' + kode;
@@ -101,12 +105,12 @@ export function kampusKatalog(daftar) {
     bar.append(tombol);
     const card = awalFasilitas.cloneNode(true);
     card.dataset.campus = tombol.dataset.campus;
-    card.querySelector('.facility-title').textContent = nama;
+    card.querySelector('.facility-title').textContent = 'Fasilitas Kantin: ' + nama;
     const [lokasi, rincian] = card.querySelectorAll('.facility-item');
-    lokasi.textContent = alamat || 'Alamat belum dicatat.';
-    rincian.textContent = info || 'Fasilitas belum dicatat.';
-    tautanLokasi(card, nama, alamat);
+    lokasi.replaceChildren(lokasi.firstElementChild, ' ' + (alamat || 'Alamat belum dicatat.'));
+    rincian.replaceChildren(rincian.firstElementChild, ' ' + (info || 'Fasilitas belum dicatat.'));
     fasilitas.append(card);
+    tautanLokasi(card, nama, alamat);
   }
 }
 
@@ -142,7 +146,9 @@ export function detail(t, kembali) {
   id('detailStarContainer').textContent = nilai.nilai != null ? bintang(nilai.nilai) : '';
   id('detailReviewCount').textContent = nilai.jumlah + ' ulasan';
   id('detailAspectGrid').innerHTML = aspek.map((nama, i) => `<div class="aspect-box"><span>${nama}</span><strong>${nilai.aspek[i] != null ? skor(nilai.aspek[i]) + ' / 5' : '—'}</strong></div>`).join('');
-  id('detailReviewsList').innerHTML = t.ulasan.map(u => `<article class="review-card"><strong>${teks(u.status)}</strong><p>${teks(u.komentar)}</p></article>`).join('') || '<p class="empty-note">Belum ada ulasan untuk stand ini.</p>';
+  id('detailReviewsList').innerHTML = t.ulasan.filter(u => u.komentar)
+    .map(u => `<article class="review-card"><strong>${teks(u.status)}</strong><p>${teks(u.komentar)}</p></article>`)
+    .join('') || '<p class="empty-note">Belum ada komentar untuk stand ini.</p>';
   for (const link of id('screen-public-tenant-detail').querySelectorAll('[data-survey-link]')) link.href = surveiUrl(t);
   for (const link of id('screen-public-tenant-detail').querySelectorAll('[data-katalog-link]')) link.href = kembali;
   menuDetail(t);
